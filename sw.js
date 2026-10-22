@@ -1,22 +1,23 @@
-const CACHE_NAME = 'english-ai-studio-v1';
-const STATIC_ASSETS = [
-  './',
+const CACHE_NAME = 'english-ai-studio-v2';
+const PRECACHE_ASSETS = [
   './index.html',
   './manifest.json',
   './assets/icon-192.png',
   './assets/icon-512.png',
-  './assets/apple-touch-icon.png'
+  './assets/icon-maskable-192.png',
+  './assets/icon-maskable-512.png'
 ];
 
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('Cache addAll warning:', err);
-      });
+      // Individual caching using Promise.allSettled so installation never fails
+      return Promise.allSettled(
+        PRECACHE_ASSETS.map((asset) => cache.add(asset).catch((err) => console.warn('Cache error for', asset, err)))
+      );
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -29,41 +30,57 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+  const request = event.request;
 
-  // Do not intercept or cache external API calls (e.g. Google Gemini API)
-  if (url.origin.includes('googleapis.com')) {
+  // Only handle HTTP/HTTPS GET requests
+  if (request.method !== 'GET' || !request.url.startsWith('http')) {
     return;
   }
 
-  event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        // Clone and cache successful response for same-origin or CDN resources
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache).catch(() => {});
+  // Bypass live API calls
+  if (request.url.includes('googleapis.com') || request.url.includes('mymemory.translated.net')) {
+    return;
+  }
+
+  // Navigation requests: Network first with index.html cache fallback
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(async () => {
+          const cached = (await caches.match(request)) || (await caches.match('./index.html'));
+          if (cached) return cached;
+          return new Response('English AI Studio Offline', {
+            status: 200,
+            headers: { 'Content-Type': 'text/html; charset=utf-8' }
           });
+        })
+    );
+    return;
+  }
+
+  // Static assets: Cache-first, then network and cache
+  event.respondWith(
+    caches.match(request).then((cached) => {
+      if (cached) return cached;
+      return fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
         }
         return networkResponse;
-      })
-      .catch(() => {
-        // Fallback to cache if network fails
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          if (event.request.mode === 'navigate') {
-            return caches.match('./index.html');
-          }
-        });
-      })
+      });
+    })
   );
 });
