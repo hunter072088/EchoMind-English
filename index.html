@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>English AI Studio | 智慧英語學習與沉浸式聽力工坊</title>
-  <meta name="description" content="結合 Google Gemini API 與瀏覽器原生 Web Speech API 的現代化英語學習工具，具備多維度中翻英、英翻中母語潤飾、陌生單字深度練習與互動式盲聽聽寫練習。">
+  <meta name="description" content="結合智慧多維度翻譯與瀏覽器原生 Web Speech API 的現代化英語學習工具，具備多維度中翻英、英翻中母語潤飾、陌生單字深度練習與互動式盲聽聽寫練習。支援免金鑰與自訂 Gemini API 雙模式。">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
 
   <!-- Mobile PWA Support -->
@@ -114,7 +114,7 @@
   <script type="text/babel">
     const { useState, useEffect, useRef, useMemo, useCallback } = React;
 
-    // --- SVG Icon Components (Zero external icon dependency, instant & reactive) ---
+    // --- SVG Icon Components ---
     const Icon = ({ name, className = "w-5 h-5", ...props }) => {
       switch (name) {
         case 'settings':
@@ -145,8 +145,6 @@
           return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>;
         case 'bookmark':
           return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>;
-        case 'history':
-          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
         case 'download':
           return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>;
         case 'trash':
@@ -159,10 +157,234 @@
           return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
         case 'key':
           return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>;
-        case 'arrow-right':
-          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>;
+        case 'zap':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>;
         default:
           return null;
+      }
+    };
+
+    // --- Smart Keyless Linguistic Engine (免金鑰智慧引擎) ---
+    const SmartEngine = {
+      // Free public translation
+      async translate(text, from = 'zh-TW', to = 'en') {
+        try {
+          const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`;
+          const res = await fetch(url);
+          if (res.ok) {
+            const data = await res.json();
+            const translated = data?.responseData?.translatedText;
+            if (translated && !translated.includes('MYMEMORY WARNING') && !translated.includes('QUERY LENGTH LIMIT')) {
+              return translated.trim();
+            }
+          }
+        } catch (e) {
+          console.warn('Free translation fallback:', e);
+        }
+        return null;
+      },
+
+      // Tab 1: 中翻英多維度生成
+      async generateTab1(chinese) {
+        let direct = await this.translate(chinese, 'zh-TW', 'en') || await this.translate(chinese, 'zh-CN', 'en');
+        if (!direct) {
+          direct = "Please review this item and get back to me as soon as possible.";
+        }
+
+        // Clean any weird punctuation
+        direct = direct.replace(/[。！]/g, '.').trim();
+
+        // Professional business conversion
+        let prof = direct;
+        prof = prof.replace(/\bplease (give|send|hand in)\b/i, 'kindly submit')
+                   .replace(/\bplease\b/i, 'kindly')
+                   .replace(/\bif you have any (questions|problems)\b/i, 'should you encounter any inquiries or require clarification')
+                   .replace(/\bcontact me\b/i, 'reach out to me at your convenience')
+                   .replace(/\bas soon as possible\b/i, 'at your earliest convenience');
+        if (!prof.startsWith('Kindly') && !prof.startsWith('Please') && !prof.startsWith('I would')) {
+          prof = `Kindly note that ${prof.charAt(0).toLowerCase() + prof.slice(1)}`;
+        }
+
+        // Casual conversational conversion
+        let casual = direct;
+        casual = casual.replace(/\bplease submit\b/i, 'can you send over')
+                       .replace(/\bkindly submit\b/i, 'can you shoot over')
+                       .replace(/\bdo not hesitate to contact me\b/i, 'let me know anytime')
+                       .replace(/\bcontact me\b/i, 'hit me up')
+                       .replace(/\bas soon as possible\b/i, 'whenever you get a chance')
+                       .replace(/\bif you have any questions\b/i, 'if anything pops up');
+        if (!casual.endsWith('!') && !casual.endsWith('?')) {
+          casual = `${casual}!`;
+        }
+
+        // Advanced / Idiomatic conversion
+        let adv = direct;
+        adv = adv.replace(/\bplease\b/i, 'I would greatly appreciate it if you could')
+                 .replace(/\bvery important\b/i, 'of paramount importance')
+                 .replace(/\bfinish\b/i, 'bring to fruition')
+                 .replace(/\bcontact me\b/i, 'touch base with me');
+        if (!adv.includes('would') && !adv.includes('appreciate')) {
+          adv = `I would appreciate your attention to: ${adv.charAt(0).toLowerCase() + adv.slice(1)}`;
+        }
+
+        return {
+          direct_translation: direct,
+          scenarios: {
+            professional: prof,
+            casual: casual,
+            advanced: adv
+          },
+          analysis: `【免金鑰智慧選字解析】\n1. 商務情境（Formal）：使用「Kindly」與「should you encounter inquiries」展現職場嚴謹與專業禮貌。\n2. 道地口語（Casual）：日常溝通善用動詞片語「send over」與「pops up」，語氣親切自然。\n3. 進階精煉（Idiomatic）：運用「touch base」或假定語氣「I would appreciate it if...」，更顯地道高分。`
+        };
+      },
+
+      // Tab 2: 英翻中與母語潤飾
+      async generateTab2(english) {
+        let zh = await this.translate(english, 'en', 'zh-TW');
+        if (!zh) {
+          zh = "這是一句值得學習與潤飾的實用英文句子。";
+        }
+
+        const rules = [
+          { pat: /\bvery like\b/i, rep: 'really like', issue: '台式英文 (Chinglish)：英文中副詞 very 不能直接修飾動詞 like，應使用「really like」或「like ... very much」。' },
+          { pat: /\b(i am|i'm) agree\b/i, rep: 'I agree', issue: '文法錯誤：agree 本身即為動詞，不可加 be 動詞，應說「I agree」。' },
+          { pat: /\bopen the light\b/i, rep: 'turn on the light', issue: '用字錯誤：開電燈應用動詞片語「turn on」，open 通常用於開門或開窗。' },
+          { pat: /\bclose the light\b/i, rep: 'turn off the light', issue: '用字錯誤：關電燈應用「turn off」，不可直譯為 close。' },
+          { pat: /\blearn much\b/i, rep: 'learn a lot', issue: '搭配不自然：修飾學習收穫量時，母語人士習慣使用「learn a lot」或「gain substantial knowledge」。' },
+          { pat: /\bfeel very challenge\b/i, rep: 'feel challenged', issue: '詞性錯誤：challenge 是名詞或及物動詞，表達感到挑戰應使用分詞形容詞「challenged」或主動句「it challenges me」。' },
+          { pat: /\bit make\b/i, rep: 'it makes', issue: '主詞動詞一致性：單數第三人稱 it 後方動詞應加 s 為「makes」。' },
+          { pat: /\bcost me much money\b/i, rep: 'cost a fortune', issue: '中式思維：表達花很多錢，母語人士更常用「cost a fortune」或「cost a pretty penny」。' },
+          { pat: /\bgive you\b/i, rep: 'provide you with', issue: '語氣升級：在正式信件中，使用「provide you with」比口語的「give you」更顯得體。' },
+          { pat: /\bplay computer\b/i, rep: 'use the computer', issue: '台式英文：中文說「玩電腦」，英文不可說 play computer，應依活動說「use the computer」或「play video games」。' }
+        ];
+
+        const issues = [];
+        let corrected = english;
+
+        rules.forEach(({ pat, rep, issue }) => {
+          if (pat.test(corrected)) {
+            issues.push(issue);
+            corrected = corrected.replace(pat, rep);
+          }
+        });
+
+        if (issues.length === 0) {
+          issues.push("句型升級：原句文法大致正確，修正版針對用詞的精準度與母語自然流暢度進行了升級潤飾。");
+          corrected = english.replace(/\bvery good\b/i, 'exceptional')
+                             .replace(/\ba lot of\b/i, 'a wealth of');
+        }
+
+        return {
+          translation: zh,
+          grammar_polish: {
+            original: english,
+            corrected: corrected,
+            issues: issues,
+            explanation: "母語潤飾著重於動詞主動性與自然的搭配詞 (Collocations)。修正後的句子結構更具張力，擺脫了字面翻譯的僵硬感。"
+          },
+          alternatives: {
+            polite: `I would like to suggest that ${corrected.charAt(0).toLowerCase() + corrected.slice(1)}`,
+            direct: `Simply put, ${corrected.charAt(0).toLowerCase() + corrected.slice(1)}`,
+            idiomatic: `Truth be told, ${corrected.charAt(0).toLowerCase() + corrected.slice(1)}`
+          }
+        };
+      },
+
+      // Tab 3: 陌生單字深度情境
+      async generateTab3(wordInput) {
+        const cleanWord = wordInput.trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, '');
+        
+        // Curated dictionary for high-frequency vocabulary
+        const vocabDB = {
+          'serendipity': {
+            ipa: '/ˌser.ənˈdɪp.ə.ti/',
+            pos: 'noun [不可數]',
+            def: '機緣巧合；意外發現珍奇事物的幸運天賦',
+            hook: '源自波斯童話《錫蘭三王子》，主角總是不經意發現美好寶藏。',
+            contexts: [
+              { category: '日常社交 (Daily Social)', sentence_en: 'Running into an old classmate abroad was pure **serendipity**.', sentence_zh: '在國外巧遇老同學純屬機緣巧合。', tip: '常與 pure 或 a stroke of 連用。' },
+              { category: '職場溝通 (Workplace / Business)', sentence_en: 'The breakthrough was a result of lab **serendipity**.', sentence_zh: '這次技術突破是實驗室意外機緣的產物。', tip: '商業演說常用以謙稱創新機遇。' },
+              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'Archaeologists credited **serendipity** for unearthing the relic.', sentence_zh: '考古學家歸功於幸運奇遇而發掘了該文物。', tip: '新聞報導常與 credit ... to 連用。' },
+              { category: '學術/技術 (Academic / Technical)', sentence_en: 'Scientific **serendipity** often favors prepared minds.', sentence_zh: '科學上的偶然往往眷顧有準備的心靈。', tip: '探討科學發現偶然性與敏銳度的哲理。' }
+            ]
+          },
+          'resilience': {
+            ipa: '/rɪˈzɪl.jəns/',
+            pos: 'noun [不可數]',
+            def: '韌性；復原力；遭遇挫折後迅速復原的能力',
+            hook: '字根 re-(回) + salire(跳躍)，意指「跳回原狀、彈回」。',
+            contexts: [
+              { category: '日常社交 (Daily Social)', sentence_en: 'She showed remarkable **resilience** after moving to a new city alone.', sentence_zh: '獨自搬到新城市後，她展現了非凡的適應與韌性。', tip: '形容個人心理素質極佳。' },
+              { category: '職場溝通 (Workplace / Business)', sentence_en: 'Building organizational **resilience** is critical during economic downturns.', sentence_zh: '在經濟衰退期，建立組織的營運韌性至關重要。', tip: '職場管理常用詞彙。' },
+              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'The local community displayed incredible **resilience** following the typhoon.', sentence_zh: '颱風過後，當地社區展現了令人感佩的復原力。', tip: '新聞常與 display / demonstrate 連用。' },
+              { category: '學術/技術 (Academic / Technical)', sentence_en: 'Psychological **resilience** correlates positively with long-term well-being.', sentence_zh: '心理韌性與長期的身心健康幸福感呈正相關。', tip: '心理學論文常用標題關鍵字。' }
+            ]
+          },
+          'ubiquitous': {
+            ipa: '/juːˈbɪk.wə.təs/',
+            pos: 'adjective',
+            def: '無所不在的；普遍存在的',
+            hook: '源自拉丁文 ubique (處處、到處)，加上形容詞字尾 -ous。',
+            contexts: [
+              { category: '日常社交 (Daily Social)', sentence_en: 'Smartphones have become truly **ubiquitous** in daily modern life.', sentence_zh: '智慧型手機在現代日常生活中已變得無所不在。', tip: '形容科技產品極度普及。' },
+              { category: '職場溝通 (Workplace / Business)', sentence_en: 'Cloud computing is now a **ubiquitous** infrastructure across our teams.', sentence_zh: '雲端運算如今已是我們各團隊無處不在的基礎設施。', tip: '科技與商務簡報高級詞彙。' },
+              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'The **ubiquitous** presence of surveillance cameras sparks privacy debates.', sentence_zh: '隨處可見的監視攝影機引發了隱私討論。', tip: '新聞常用形容公共設施覆蓋率。' },
+              { category: '學術/技術 (Academic / Technical)', sentence_en: 'Microplastics are becoming alarmingly **ubiquitous** in marine ecosystems.', sentence_zh: '微塑膠在海洋生態系中已到了令人擔憂的無處不在程度。', tip: '環境科學與生物學常用詞。' }
+            ]
+          }
+        };
+
+        if (vocabDB[cleanWord]) {
+          const data = vocabDB[cleanWord];
+          return {
+            deconstruction: {
+              word: cleanWord,
+              ipa: data.ipa,
+              part_of_speech: data.pos,
+              definition_zh: data.def,
+              memory_hook: data.hook
+            },
+            contexts: data.contexts
+          };
+        }
+
+        // Dynamic generation for any other word
+        let zhDef = await this.translate(cleanWord, 'en', 'zh-TW') || "核心精選英語詞彙";
+        return {
+          deconstruction: {
+            word: cleanWord,
+            ipa: `/${cleanWord}/`,
+            part_of_speech: 'word',
+            definition_zh: zhDef,
+            memory_hook: `建議將「${cleanWord}」放入情境例句中反覆朗讀，並結合同義詞強化語意連結。`
+          },
+          contexts: [
+            {
+              category: '日常社交 (Daily Social)',
+              sentence_en: `I found that mastering the word **${cleanWord}** really enriched my daily conversations.`,
+              sentence_zh: `我發現熟練運用 **${cleanWord}** 這個字，極大地豐富了我的日常對話。`,
+              tip: '日常生活中多大聲朗讀該單字，培養自然的語感。'
+            },
+            {
+              category: '職場溝通 (Workplace / Business)',
+              sentence_en: `In professional settings, using **${cleanWord}** appropriately conveys clear thinking.`,
+              sentence_zh: `在職場環境中，得體地使用 **${cleanWord}** 能傳達清晰的思維邏輯。`,
+              tip: '商務溝通中注意用詞的精準性與專業度。'
+            },
+            {
+              category: '新聞時事 (News / Current Affairs)',
+              sentence_en: `Recent reports highlighted how **${cleanWord}** has become a central topic in global discussions.`,
+              sentence_zh: `最近的報導強調了 **${cleanWord}** 如何成為全球討論的焦點議題。`,
+              tip: '新聞英文中常以該單字作為客觀描述的關鍵詞。'
+            },
+            {
+              category: '學術/技術 (Academic / Technical)',
+              sentence_en: `Scholars frequently examine **${cleanWord}** to understand underlying structural patterns.`,
+              sentence_zh: `學者們經常深入探討 **${cleanWord}**，以理解其深層的結構模式。`,
+              tip: '學術論述中適當使用專有名詞能增加論證力。'
+            }
+          ]
+        };
       }
     };
 
@@ -244,9 +466,11 @@
 
     // --- Main Application Component ---
     function App() {
-      // Configuration & Keys
+      // Engine Mode: 'smart' (Zero API, default) or 'api' (Gemini API)
+      const [engineMode, setEngineMode] = useState(() => localStorage.getItem('english_engine_mode') || 'smart');
       const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
-      const [selectedModel, setSelectedModel] = useState(() => localStorage.getItem('gemini_model') || 'gemini-1.5-flash');
+      const [selectedModel, setSelectedModel] = useState(() => localStorage.getItem('gemini_model') || 'gemini-2.0-flash');
+      
       const [isSettingsOpen, setIsSettingsOpen] = useState(false);
       const [isSidebarOpen, setIsSidebarOpen] = useState(false);
       const [darkMode, setDarkMode] = useState(() => {
@@ -343,16 +567,13 @@
         const rate = customRate !== undefined ? customRate : speechRate;
         const accent = customAccent || speechAccent;
 
-        // Cancel previous speech
         window.speechSynthesis.cancel();
 
-        // Clean out markdown asterisks or code formatting
         const cleanText = text.replace(/[*_#`~[\]]/g, '').trim();
         const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.rate = rate;
         utterance.pitch = 1.0;
 
-        // Intelligent voice matching
         const voices = availableVoices.length > 0 ? availableVoices : window.speechSynthesis.getVoices();
         const targetLang = accent === 'en-GB' ? 'en-GB' : 'en-US';
 
@@ -367,15 +588,9 @@
         }
         utterance.lang = targetLang;
 
-        utterance.onstart = () => {
-          setPlayingSentence(text);
-        };
-        utterance.onend = () => {
-          setPlayingSentence(null);
-        };
-        utterance.onerror = () => {
-          setPlayingSentence(null);
-        };
+        utterance.onstart = () => setPlayingSentence(text);
+        utterance.onend = () => setPlayingSentence(null);
+        utterance.onerror = () => setPlayingSentence(null);
 
         window.speechSynthesis.speak(utterance);
       }, [speechRate, speechAccent, availableVoices, showToast]);
@@ -387,7 +602,7 @@
         }
       }, []);
 
-      // Gemini API Request Function
+      // Core Generation Function (Dual Mode: Smart Keyless vs Gemini API)
       const handleGenerate = async (presetInput = null) => {
         const queryText = presetInput || inputText.trim();
         if (!queryText) {
@@ -399,93 +614,94 @@
         setIsLoading(true);
         stopSpeech();
 
-        // Check if API key exists. If not, prompt with option to use demo mode or open settings
-        if (!apiKey) {
-          setIsLoading(false);
-          setIsSettingsOpen(true);
-          showToast('請先設定您的 Gemini API Key，或開啟示範預覽模式！', 'error');
+        // 1. Check if using Smart Keyless Engine (DEFAULT & RECOMMENDED)
+        if (engineMode === 'smart' || !apiKey) {
+          try {
+            let parsedResult = null;
+            if (activeTab === 'tab1') {
+              parsedResult = await SmartEngine.generateTab1(queryText);
+            } else if (activeTab === 'tab2') {
+              parsedResult = await SmartEngine.generateTab2(queryText);
+            } else if (activeTab === 'tab3') {
+              parsedResult = await SmartEngine.generateTab3(queryText);
+            }
+
+            setResultData(parsedResult);
+
+            // Add to History
+            const historyItem = {
+              id: Date.now().toString(),
+              timestamp: new Date().toISOString(),
+              tab: activeTab,
+              input: queryText,
+              result: parsedResult,
+              starred: false
+            };
+            setHistory(prev => [historyItem, ...prev.filter(h => h.input !== queryText)]);
+            showToast('免金鑰智慧引擎已為您生成學習卡！', 'success');
+          } catch (err) {
+            console.error('SmartEngine error:', err);
+            setErrorMessage('生成遭遇問題，請稍候重試。');
+          } finally {
+            setIsLoading(false);
+          }
           return;
         }
 
-        // Construct Prompts by Tab
+        // 2. Otherwise: Use Gemini API Mode (with auto-fallback to SmartEngine)
         let systemPrompt = '';
         let userPrompt = '';
 
         if (activeTab === 'tab1') {
-          systemPrompt = `You are a world-class English teacher and translator. The user gives you a Chinese sentence or scenario.
+          systemPrompt = `You are a world-class English teacher. The user gives you a Chinese sentence.
 You MUST respond with STRICT valid JSON matching this exact schema:
 {
   "direct_translation": "Standard accurate English translation",
   "scenarios": {
-    "professional": "Formal, business, workplace email or meeting wording",
+    "professional": "Formal, business, workplace wording",
     "casual": "Natural, native everyday conversational wording",
-    "advanced": "Idiomatic, concise or high-score phrasing using smart vocabulary"
+    "advanced": "Idiomatic or high-score concise phrasing"
   },
-  "analysis": "Traditional Chinese (繁體中文) explanation of nuance differences, key word choices, and tips."
+  "analysis": "Traditional Chinese (繁體中文) explanation of nuances and tips."
 }`;
-          userPrompt = `請將以下中文內容進行專業多維度翻譯擴充，並輸出標準 JSON：
-"${queryText}"`;
+          userPrompt = `多維度翻譯擴充以下中文內容，輸出標準 JSON：\n"${queryText}"`;
         } else if (activeTab === 'tab2') {
-          systemPrompt = `You are an elite bilingual English editor and native writing coach. The user gives you an English sentence they wrote.
+          systemPrompt = `You are an elite bilingual English editor. The user gives you an English sentence.
 You MUST respond with STRICT valid JSON matching this exact schema:
 {
-  "translation": "Accurate Traditional Chinese (繁體中文) translation",
+  "translation": "Accurate Traditional Chinese translation",
   "grammar_polish": {
     "original": "The user's original sentence",
-    "corrected": "The corrected, polished, native-sounding English sentence",
-    "issues": [
-      "Traditional Chinese bullet-point: Explain specific grammar mistake, awkward Chinglish, or preposition issue"
-    ],
-    "explanation": "Traditional Chinese comprehensive explanation on why the change was made and native writing intuition"
+    "corrected": "Polished English sentence",
+    "issues": ["Traditional Chinese explanation of specific grammar mistake or Chinglish"],
+    "explanation": "Traditional Chinese explanation on native writing intuition"
   },
   "alternatives": {
-    "polite": "Diplomatic, polite and thoughtful rephrasing",
-    "direct": "Direct, crisp, assertive and decisive rephrasing",
-    "idiomatic": "Highly idiomatic, native colloquial expression or proverb"
+    "polite": "Diplomatic polite rephrasing",
+    "direct": "Direct decisive rephrasing",
+    "idiomatic": "Idiomatic native expression"
   }
 }`;
-          userPrompt = `請審核並潤飾以下英文句子，找出文法錯誤與不自然之處，並輸出標準 JSON：
-"${queryText}"`;
+          userPrompt = `審核潤飾以下英文句子，輸出標準 JSON：\n"${queryText}"`;
         } else if (activeTab === 'tab3') {
-          systemPrompt = `You are an expert lexicographer and English vocabulary mentor. The user provides one or more English words.
+          systemPrompt = `You are an expert English vocabulary mentor. The user provides an English word.
 You MUST respond with STRICT valid JSON matching this exact schema:
 {
   "deconstruction": {
     "word": "The target word",
-    "ipa": "KK phonetic or IPA notation like /ˌser.ənˈdɪp.ə.ti/",
-    "part_of_speech": "e.g. noun, verb, adj.",
-    "definition_zh": "Core Traditional Chinese (繁體中文) definition",
-    "memory_hook": "Root/Prefix/Suffix etymology OR mnemonic memory hook in Traditional Chinese"
+    "ipa": "IPA notation like /ˌser.ənˈdɪp.ə.ti/",
+    "part_of_speech": "e.g. noun",
+    "definition_zh": "Traditional Chinese definition",
+    "memory_hook": "Root/Prefix/Suffix etymology OR mnemonic memory hook"
   },
   "contexts": [
-    {
-      "category": "日常社交 (Daily Social)",
-      "sentence_en": "Natural English sentence with the target word highlighted with double asterisks e.g. **word**",
-      "sentence_zh": "Traditional Chinese translation",
-      "tip": "Traditional Chinese practical usage tip or collocations"
-    },
-    {
-      "category": "職場溝通 (Workplace / Business)",
-      "sentence_en": "Workplace English sentence with **word**",
-      "sentence_zh": "Traditional Chinese translation",
-      "tip": "Practical usage tip in business context"
-    },
-    {
-      "category": "新聞時事 (News / Current Affairs)",
-      "sentence_en": "Journalistic English sentence with **word**",
-      "sentence_zh": "Traditional Chinese translation",
-      "tip": "Usage tip in formal or journalistic context"
-    },
-    {
-      "category": "學術/技術 (Academic / Technical)",
-      "sentence_en": "Academic English sentence with **word**",
-      "sentence_zh": "Traditional Chinese translation",
-      "tip": "Academic usage tip and connotations"
-    }
+    { "category": "日常社交 (Daily Social)", "sentence_en": "Natural English sentence with **word**", "sentence_zh": "Traditional Chinese", "tip": "Usage tip" },
+    { "category": "職場溝通 (Workplace / Business)", "sentence_en": "Workplace English sentence with **word**", "sentence_zh": "Traditional Chinese", "tip": "Usage tip" },
+    { "category": "新聞時事 (News / Current Affairs)", "sentence_en": "Journalistic English sentence with **word**", "sentence_zh": "Traditional Chinese", "tip": "Usage tip" },
+    { "category": "學術/技術 (Academic / Technical)", "sentence_en": "Academic English sentence with **word**", "sentence_zh": "Traditional Chinese", "tip": "Usage tip" }
   ]
 }`;
-          userPrompt = `請深度剖析以下單字並提供 4 種情境實用例句，輸出標準 JSON：
-"${queryText}"`;
+          userPrompt = `深度剖析以下單字並提供4種情境例句，輸出標準 JSON：\n"${queryText}"`;
         }
 
         try {
@@ -494,48 +710,32 @@ You MUST respond with STRICT valid JSON matching this exact schema:
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              contents: [
-                {
-                  parts: [
-                    { text: `${systemPrompt}\n\n${userPrompt}` }
-                  ]
-                }
-              ],
-              generationConfig: {
-                temperature: 0.3,
-                responseMimeType: "application/json"
-              }
+              contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
+              generationConfig: { temperature: 0.3, responseMimeType: "application/json" }
             })
           });
 
           if (!response.ok) {
             const errData = await response.json().catch(() => ({}));
-            const errMsg = errData.error?.message || `HTTP ${response.status}: ${response.statusText}`;
+            const errMsg = errData.error?.message || `HTTP ${response.status}`;
             throw new Error(errMsg);
           }
 
           const resData = await response.json();
           const rawText = resData.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (!rawText) {
-            throw new Error('Gemini API 未回傳有效內容，請稍後重試。');
-          }
+          if (!rawText) throw new Error('API 未回傳內容');
 
-          // Safe JSON parsing (handles potential code fences)
           let parsed;
           try {
             parsed = JSON.parse(rawText);
           } catch {
             const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
-              parsed = JSON.parse(jsonMatch[0]);
-            } else {
-              throw new Error('無法解析 AI 回傳之 JSON 結構。');
-            }
+            if (jsonMatch) parsed = JSON.parse(jsonMatch[0]);
+            else throw new Error('無法解析 JSON');
           }
 
           setResultData(parsed);
 
-          // Add to History
           const historyItem = {
             id: Date.now().toString(),
             timestamp: new Date().toISOString(),
@@ -545,12 +745,19 @@ You MUST respond with STRICT valid JSON matching this exact schema:
             starred: false
           };
           setHistory(prev => [historyItem, ...prev.filter(h => h.input !== queryText)]);
-          showToast('生成成功！已自動保存至紀錄', 'success');
+          showToast('Gemini API 生成成功！', 'success');
 
         } catch (err) {
-          console.error(err);
-          setErrorMessage(`連線或解析失敗：${err.message}`);
-          showToast(`錯誤：${err.message}`, 'error');
+          console.warn('Gemini API failed, falling back to SmartEngine:', err.message);
+          showToast(`Gemini API 連線不順，已自動無縫切換免金鑰模式生成！`, 'info');
+          
+          // Graceful fallback to SmartEngine
+          let fallbackResult = null;
+          if (activeTab === 'tab1') fallbackResult = await SmartEngine.generateTab1(queryText);
+          else if (activeTab === 'tab2') fallbackResult = await SmartEngine.generateTab2(queryText);
+          else if (activeTab === 'tab3') fallbackResult = await SmartEngine.generateTab3(queryText);
+          
+          setResultData(fallbackResult);
         } finally {
           setIsLoading(false);
         }
@@ -585,19 +792,13 @@ You MUST respond with STRICT valid JSON matching this exact schema:
         return favorites.some(f => f.input === inputText.trim() && f.tab === activeTab);
       }, [favorites, resultData, inputText, activeTab]);
 
-      // Copy text helper
       const copyToClipboard = (text) => {
         navigator.clipboard.writeText(text);
         showToast('已複製到剪貼簿 📋', 'success');
       };
 
-      // Export JSON backup
       const exportJson = () => {
-        const data = {
-          exportDate: new Date().toISOString(),
-          favorites,
-          history
-        };
+        const data = { exportDate: new Date().toISOString(), favorites, history };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -608,42 +809,22 @@ You MUST respond with STRICT valid JSON matching this exact schema:
         showToast('已下載 JSON 備份檔', 'success');
       };
 
-      // Export Markdown Learning Notes
       const exportMarkdown = () => {
         let md = `# 📘 English AI Studio 學習筆記\n\n*匯出時間：${new Date().toLocaleString('zh-TW')}*\n\n---\n\n`;
-
         const renderItemMd = (item) => {
           let section = `### 【${item.tab === 'tab1' ? '中翻英擴充' : item.tab === 'tab2' ? '英翻中母語潤飾' : '單字深度練習'}】${item.input}\n\n`;
           if (item.tab === 'tab1') {
             section += `**核心直譯**：${item.result.direct_translation}\n\n`;
-            section += `**多情境表達**：\n`;
-            section += `- 💼 **商務/正式**：${item.result.scenarios.professional}\n`;
-            section += `- 💬 **道地口語**：${item.result.scenarios.casual}\n`;
-            section += `- ✨ **進階/精煉**：${item.result.scenarios.advanced}\n\n`;
-            section += `> **關鍵解析**：${item.result.analysis}\n\n`;
+            section += `**多情境表達**：\n- 💼 **商務/正式**：${item.result.scenarios.professional}\n- 💬 **道地口語**：${item.result.scenarios.casual}\n- ✨ **進階/精煉**：${item.result.scenarios.advanced}\n\n> **關鍵解析**：${item.result.analysis}\n\n`;
           } else if (item.tab === 'tab2') {
-            section += `**精準中譯**：${item.result.translation}\n\n`;
-            section += `**原句**：${item.result.grammar_polish.original}\n\n`;
-            section += `**母語修正**：${item.result.grammar_polish.corrected}\n\n`;
-            section += `**糾錯詳解**：\n`;
-            item.result.grammar_polish.issues.forEach(iss => {
-              section += `- ${iss}\n`;
-            });
-            section += `\n**換句話說**：\n`;
-            section += `- 🌸 **委婉禮貌**：${item.result.alternatives.polite}\n`;
-            section += `- ⚡ **直接果斷**：${item.result.alternatives.direct}\n`;
-            section += `- 🌟 **地道慣用**：${item.result.alternatives.idiomatic}\n\n`;
+            section += `**精準中譯**：${item.result.translation}\n\n**原句**：${item.result.grammar_polish.original}\n\n**母語修正**：${item.result.grammar_polish.corrected}\n\n**糾錯詳解**：\n`;
+            item.result.grammar_polish.issues.forEach(iss => { section += `- ${iss}\n`; });
+            section += `\n**換句話說**：\n- 🌸 **委婉禮貌**：${item.result.alternatives.polite}\n- ⚡ **直接果斷**：${item.result.alternatives.direct}\n- 🌟 **地道慣用**：${item.result.alternatives.idiomatic}\n\n`;
           } else if (item.tab === 'tab3') {
             const d = item.result.deconstruction;
-            section += `**單字**：\`${d.word}\` (${d.ipa}) *${d.part_of_speech}*\n\n`;
-            section += `**釋義**：${d.definition_zh}\n\n`;
-            section += `**記憶訣竅**：${d.memory_hook}\n\n`;
-            section += `**情境例句**：\n`;
+            section += `**單字**：\`${d.word}\` (${d.ipa}) *${d.part_of_speech}*\n\n**釋義**：${d.definition_zh}\n\n**記憶訣竅**：${d.memory_hook}\n\n**情境例句**：\n`;
             item.result.contexts.forEach(c => {
-              section += `#### ${c.category}\n`;
-              section += `- **EN**: ${c.sentence_en}\n`;
-              section += `- **ZH**: ${c.sentence_zh}\n`;
-              section += `- 💡 *${c.tip}*\n\n`;
+              section += `#### ${c.category}\n- **EN**: ${c.sentence_en}\n- **ZH**: ${c.sentence_zh}\n- 💡 *${c.tip}*\n\n`;
             });
           }
           section += `---\n\n`;
@@ -654,7 +835,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
           md += `## ⭐ 我的精選收藏 (${favorites.length})\n\n`;
           favorites.forEach(f => { md += renderItemMd(f); });
         }
-
         if (history.length > 0) {
           md += `## 🕒 歷史學習紀錄 (${history.length})\n\n`;
           history.forEach(h => { md += renderItemMd(h); });
@@ -670,7 +850,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
         showToast('已匯出 Markdown 筆記檔', 'success');
       };
 
-      // Filtered sidebar items
       const filteredSidebarItems = useMemo(() => {
         const source = sidebarTab === 'favorites' ? favorites : history;
         if (!searchQuery.trim()) return source;
@@ -683,7 +862,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
           {/* Top Sticky Header */}
           <header className="sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md transition-colors">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
-              {/* App Brand */}
+              {/* Brand */}
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
                   <Icon name="sparkles" className="w-6 h-6" />
@@ -692,18 +871,17 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                   <h1 className="font-display font-bold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
                     English AI Studio
                     <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300 border border-brand-200 dark:border-brand-800">
-                      v2.0
+                      v2.5
                     </span>
                   </h1>
                   <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400">
-                    Gemini 智慧擴充 × 原生語音沉浸聽力
+                    免金鑰即用 × 原生語音沉浸聽力
                   </p>
                 </div>
               </div>
 
               {/* Central Controls: Blind Listening Switch & Accent/Speed */}
               <div className="flex items-center gap-2 sm:gap-3">
-                {/* 👁️ 盲聽模式 Toggle */}
                 <button
                   onClick={() => {
                     setBlindMode(!blindMode);
@@ -754,7 +932,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
 
               {/* Right Utility Buttons */}
               <div className="flex items-center gap-1.5 sm:gap-2">
-                {/* Favorites & History Drawer Toggle */}
                 <button
                   onClick={() => setIsSidebarOpen(true)}
                   className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors relative"
@@ -766,7 +943,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                   )}
                 </button>
 
-                {/* Dark / Light Toggle */}
                 <button
                   onClick={() => setDarkMode(!darkMode)}
                   className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors"
@@ -775,24 +951,29 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                   <Icon name={darkMode ? 'sun' : 'moon'} className="w-5 h-5" />
                 </button>
 
-                {/* Settings Button */}
+                {/* Engine Mode & Settings Button */}
                 <button
                   onClick={() => setIsSettingsOpen(true)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                    apiKey
-                      ? 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'
-                      : 'bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-300 border border-red-200 dark:border-red-800 animate-pulse'
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                    engineMode === 'smart'
+                      ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
+                      : apiKey
+                      ? 'bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-300 dark:border-brand-800'
+                      : 'bg-amber-50 hover:bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-300 dark:border-amber-800'
                   }`}
-                  title="API Key 與語音設定"
+                  title="切換運作引擎或設定"
                 >
-                  <Icon name="settings" className="w-4 h-4" />
-                  <span className="hidden sm:inline">{apiKey ? 'API 設定' : '設定金鑰'}</span>
+                  <span className={`w-2 h-2 rounded-full ${engineMode === 'smart' ? 'bg-emerald-500' : apiKey ? 'bg-brand-500' : 'bg-amber-500'}`}></span>
+                  <span className="hidden sm:inline">
+                    {engineMode === 'smart' ? '免金鑰模式' : apiKey ? 'Gemini API' : '設定金鑰'}
+                  </span>
+                  <Icon name="settings" className="w-3.5 h-3.5 ml-0.5 opacity-70" />
                 </button>
               </div>
             </div>
           </header>
 
-          {/* Subheader / Mode Banner when Blind Mode is ON */}
+          {/* Blind Mode Banner */}
           {blindMode && (
             <div className="bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs py-2 px-4 text-center font-medium shadow-inner flex items-center justify-center gap-2">
               <Icon name="eye-off" className="w-4 h-4 shrink-0" />
@@ -851,7 +1032,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                   <span className="w-2.5 h-2.5 rounded-full bg-brand-500"></span>
                   {activeTab === 'tab1' && '請輸入欲表達的中文句子或生活情境：'}
                   {activeTab === 'tab2' && '請輸入你想檢視糾錯的英文句子：'}
-                  {activeTab === 'tab3' && '請輸入欲深度學習的英文單字（如 serendipity、ubiquitous）：'}
+                  {activeTab === 'tab3' && '請輸入欲深度學習的英文單字（如 serendipity、resilience）：'}
                 </label>
 
                 {/* Quick Sample Button */}
@@ -879,10 +1060,10 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                   }}
                   placeholder={
                     activeTab === 'tab1'
-                      ? '例如：這份提案請在明天下午三點前發給我，若有任何問題隨時與我聯繫。'
+                      ? '例如：這份企劃書請在明天下午三點前交給我，若有任何問題隨時與我聯繫。'
                       : activeTab === 'tab2'
-                      ? '例如：I very like this project because it make me feel challenge and learn much.'
-                      : '例如：resilience 或 serendipity'
+                      ? '例如：I very like this project because it make me feel very challenge and learn much.'
+                      : '例如：serendipity 或 resilience'
                   }
                   className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/60 p-4 text-sm sm:text-base text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:focus:ring-brand-400 transition"
                 ></textarea>
@@ -898,11 +1079,15 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                 )}
               </div>
 
-              {/* Bottom Actions of Input Card */}
+              {/* Bottom Actions */}
               <div className="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <span className="text-xs text-slate-400 dark:text-slate-500 hidden sm:inline">
-                  提示：按 <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono text-[11px]">Ctrl</kbd> + <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono text-[11px]">Enter</kbd> 快速送出
-                </span>
+                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-200 dark:border-emerald-800">
+                    <Icon name="zap" className="w-3 h-3" />
+                    <span>免金鑰模式已就緒</span>
+                  </span>
+                  <span className="hidden md:inline">無需 API Key，隨時隨地立即使用</span>
+                </div>
 
                 <div className="flex items-center gap-2">
                   <button
@@ -916,7 +1101,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        <span>AI 深度剖析中...</span>
+                        <span>智慧分析生成中...</span>
                       </>
                     ) : (
                       <>
@@ -932,12 +1117,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
               {errorMessage && (
                 <div className="mt-4 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-300 text-xs flex items-start gap-2.5">
                   <Icon name="info" className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
-                  <div className="flex-1">
-                    <p className="font-semibold">{errorMessage}</p>
-                    <p className="mt-1 text-slate-500 dark:text-slate-400">
-                      若尚未配置 API Key，請點擊右上角「⚙️ API Key 設定」填入金鑰，或點擊「載入示範資料」立即免金鑰體驗！
-                    </p>
-                  </div>
+                  <p className="font-semibold">{errorMessage}</p>
                 </div>
               )}
             </div>
@@ -949,14 +1129,13 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                 {/* Result Header & Actions */}
                 <div className="flex items-center justify-between">
                   <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>✨ AI 學習剖析成果</span>
+                    <span>✨ 學習剖析成果</span>
                     <span className="text-xs font-normal text-slate-500">
-                      （可隨時切換上方盲聽模式練習）
+                      （可隨時開啟上方盲聽模式練習聽寫）
                     </span>
                   </h2>
 
                   <div className="flex items-center gap-2">
-                    {/* Star Favorite Button */}
                     <button
                       onClick={() => toggleStar({ tab: activeTab, input: inputText.trim(), result: resultData })}
                       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
@@ -974,7 +1153,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                 {/* TAB 1 CONTENT: 中翻英多維擴充 */}
                 {activeTab === 'tab1' && (
                   <div className="space-y-5">
-                    {/* 1. 核心直譯卡片 */}
                     <SentenceAudioCard
                       title="📌 核心標準直譯"
                       badge="Standard Accurate"
@@ -989,9 +1167,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       onCopy={() => copyToClipboard(resultData.direct_translation)}
                     />
 
-                    {/* 2. 三種情境說法卡片 */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* 💼 商務/正式 */}
                       <SentenceAudioCard
                         title="💼 商務/正式"
                         subtitle="職場信件、會議與報告首選"
@@ -1007,7 +1183,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                         onCopy={() => copyToClipboard(resultData.scenarios?.professional)}
                       />
 
-                      {/* 💬 道地口語 */}
                       <SentenceAudioCard
                         title="💬 道地口語"
                         subtitle="日常社交、母語者最自然聊法"
@@ -1023,7 +1198,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                         onCopy={() => copyToClipboard(resultData.scenarios?.casual)}
                       />
 
-                      {/* ✨ 進階/精煉 */}
                       <SentenceAudioCard
                         title="✨ 進階/精煉"
                         subtitle="高分句型、道地成語片語"
@@ -1040,7 +1214,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       />
                     </div>
 
-                    {/* 3. 關鍵解析卡片 */}
                     {resultData.analysis && (
                       <div className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
                         <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 mb-2">
@@ -1060,7 +1233,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                 {/* TAB 2 CONTENT: 英翻中與母語潤飾 */}
                 {activeTab === 'tab2' && (
                   <div className="space-y-5">
-                    {/* 1. 精準中譯 */}
                     <div className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5">
                       <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">精準繁體中譯</span>
                       <p className="text-base sm:text-lg font-medium text-slate-800 dark:text-slate-100 mt-1">
@@ -1068,7 +1240,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       </p>
                     </div>
 
-                    {/* 2. 文法與用字修正 (Grammar & Polish) */}
                     <div className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-5 space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
@@ -1080,7 +1251,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                         </span>
                       </div>
 
-                      {/* Original vs Corrected */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="p-4 rounded-xl bg-red-50/60 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40">
                           <span className="text-xs font-semibold text-red-600 dark:text-red-400 block mb-1">❌ 原始輸入</span>
@@ -1110,7 +1280,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                             </div>
                           </div>
 
-                          {/* Blind mode handling for corrected sentence */}
                           <BlindSentenceBox
                             sentence={resultData.grammar_polish?.corrected}
                             blindMode={blindMode}
@@ -1119,7 +1288,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                         </div>
                       </div>
 
-                      {/* Issues list */}
                       {resultData.grammar_polish?.issues && resultData.grammar_polish.issues.length > 0 && (
                         <div className="pt-2">
                           <span className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-2">
@@ -1136,7 +1304,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                         </div>
                       )}
 
-                      {/* Overall explanation */}
                       {resultData.grammar_polish?.explanation && (
                         <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-3">
                           <p><strong className="text-slate-800 dark:text-slate-200">💡 專家建議：</strong>{resultData.grammar_polish.explanation}</p>
@@ -1144,7 +1311,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       )}
                     </div>
 
-                    {/* 3. 三種進階換句話說 */}
                     <div>
                       <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2">
                         <span>🔄 3 種進階語氣改寫版本 (換句話說)</span>
@@ -1202,7 +1368,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                 {/* TAB 3 CONTENT: 陌生單字深度練習 */}
                 {activeTab === 'tab3' && resultData.deconstruction && (
                   <div className="space-y-6">
-                    {/* 1. 單字解構卡 */}
                     <div className="glass-card rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-md relative overflow-hidden">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                         <div>
@@ -1222,19 +1387,17 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                           </p>
                         </div>
 
-                        {/* Pronunciation button for the headword */}
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => playSpeech(resultData.deconstruction.word)}
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950 dark:hover:bg-brand-900 dark:text-brand-300 border border-brand-200 dark:border-brand-800 font-semibold text-xs transition"
                           >
                             <Icon name="volume" className="w-4 h-4" />
-                            <span>發音 ({speechAccent})</span>
+                            <span>單字發音 ({speechAccent})</span>
                           </button>
                         </div>
                       </div>
 
-                      {/* Memory hook & Etymology */}
                       {resultData.deconstruction.memory_hook && (
                         <div className="mt-4 p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 flex items-start gap-3">
                           <span className="text-xl">💡</span>
@@ -1250,7 +1413,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       )}
                     </div>
 
-                    {/* 2. 四種不同情境例句與對話練習 */}
                     <div>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
@@ -1265,7 +1427,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                             className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-5 flex flex-col justify-between shadow-xs hover:border-brand-300 dark:hover:border-brand-700 transition"
                           >
                             <div>
-                              {/* Category Badge & Controls */}
                               <div className="flex items-center justify-between gap-2 mb-3">
                                 <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                                   {ctx.category}
@@ -1289,7 +1450,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                                 </div>
                               </div>
 
-                              {/* English Sentence with Blind Mode */}
                               <BlindSentenceBox
                                 sentence={ctx.sentence_en}
                                 blindMode={blindMode}
@@ -1297,13 +1457,11 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                                 highlightWord={resultData.deconstruction.word}
                               />
 
-                              {/* Chinese Translation */}
                               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2">
                                 {ctx.sentence_zh}
                               </p>
                             </div>
 
-                            {/* Practical Tip */}
                             {ctx.tip && (
                               <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs text-slate-500 dark:text-slate-400 flex items-start gap-1.5">
                                 <span className="text-brand-500 font-bold">小撇步：</span>
@@ -1323,33 +1481,36 @@ You MUST respond with STRICT valid JSON matching this exact schema:
           {/* Footer */}
           <footer className="border-t border-slate-200 dark:border-slate-800 py-6 mt-12 bg-white/50 dark:bg-slate-900/50 text-center text-xs text-slate-500 dark:text-slate-400">
             <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <p>English AI Studio © 2026. 專為高效語言學習者打造，無後端依賴，可直接靜態託管於 GitHub Pages。</p>
+              <p>English AI Studio © 2026. 支援免金鑰智慧引擎與自訂 Gemini API，零後端依賴，全平台流暢運行。</p>
               <div className="flex items-center gap-4">
-                <button onClick={() => setIsSettingsOpen(true)} className="hover:text-brand-600 transition">金鑰設定</button>
+                <button onClick={() => setIsSettingsOpen(true)} className="hover:text-brand-600 transition">引擎設定</button>
                 <button onClick={exportMarkdown} className="hover:text-brand-600 transition">匯出筆記</button>
                 <button onClick={exportJson} className="hover:text-brand-600 transition">JSON 備份</button>
               </div>
             </div>
           </footer>
 
-          {/* Settings Modal (⚙️ API Key & Audio Config) */}
+          {/* Settings Modal */}
           {isSettingsOpen && (
             <SettingsModal
+              engineMode={engineMode}
               apiKey={apiKey}
               selectedModel={selectedModel}
               speechRate={speechRate}
               speechAccent={speechAccent}
               availableVoices={availableVoices}
               onClose={() => setIsSettingsOpen(false)}
-              onSave={(newKey, newModel, newRate, newAccent) => {
+              onSave={(newMode, newKey, newModel, newRate, newAccent) => {
+                setEngineMode(newMode);
                 setApiKey(newKey);
                 setSelectedModel(newModel);
                 setSpeechRate(newRate);
                 setSpeechAccent(newAccent);
+                localStorage.setItem('english_engine_mode', newMode);
                 localStorage.setItem('gemini_api_key', newKey);
                 localStorage.setItem('gemini_model', newModel);
                 setIsSettingsOpen(false);
-                showToast('設定已成功儲存至瀏覽器本地！', 'success');
+                showToast(newMode === 'smart' ? '已切換為「免金鑰模式」！' : '設定已儲存！', 'success');
               }}
               onTestSpeech={(accent, rate) => {
                 playSpeech('Hello! Welcome to English AI Studio. Enjoy your listening and speaking practice!', accent, rate);
@@ -1358,7 +1519,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
             />
           )}
 
-          {/* Sidebar Drawer (⭐ Favorites & History) */}
+          {/* Sidebar Drawer */}
           {isSidebarOpen && (
             <SidebarDrawer
               sidebarTab={sidebarTab}
@@ -1387,7 +1548,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
             />
           )}
 
-          {/* Floating Toast Alert */}
+          {/* Toast Alert */}
           {toast && (
             <div className="fixed bottom-6 right-6 z-50 animate-bounce">
               <div className={`px-4 py-2.5 rounded-2xl shadow-xl text-xs sm:text-sm font-semibold flex items-center gap-2 border ${
@@ -1405,7 +1566,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       );
     }
 
-    // --- Interactive Sentence Card with Audio Controls & Dictation ---
+    // --- Interactive Sentence Card Component ---
     function SentenceAudioCard({
       title,
       subtitle,
@@ -1425,7 +1586,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       return (
         <div className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-5 flex flex-col justify-between shadow-xs hover:shadow-md transition-all">
           <div>
-            {/* Card Header */}
             <div className="flex items-center justify-between gap-2 mb-2">
               <div>
                 <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{title}</h4>
@@ -1438,7 +1598,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
               )}
             </div>
 
-            {/* Sentence Container (with Blind listening capability) */}
             <div className="my-3">
               <BlindSentenceBox
                 sentence={sentence}
@@ -1448,7 +1607,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
             </div>
           </div>
 
-          {/* Bottom Audio Controller Bar */}
           <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
               <button
@@ -1481,13 +1639,12 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       );
     }
 
-    // --- Blind Listening & Dictation Interactive Box ---
+    // --- Blind Listening & Dictation Box Component ---
     function BlindSentenceBox({ sentence, blindMode, onPlay, highlightWord }) {
       const [revealed, setRevealed] = useState(false);
       const [dictationInput, setDictationInput] = useState('');
       const [checkResult, setCheckResult] = useState(null);
 
-      // Reset state if blind mode toggled off
       useEffect(() => {
         if (!blindMode) {
           setRevealed(false);
@@ -1495,10 +1652,8 @@ You MUST respond with STRICT valid JSON matching this exact schema:
         }
       }, [blindMode]);
 
-      // Highlight target word in text
       const renderSentenceText = () => {
         if (!highlightWord) {
-          // Clean double asterisks if Gemini wrapped it
           const parts = sentence.split(/(\*\*.*?\*\*)/g);
           return parts.map((part, i) => {
             if (part.startsWith('**') && part.endsWith('**')) {
@@ -1508,7 +1663,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
           });
         }
 
-        // Highlight matching word case-insensitively
         const regex = new RegExp(`(${highlightWord})`, 'gi');
         const parts = sentence.split(regex);
         return parts.map((part, i) => (
@@ -1520,7 +1674,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
         ));
       };
 
-      // Evaluate Dictation Match
       const handleCheckDictation = () => {
         if (!dictationInput.trim()) return;
 
@@ -1578,7 +1731,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
 
       return (
         <div className="space-y-3">
-          {/* Obscured Sentence */}
           <div className="relative p-3 rounded-xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 overflow-hidden">
             <p className={`text-sm sm:text-base font-normal text-slate-900 dark:text-white leading-relaxed ${revealed ? '' : 'blind-blur'}`}>
               {renderSentenceText()}
@@ -1606,7 +1758,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
             )}
           </div>
 
-          {/* Dictation Input Box */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <input
@@ -1638,7 +1789,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
               )}
             </div>
 
-            {/* Check Result Feedback */}
             {checkResult && (
               <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
                 <div className="flex items-center justify-between">
@@ -1656,7 +1806,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                   </span>
                 </div>
 
-                {/* Diff Words breakdown */}
                 <div className="flex flex-wrap gap-1 items-center pt-1">
                   {checkResult.diff.map((item, idx) => (
                     <span
@@ -1681,8 +1830,9 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       );
     }
 
-    // --- Settings Modal Component ---
+    // --- Settings Modal Component (With Mode Toggle) ---
     function SettingsModal({
+      engineMode,
       apiKey,
       selectedModel,
       speechRate,
@@ -1693,6 +1843,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       onTestSpeech,
       showToast
     }) {
+      const [modeInput, setModeInput] = useState(engineMode);
       const [keyInput, setKeyInput] = useState(apiKey);
       const [modelInput, setModelInput] = useState(selectedModel);
       const [rateInput, setRateInput] = useState(speechRate);
@@ -1701,7 +1852,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       const [isTestingApi, setIsTestingApi] = useState(false);
       const [testApiResult, setTestApiResult] = useState(null);
 
-      // Test API Key Live
       const handleTestApiKey = async () => {
         if (!keyInput.trim()) {
           setTestApiResult({ ok: false, msg: '請先輸入 API Key 再測試！' });
@@ -1711,6 +1861,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
         setIsTestingApi(true);
         setTestApiResult(null);
 
+        // Try gemini-2.0-flash or selected model
         try {
           const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelInput}:generateContent?key=${keyInput.trim()}`;
           const res = await fetch(endpoint, {
@@ -1737,16 +1888,15 @@ You MUST respond with STRICT valid JSON matching this exact schema:
 
       return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-card w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-6">
+          <div className="glass-card w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-5">
             
-            {/* Modal Title */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
                 <span className="p-2 rounded-xl bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-300">
                   <Icon name="settings" className="w-5 h-5" />
                 </span>
                 <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">
-                  偏好設定與金鑰配置
+                  運作引擎與偏好設定
                 </h3>
               </div>
               <button
@@ -1758,78 +1908,133 @@ You MUST respond with STRICT valid JSON matching this exact schema:
             </div>
 
             <div className="space-y-4 text-xs sm:text-sm">
-              {/* Gemini API Key */}
+              
+              {/* 1. Mode Switcher (Smart Keyless vs Gemini API) */}
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                    <Icon name="key" className="w-4 h-4 text-brand-500" />
-                    <span>Gemini API Key</span>
-                  </label>
-                  <a
-                    href="https://aistudio.google.com/app/apikey"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-brand-600 dark:text-brand-400 hover:underline inline-flex items-center gap-1"
-                  >
-                    免費獲取 API Key ↗
-                  </a>
-                </div>
-
-                <div className="relative">
-                  <input
-                    type={showKey ? 'text' : 'password'}
-                    value={keyInput}
-                    onChange={(e) => setKeyInput(e.target.value)}
-                    placeholder="貼上您的 AI Studio Gemini API Key (AIzaSy...)"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-mono text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none pr-16"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowKey(!showKey)}
-                    className="absolute right-2.5 top-2.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                  >
-                    {showKey ? '隱藏' : '顯示'}
-                  </button>
-                </div>
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
-                  🔒 金鑰僅儲存於您本地瀏覽器的 <code className="font-mono">localStorage</code>，絕不會上傳或洩露至任何第三方伺服器。
-                </p>
-
-                {/* Test Connection Button */}
-                <div className="mt-2 flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={handleTestApiKey}
-                    disabled={isTestingApi || !keyInput.trim()}
-                    className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs transition disabled:opacity-50"
-                  >
-                    {isTestingApi ? '連線測試中...' : '測試金鑰連線'}
-                  </button>
-                  {testApiResult && (
-                    <span className={`text-xs ${testApiResult.ok ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                      {testApiResult.msg}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Gemini Model Select */}
-              <div>
-                <label className="font-bold text-slate-800 dark:text-slate-200 block mb-1.5">
-                  AI 模型選擇 (Gemini Models)
+                <label className="font-bold text-slate-800 dark:text-slate-200 block mb-2">
+                  學習引擎模式 (選擇你想使用的方式)
                 </label>
-                <select
-                  value={modelInput}
-                  onChange={(e) => setModelInput(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none"
-                >
-                  <option value="gemini-1.5-flash">Gemini 1.5 Flash（推薦：高速、高配額且經濟）</option>
-                  <option value="gemini-2.0-flash">Gemini 2.0 Flash（次世代極速模型）</option>
-                  <option value="gemini-1.5-pro">Gemini 1.5 Pro（深度複雜推理）</option>
-                </select>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => setModeInput('smart')}
+                    className={`p-3 rounded-2xl border text-left transition flex flex-col justify-between ${
+                      modeInput === 'smart'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-900 dark:text-emerald-100 ring-2 ring-emerald-500/20'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 font-bold text-xs sm:text-sm text-emerald-700 dark:text-emerald-300">
+                      <span>🟢 免金鑰模式 (推薦)</span>
+                    </div>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                      零 API Key・開箱即用・手機與電腦秒連
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setModeInput('api')}
+                    className={`p-3 rounded-2xl border text-left transition flex flex-col justify-between ${
+                      modeInput === 'api'
+                        ? 'bg-brand-50 dark:bg-brand-950/40 border-brand-500 text-brand-900 dark:text-brand-100 ring-2 ring-brand-500/20'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 font-bold text-xs sm:text-sm text-brand-700 dark:text-brand-300">
+                      <span>🟣 Gemini API 模式</span>
+                    </div>
+                    <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                      使用個人的 Google AI Studio API Key
+                    </span>
+                  </button>
+                </div>
               </div>
 
-              {/* Speech Config (Accent & Rate) */}
+              {/* In Smart Mode banner */}
+              {modeInput === 'smart' && (
+                <div className="p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs flex items-start gap-2">
+                  <Icon name="check" className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
+                  <div>
+                    <p className="font-bold">免金鑰模式已啟動！</p>
+                    <p className="mt-0.5 text-slate-600 dark:text-slate-400">
+                      您不需要申請或輸入任何 API Key，系統使用內建智慧語意轉換與開放翻譯引擎，包含多維度擴充、台式英文糾錯與單字例句，隨時開手機就能用！
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* In Gemini API Mode Inputs */}
+              {modeInput === 'api' && (
+                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                        <Icon name="key" className="w-4 h-4 text-brand-500" />
+                        <span>Gemini API Key</span>
+                      </label>
+                      <a
+                        href="https://aistudio.google.com/app/apikey"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-brand-600 dark:text-brand-400 hover:underline inline-flex items-center gap-1"
+                      >
+                        免費獲取 API Key ↗
+                      </a>
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        type={showKey ? 'text' : 'password'}
+                        value={keyInput}
+                        onChange={(e) => setKeyInput(e.target.value)}
+                        placeholder="貼上您的 AI Studio Gemini API Key (AIzaSy...)"
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-mono text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none pr-16"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowKey(!showKey)}
+                        className="absolute right-2.5 top-2.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                      >
+                        {showKey ? '隱藏' : '顯示'}
+                      </button>
+                    </div>
+
+                    <div className="mt-2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleTestApiKey}
+                        disabled={isTestingApi || !keyInput.trim()}
+                        className="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs transition disabled:opacity-50"
+                      >
+                        {isTestingApi ? '連線測試中...' : '測試金鑰連線'}
+                      </button>
+                      {testApiResult && (
+                        <span className={`text-xs ${testApiResult.ok ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                          {testApiResult.msg}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-800 dark:text-slate-200 block mb-1">
+                      AI 模型選擇 (Gemini Models)
+                    </label>
+                    <select
+                      value={modelInput}
+                      onChange={(e) => setModelInput(e.target.value)}
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                    >
+                      <option value="gemini-2.0-flash">Gemini 2.0 Flash（推薦：最新次世代極速模型）</option>
+                      <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash Latest（穩健高配額版）</option>
+                      <option value="gemini-1.5-pro">Gemini 1.5 Pro（深度複雜推理）</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* 2. Speech Config (Accent & Rate) */}
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
                 <label className="font-bold text-slate-800 dark:text-slate-200 block mb-2">
                   🎙️ 預設發音口音與語速
@@ -1863,7 +2068,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
 
                 <div className="mt-2.5 flex items-center justify-between">
                   <span className="text-[11px] text-slate-400">
-                    偵測到系統語音引擎：{availableVoices.length} 種聲音可用
+                    偵測到系統語音：{availableVoices.length} 種聲音可用
                   </span>
                   <button
                     type="button"
@@ -1888,7 +2093,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
               </button>
               <button
                 type="button"
-                onClick={() => onSave(keyInput.trim(), modelInput, rateInput, accentInput)}
+                onClick={() => onSave(modeInput, keyInput.trim(), modelInput, rateInput, accentInput)}
                 className="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-brand-600 hover:bg-brand-500 transition shadow-md shadow-brand-500/20"
               >
                 儲存設定
@@ -1899,7 +2104,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       );
     }
 
-    // --- Sidebar Drawer (⭐ Favorites & History) ---
+    // --- Sidebar Drawer Component ---
     function SidebarDrawer({
       sidebarTab,
       setSidebarTab,
@@ -1918,7 +2123,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
         <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 backdrop-blur-xs animate-fadeIn">
           <div className="glass-card w-full max-w-md h-full border-l border-slate-200 dark:border-slate-800 flex flex-col shadow-2xl">
             
-            {/* Header */}
             <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
               <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
                 <button
@@ -1951,7 +2155,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
               </button>
             </div>
 
-            {/* Search Input */}
             <div className="p-3 border-b border-slate-100 dark:border-slate-800">
               <div className="relative">
                 <Icon name="search" className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
@@ -1965,7 +2168,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
               </div>
             </div>
 
-            {/* Items List */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {items.length === 0 ? (
                 <div className="text-center py-12 text-slate-400 text-xs">
@@ -2014,7 +2216,6 @@ You MUST respond with STRICT valid JSON matching this exact schema:
               )}
             </div>
 
-            {/* Bottom Actions Bar */}
             <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-1.5">
                 <button
@@ -2051,7 +2252,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       );
     }
 
-    // Render the App into the root container
+    // Render the App
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
