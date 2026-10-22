@@ -7,6 +7,15 @@
   <meta name="description" content="結合 Google Gemini API 與瀏覽器原生 Web Speech API 的現代化英語學習工具，具備多維度中翻英、英翻中母語潤飾、陌生單字深度練習與互動式盲聽聽寫練習。">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
 
+  <!-- Mobile PWA Support -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="English AI">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
   <!-- Google Fonts: Inter & Outfit -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2045,6 +2054,21 @@ You MUST respond with STRICT valid JSON matching this exact schema:
     // Render the App into the root container
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
+  </script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => {
+            console.log('PWA ServiceWorker registered successfully:', reg.scope);
+          })
+          .catch((err) => {
+            console.warn('PWA ServiceWorker registration failed:', err);
+          });
+      });
+    }
   </script>
 </body>
 </html>
