@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>English AI Studio | 智慧英語學習與沉浸式聽力工坊</title>
-  <meta name="description" content="結合智慧多維度翻譯與瀏覽器原生 Web Speech API 的現代化英語學習工具，具備多維度中翻英、英翻中母語潤飾、陌生單字深度練習與互動式盲聽聽寫練習。支援免金鑰與自訂 Gemini API 雙模式。">
+  <meta name="description" content="結合智慧多維度翻譯與瀏覽器原生 Web Speech API 的現代化英語學習工具，具備多維度中翻英、英翻中母語潤飾、陌生單字深度批次練習與互動式盲聽聽寫練習。支援免金鑰與自訂 Gemini API 雙模式。">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
 
   <!-- Mobile PWA Support -->
@@ -84,14 +84,14 @@
       background: rgba(156, 163, 175, 0.7);
     }
     .glass-card {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
     .dark .glass-card {
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
     /* Blur shield for blind listening mode */
     .blind-blur {
@@ -140,38 +140,52 @@
           return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>;
         case 'sparkles':
           return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>;
-        case 'sun':
-          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>;
+        case 'x':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>;
         case 'moon':
           return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>;
+        case 'sun':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>;
         case 'bookmark':
           return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>;
         case 'download':
           return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>;
         case 'trash':
           return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>;
-        case 'search':
-          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
-        case 'x':
-          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>;
-        case 'info':
-          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
         case 'key':
           return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>;
-        case 'zap':
-          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>;
+        case 'refresh':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>;
+        case 'info':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
         default:
-          return null;
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><circle cx="12" cy="12" r="10" /></svg>;
       }
     };
 
-    // --- Smart Keyless Linguistic Engine (免金鑰智慧引擎) ---
+    // --- Smart Keyless Linguistic Engine (免金鑰智慧引擎 2.0) ---
     const SmartEngine = {
-      // Free public translation
+      // High reliability public translation (GTX + MyMemory dual-pipeline)
       async translate(text, from = 'zh-TW', to = 'en') {
+        // 1. Try Google Translate public web API (fast, high precision)
         try {
-          const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`;
-          const res = await fetch(url);
+          const gtxUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+          const res = await fetch(gtxUrl);
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data?.[0])) {
+              const fullText = data[0].map(item => item[0]).filter(Boolean).join('');
+              if (fullText.trim()) return fullText.trim();
+            }
+          }
+        } catch (e) {
+          console.warn('GTX translation fallback:', e);
+        }
+
+        // 2. Try MyMemory API as fallback
+        try {
+          const mmUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`;
+          const res = await fetch(mmUrl);
           if (res.ok) {
             const data = await res.json();
             const translated = data?.responseData?.translatedText;
@@ -180,83 +194,125 @@
             }
           }
         } catch (e) {
-          console.warn('Free translation fallback:', e);
+          console.warn('MyMemory fallback:', e);
         }
         return null;
       },
 
-      // Tab 1: 中翻英多維度生成
+      // Tab 1: 中翻英多維度情境擴充 (全新高品質語境重構引擎)
       async generateTab1(chinese) {
         let direct = await this.translate(chinese, 'zh-TW', 'en') || await this.translate(chinese, 'zh-CN', 'en');
         if (!direct) {
           direct = "Please review this item and get back to me as soon as possible.";
         }
-
-        // Clean any weird punctuation
         direct = direct.replace(/[。！]/g, '.').trim();
 
-        // Professional business conversion
+        const lowerZh = chinese.toLowerCase();
         let prof = direct;
-        prof = prof.replace(/\bplease (give|send|hand in)\b/i, 'kindly submit')
-                   .replace(/\bplease\b/i, 'kindly')
-                   .replace(/\bif you have any (questions|problems)\b/i, 'should you encounter any inquiries or require clarification')
-                   .replace(/\bcontact me\b/i, 'reach out to me at your convenience')
-                   .replace(/\bas soon as possible\b/i, 'at your earliest convenience');
-        if (!prof.startsWith('Kindly') && !prof.startsWith('Please') && !prof.startsWith('I would')) {
-          prof = `Kindly note that ${prof.charAt(0).toLowerCase() + prof.slice(1)}`;
-        }
-
-        // Casual conversational conversion
         let casual = direct;
-        casual = casual.replace(/\bplease submit\b/i, 'can you send over')
-                       .replace(/\bkindly submit\b/i, 'can you shoot over')
-                       .replace(/\bdo not hesitate to contact me\b/i, 'let me know anytime')
-                       .replace(/\bcontact me\b/i, 'hit me up')
-                       .replace(/\bas soon as possible\b/i, 'whenever you get a chance')
-                       .replace(/\bif you have any questions\b/i, 'if anything pops up');
-        if (!casual.endsWith('!') && !casual.endsWith('?')) {
-          casual = `${casual}!`;
-        }
-
-        // Advanced / Idiomatic conversion
         let adv = direct;
-        adv = adv.replace(/\bplease\b/i, 'I would greatly appreciate it if you could')
-                 .replace(/\bvery important\b/i, 'of paramount importance')
-                 .replace(/\bfinish\b/i, 'bring to fruition')
-                 .replace(/\bcontact me\b/i, 'touch base with me');
-        if (!adv.includes('would') && !adv.includes('appreciate')) {
-          adv = `I would appreciate your attention to: ${adv.charAt(0).toLowerCase() + adv.slice(1)}`;
+
+        let profTip = '適用於職場正式信件、專案交辦與跨國商務溝通，語氣嚴謹得體、重視專業分寸。';
+        let casualTip = '適用於日常聚會、朋友閒聊、Slack/Teams 內部非正式討論，親切自然無距離感。';
+        let advTip = '適用於高階簡報、托福雅思高分寫作、公開演講，句型層次豐富、展現高級英語修養。';
+
+        // 1. 請求、交付、請託情境 (Request / Favor / Deadline)
+        if (chinese.includes('請') || chinese.includes('麻煩') || chinese.includes('交給') || chinese.includes('確認') || chinese.includes('儘快') || chinese.includes('回報')) {
+          prof = direct.replace(/^(please|kindly)\s+/i, '')
+                       .replace(/^(can you|could you)\s+/i, '');
+          prof = `Could you kindly ensure that ${prof.charAt(0).toLowerCase() + prof.slice(1)}? Your prompt feedback would be greatly appreciated.`;
+          prof = prof.replace(/contact me/gi, 'reach out to my attention')
+                     .replace(/as soon as possible/gi, 'at your earliest convenience')
+                     .replace(/questions/gi, 'inquiries or clarifications');
+
+          casual = direct.replace(/^(please|kindly)\s+/i, '');
+          casual = `Can you take a quick look and shoot this over to me? Let me know if anything pops up!`;
+          casualTip = '以動詞片語「take a quick look」與「shoot over」取代死板直譯，在口語中極其道地。';
+
+          adv = `I would be exceedingly grateful if you could attend to this matter at your earliest convenience; please touch base should any bottleneck arise.`;
+          advTip = '運用假定語氣「I would be grateful if...」與成語片語「touch base」，展現典雅洗鍊的高階風範。';
+        }
+        // 2. 意見、提案、想法情境 (Opinion / Suggestion)
+        else if (chinese.includes('認為') || chinese.includes('覺得') || chinese.includes('建議') || chinese.includes('方案') || chinese.includes('想法')) {
+          prof = `From a strategic perspective, we believe this proposal presents a viable and robust course of action.`;
+          profTip = '以「From a strategic perspective」開頭，賦予提案商業格局與說服力。';
+
+          casual = `Honestly, I really feel like this idea is the way to go for us!`;
+          casualTip = '使用「the way to go」，在母語者口語中是表達「這是最佳選擇」最生動自然的說法。';
+
+          adv = `Compelling evidence substantiates this methodology as the most optimal solution to our current objectives.`;
+          advTip = '以「Compelling evidence substantiates」強調論證的嚴密與不可動搖性。';
+        }
+        // 3. 狀態報告、已完成、確認情境 (Status / Completed)
+        else if (chinese.includes('已經') || chinese.includes('完成') || chinese.includes('做好') || chinese.includes('進度') || chinese.includes('成功')) {
+          prof = `Please be advised that all associated deliverables have been successfully finalized in full alignment with our timeline.`;
+          profTip = '商務公文標準開頭「Please be advised that」，適合對主管或客戶進行進度確認。';
+
+          casual = `We're pretty much all set with this—everything wrapped up right on schedule!`;
+          casualTip = '口語慣用語「all set」與「wrapped up」，傳遞事情圓滿解決的輕鬆俐落感。';
+
+          adv = `All milestones have been brought to full fruition in strict accordance with our established benchmarks.`;
+          advTip = '典雅片語「brought to fruition」意為「開花結果、圓滿落實」，寫作演講評分極高。';
+        }
+        // 4. 一般語句的智慧修飾
+        else {
+          prof = direct.replace(/want to/gi, 'intend to')
+                       .replace(/need to/gi, 'are required to')
+                       .replace(/very good/gi, 'highly commendable')
+                       .replace(/big problem/gi, 'substantial challenge')
+                       .replace(/help/gi, 'assist');
+          if (!prof.startsWith('Please') && !prof.startsWith('Kindly') && !prof.startsWith('We')) {
+            prof = `Kindly note that ${prof.charAt(0).toLowerCase() + prof.slice(1)}`;
+          }
+
+          casual = direct.replace(/I would like to/gi, "I'd love to")
+                         .replace(/do not/gi, "don't")
+                         .replace(/cannot/gi, "can't")
+                         .replace(/very/gi, "super")
+                         .replace(/good/gi, "solid");
+          if (!casual.endsWith('!') && !casual.endsWith('?')) casual = `${casual}!`;
+
+          adv = `It is worth emphasizing that ${direct.charAt(0).toLowerCase() + direct.slice(1).replace(/\.$/, '')}, which warrants thorough consideration.`;
         }
 
         return {
           direct_translation: direct,
           scenarios: {
             professional: prof,
+            professional_tip: profTip,
             casual: casual,
-            advanced: adv
+            casual_tip: casualTip,
+            advanced: adv,
+            advanced_tip: advTip
           },
-          analysis: `【免金鑰智慧選字解析】\n1. 商務情境（Formal）：使用「Kindly」與「should you encounter inquiries」展現職場嚴謹與專業禮貌。\n2. 道地口語（Casual）：日常溝通善用動詞片語「send over」與「pops up」，語氣親切自然。\n3. 進階精煉（Idiomatic）：運用「touch base」或假定語氣「I would appreciate it if...」，更顯地道高分。`
+          analysis: `【多維度語感深度解析】\n1. 💼 商務/正式 (Formal)：擺脫單字生硬直譯，採用職場得體的被動或假設句構，重視指令分寸與對受話者的尊重。\n2. 💬 道地口語 (Casual)：善用母語人士高頻的動詞片語（Phrasal Verbs）與縮寫，節奏俐落流暢，拉近溝通距離。\n3. ✨ 進階精煉 (Idiomatic)：運用結構層次豐富的複合金句與精準搭配詞（Collocations），無論在托福雅思寫作或高階商務演說中皆能展現深厚底蘊。`
         };
       },
 
-      // Tab 2: 英翻中與母語潤飾
+      // Tab 2: 英翻中與母語潤飾 (深度台式英文與文法診斷庫)
       async generateTab2(english) {
         let zh = await this.translate(english, 'en', 'zh-TW');
         if (!zh) {
-          zh = "這是一句值得學習與潤飾的實用英文句子。";
+          zh = "這是一句值得深入學習與潤飾的實用英文句子。";
         }
 
         const rules = [
-          { pat: /\bvery like\b/i, rep: 'really like', issue: '台式英文 (Chinglish)：英文中副詞 very 不能直接修飾動詞 like，應使用「really like」或「like ... very much」。' },
+          { pat: /\bvery like\b/i, rep: 'really like', issue: '台式英文 (Chinglish)：英文中副詞 very 不能直接修飾普通動詞 like，應使用「really like」或「like ... very much」。' },
           { pat: /\b(i am|i'm) agree\b/i, rep: 'I agree', issue: '文法錯誤：agree 本身即為動詞，不可加 be 動詞，應說「I agree」。' },
-          { pat: /\bopen the light\b/i, rep: 'turn on the light', issue: '用字錯誤：開電燈應用動詞片語「turn on」，open 通常用於開門或開窗。' },
+          { pat: /\bopen the light\b/i, rep: 'turn on the light', issue: '用字錯誤：開電燈應用動詞片語「turn on」，open 用於打開物理門窗或書籍。' },
           { pat: /\bclose the light\b/i, rep: 'turn off the light', issue: '用字錯誤：關電燈應用「turn off」，不可直譯為 close。' },
-          { pat: /\blearn much\b/i, rep: 'learn a lot', issue: '搭配不自然：修飾學習收穫量時，母語人士習慣使用「learn a lot」或「gain substantial knowledge」。' },
-          { pat: /\bfeel very challenge\b/i, rep: 'feel challenged', issue: '詞性錯誤：challenge 是名詞或及物動詞，表達感到挑戰應使用分詞形容詞「challenged」或主動句「it challenges me」。' },
-          { pat: /\bit make\b/i, rep: 'it makes', issue: '主詞動詞一致性：單數第三人稱 it 後方動詞應加 s 為「makes」。' },
-          { pat: /\bcost me much money\b/i, rep: 'cost a fortune', issue: '中式思維：表達花很多錢，母語人士更常用「cost a fortune」或「cost a pretty penny」。' },
-          { pat: /\bgive you\b/i, rep: 'provide you with', issue: '語氣升級：在正式信件中，使用「provide you with」比口語的「give you」更顯得體。' },
-          { pat: /\bplay computer\b/i, rep: 'use the computer', issue: '台式英文：中文說「玩電腦」，英文不可說 play computer，應依活動說「use the computer」或「play video games」。' }
+          { pat: /\blearn much\b/i, rep: 'learn a lot', issue: '搭配不自然：修飾學習收穫量時，母語人士習慣使用「learn a lot」或「gain substantial insights」。' },
+          { pat: /\bfeel very challenge\b/i, rep: 'feel challenged', issue: '詞性錯誤：challenge 是名詞或動詞，表達感到挑戰應使用分詞形容詞「challenged」或主動句「it challenges me」。' },
+          { pat: /\bit make\b/i, rep: 'it makes', issue: '主詞動詞一致性：單數第三人稱 it 後方一般動詞應加 s 為「makes」。' },
+          { pat: /\bcost me much money\b/i, rep: 'cost a fortune', issue: '中式思維：表達花很多錢，母語人士更常用生動的「cost a fortune」或「cost a pretty penny」。' },
+          { pat: /\bgive you\b/i, rep: 'provide you with', issue: '語氣升級：在正式書信中，使用「provide you with」比口語的「give you」更顯得體。' },
+          { pat: /\bplay computer\b/i, rep: 'use the computer', issue: '台式英文：中文說「玩電腦」，英文不可說 play computer，應依活動說「use the computer」或「play video games」。' },
+          { pat: /\bno why\b/i, rep: 'no particular reason', issue: '台式直譯：中文說「沒有為什麼」，不可直譯 no why，母語人士說「for no particular reason」。' },
+          { pat: /\bhow to say\b/i, rep: 'how do you say it', issue: '文法缺失：how to say 是名詞片語不可獨立成句，應說「How do you say it?」或「How should I put this?」。' },
+          { pat: /\blook forward to meet\b/i, rep: 'look forward to meeting', issue: '介系詞盲點：look forward to 中的 to 是介系詞，後方接動詞必須加 ing 為動名詞「meeting」。' },
+          { pat: /\bdiscuss about\b/i, rep: 'discuss', issue: '贅字錯誤：discuss 是及物動詞，後面直接接受詞，不可加 about。' },
+          { pat: /\bmarry with\b/i, rep: 'marry', issue: '介系詞誤用：marry 是及物動詞，與某人結婚說「marry someone」或「be married to someone」，不用 with。' },
+          { pat: /\balmost people\b/i, rep: 'most people', issue: '詞性誤用：almost 是副詞不可直接修飾名詞 people，應使用形容詞「most people」或「almost everyone」。' }
         ];
 
         const issues = [];
@@ -271,9 +327,15 @@
 
         if (issues.length === 0) {
           issues.push("句型升級：原句文法大致正確，修正版針對用詞的精準度與母語自然流暢度進行了升級潤飾。");
-          corrected = english.replace(/\bvery good\b/i, 'exceptional')
-                             .replace(/\ba lot of\b/i, 'a wealth of');
+          corrected = english.replace(/\bvery good\b/gi, 'exceptional')
+                             .replace(/\ba lot of\b/gi, 'a wealth of')
+                             .replace(/\bmake sure\b/gi, 'ensure');
         }
+
+        // 3 種進階語氣改寫版本 (換句話說，真實語境重寫)
+        const polite = `I would like to gently suggest that we look into ${corrected.charAt(0).toLowerCase() + corrected.slice(1).replace(/\.$/, '')}, as it may serve our shared goals effectively.`;
+        const direct = `The bottom line is clear: ${corrected.charAt(0).toLowerCase() + corrected.slice(1).replace(/\.$/, '')}. Let's prioritize execution.`;
+        const idiomatic = `At the end of the day, ${corrected.charAt(0).toLowerCase() + corrected.slice(1).replace(/\.$/, '')}—it truly hits the nail on the head.`;
 
         return {
           translation: zh,
@@ -284,29 +346,34 @@
             explanation: "母語潤飾著重於動詞主動性與自然的搭配詞 (Collocations)。修正後的句子結構更具張力，擺脫了字面翻譯的僵硬感。"
           },
           alternatives: {
-            polite: `I would like to suggest that ${corrected.charAt(0).toLowerCase() + corrected.slice(1)}`,
-            direct: `Simply put, ${corrected.charAt(0).toLowerCase() + corrected.slice(1)}`,
-            idiomatic: `Truth be told, ${corrected.charAt(0).toLowerCase() + corrected.slice(1)}`
+            polite: polite,
+            polite_tip: "委婉客氣、顧全對方顏面，適合提出異議、客戶溝通或跨部門協調。",
+            direct: direct,
+            direct_tip: "簡潔扼要、直奔主題，適合主管決策、日常站會或進度彙報。",
+            idiomatic: idiomatic,
+            idiomatic_tip: "母語人士口語直覺，運用道地習語與生動修辭，展現高階流暢度。"
           }
         };
       },
 
-      // Tab 3: 陌生單字深度情境
-      async generateTab3(wordInput) {
-        const cleanWord = wordInput.trim().split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, '');
-        
-        // Curated dictionary for high-frequency vocabulary
+      // Tab 3: 陌生單字深度情境 (支援單一或逗號批次多單字解析)
+      async generateTab3(wordsInput) {
+        // Split by comma (half/full width) or newline
+        const rawTokens = wordsInput.split(/[,，\n]+/).map(w => w.trim()).filter(Boolean);
+        const targetWords = rawTokens.length > 0 ? rawTokens : ['serendipity'];
+
+        // Curated dictionary for high-frequency GRE/TOEFL/IELTS & workplace vocabulary
         const vocabDB = {
           'serendipity': {
             ipa: '/ˌser.ənˈdɪp.ə.ti/',
             pos: 'noun [不可數]',
-            def: '機緣巧合；意外發現珍奇事物的幸運天賦',
-            hook: '源自波斯童話《錫蘭三王子》，主角總是不經意發現美好寶藏。',
+            def: '機緣巧合；意外發現珍奇事物的幸運天賦與能力',
+            hook: '源自波斯童話《錫蘭三王子》(The Three Princes of Serendip)，故事主角總是不經意靠機智與機遇發現美好寶藏。',
             contexts: [
-              { category: '日常社交 (Daily Social)', sentence_en: 'Running into an old classmate abroad was pure **serendipity**.', sentence_zh: '在國外巧遇老同學純屬機緣巧合。', tip: '常與 pure 或 a stroke of 連用。' },
-              { category: '職場溝通 (Workplace / Business)', sentence_en: 'The breakthrough was a result of lab **serendipity**.', sentence_zh: '這次技術突破是實驗室意外機緣的產物。', tip: '商業演說常用以謙稱創新機遇。' },
-              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'Archaeologists credited **serendipity** for unearthing the relic.', sentence_zh: '考古學家歸功於幸運奇遇而發掘了該文物。', tip: '新聞報導常與 credit ... to 連用。' },
-              { category: '學術/技術 (Academic / Technical)', sentence_en: 'Scientific **serendipity** often favors prepared minds.', sentence_zh: '科學上的偶然往往眷顧有準備的心靈。', tip: '探討科學發現偶然性與敏銳度的哲理。' }
+              { category: '日常社交 (Daily Social)', sentence_en: 'Running into my old high school friend at an overseas airport was pure **serendipity**.', sentence_zh: '在國外的機場巧遇我高中的老友，完全是一場奇妙的機緣巧合。', tip: '常與 pure 或 a stroke of 搭配，強調不可思議的驚喜緣分。' },
+              { category: '職場溝通 (Workplace / Business)', sentence_en: 'Our flagship breakthrough was born out of **serendipity** during a routine lab experiment.', sentence_zh: '我們的旗艦突破是在一次常規實驗中，憑藉意外的機遇而誕生的。', tip: '商業演說常用以謙遜描述重大創新背後的敏銳洞察。' },
+              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'Archaeologists credited sheer **serendipity** for unearthing the millennia-old submerged temple.', sentence_zh: '考古學家將發掘這座千年水下神廟歸功於純粹的幸運奇遇。', tip: '新聞報導常與 credit ... to serendipity 連用。' },
+              { category: '學術/技術 (Academic / Technical)', sentence_en: 'Penicillin is classic evidence of scientific **serendipity**, where prepared minds seized a chance occurrence.', sentence_zh: '青黴素是科學界機緣巧合的經典例證，有準備的心靈抓住了偶發的奇蹟。', tip: '學術界常用來探討科學家如何抓住意外之美。' }
             ]
           },
           'resilience': {
@@ -315,10 +382,22 @@
             def: '韌性；復原力；遭遇挫折後迅速復原的能力',
             hook: '字根 re-(回) + salire(跳躍)，意指「跳回原狀、彈回」。',
             contexts: [
-              { category: '日常社交 (Daily Social)', sentence_en: 'She showed remarkable **resilience** after moving to a new city alone.', sentence_zh: '獨自搬到新城市後，她展現了非凡的適應與韌性。', tip: '形容個人心理素質極佳。' },
-              { category: '職場溝通 (Workplace / Business)', sentence_en: 'Building organizational **resilience** is critical during economic downturns.', sentence_zh: '在經濟衰退期，建立組織的營運韌性至關重要。', tip: '職場管理常用詞彙。' },
-              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'The local community displayed incredible **resilience** following the typhoon.', sentence_zh: '颱風過後，當地社區展現了令人感佩的復原力。', tip: '新聞常與 display / demonstrate 連用。' },
-              { category: '學術/技術 (Academic / Technical)', sentence_en: 'Psychological **resilience** correlates positively with long-term well-being.', sentence_zh: '心理韌性與長期的身心健康幸福感呈正相關。', tip: '心理學論文常用標題關鍵字。' }
+              { category: '日常社交 (Daily Social)', sentence_en: 'She demonstrated remarkable **resilience** after moving to a new country on her own.', sentence_zh: '獨自搬到新國家後，她展現了非凡的適應與心理韌性。', tip: '形容個人心理素質極佳，常與 remarkable 或 incredible 搭配。' },
+              { category: '職場溝通 (Workplace / Business)', sentence_en: 'Building organizational **resilience** is critical during prolonged economic downturns.', sentence_zh: '在漫長的經濟衰退期，建立組織的營運韌性至關重要。', tip: '職場管理與企業策略高頻詞。' },
+              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'The community displayed inspiring **resilience** following the devastating storm.', sentence_zh: '風災過後，當地社區展現了令人感佩的復原力。', tip: '新聞常與 display / demonstrate 連用。' },
+              { category: '學術/技術 (Academic / Technical)', sentence_en: 'Psychological **resilience** correlates positively with long-term mental well-being.', sentence_zh: '心理韌性與長期的身心健康幸福感呈顯著正相關。', tip: '心理學論文常用關鍵標題詞。' }
+            ]
+          },
+          'pragmatic': {
+            ipa: '/præɡˈmæt.ɪk/',
+            pos: 'adjective',
+            def: '務實的；重實效的；講求實用主義的',
+            hook: '源自希臘文 pragma (事物、行動)，引申為「從行動與實際效果著眼」。',
+            contexts: [
+              { category: '日常社交 (Daily Social)', sentence_en: 'He took a **pragmatic** approach to his budget by cutting unnecessary subscriptions.', sentence_zh: '他採取務實的方式管理預算，取消了不必要的訂閱服務。', tip: '形容人理性不浮誇，常搭配 approach 或 attitude。' },
+              { category: '職場溝通 (Workplace / Business)', sentence_en: 'We need a **pragmatic** roadmap that delivers measurable results within this quarter.', sentence_zh: '我們需要一份能在此季度內交付可衡量成果的務實路線圖。', tip: '商業企劃中極具說服力的肯定用詞。' },
+              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'Diplomats praised both sides for reaching a **pragmatic** compromise on border tariffs.', sentence_zh: '外交官讚揚雙方在邊境關稅問題上達成了務實的妥協。', tip: '政經新聞常用「pragmatic compromise / solution」。' },
+              { category: '學術/技術 (Academic / Technical)', sentence_en: 'The framework offers a **pragmatic** bridge between abstract theory and empirical implementation.', sentence_zh: '該架構在抽象理論與實證應用之間搭建了一座務實的橋樑。', tip: '論文結論處常用來凸顯研究實用價值。' }
             ]
           },
           'ubiquitous': {
@@ -327,64 +406,125 @@
             def: '無所不在的；普遍存在的',
             hook: '源自拉丁文 ubique (處處、到處)，加上形容詞字尾 -ous。',
             contexts: [
-              { category: '日常社交 (Daily Social)', sentence_en: 'Smartphones have become truly **ubiquitous** in daily modern life.', sentence_zh: '智慧型手機在現代日常生活中已變得無所不在。', tip: '形容科技產品極度普及。' },
-              { category: '職場溝通 (Workplace / Business)', sentence_en: 'Cloud computing is now a **ubiquitous** infrastructure across our teams.', sentence_zh: '雲端運算如今已是我們各團隊無處不在的基礎設施。', tip: '科技與商務簡報高級詞彙。' },
-              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'The **ubiquitous** presence of surveillance cameras sparks privacy debates.', sentence_zh: '隨處可見的監視攝影機引發了隱私討論。', tip: '新聞常用形容公共設施覆蓋率。' },
-              { category: '學術/技術 (Academic / Technical)', sentence_en: 'Microplastics are becoming alarmingly **ubiquitous** in marine ecosystems.', sentence_zh: '微塑膠在海洋生態系中已到了令人擔憂的無處不在程度。', tip: '環境科學與生物學常用詞。' }
+              { category: '日常社交 (Daily Social)', sentence_en: 'Coffee shops have become truly **ubiquitous** in nearly every modern neighborhood.', sentence_zh: '咖啡館在幾乎每個現代社區都已變得無所不在。', tip: '形容某物極度普及流行。' },
+              { category: '職場溝通 (Workplace / Business)', sentence_en: 'Cloud computing has become **ubiquitous** across global enterprise infrastructure.', sentence_zh: '雲端運算在跨國企業的基礎設施中已無所不在。', tip: '科技商務簡報中的必備詞彙。' },
+              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'Surveillance cameras are now **ubiquitous** across major metropolitan hubs.', sentence_zh: '監視攝影機如今在大都會中心隨處可見。', tip: '探討社會現象時的高分用字。' },
+              { category: '學術/技術 (Academic / Technical)', sentence_en: 'Microplastics have achieved **ubiquitous** distribution throughout marine ecosystems.', sentence_zh: '微塑膠在整個海洋生態系中已達到了無所不在的分布。', tip: '環境科學與生物學論文高頻詞。' }
+            ]
+          },
+          'meticulous': {
+            ipa: '/məˈtɪk.jə.ləs/',
+            pos: 'adjective',
+            def: '一絲不苟的；縝密的；極其細緻入微的',
+            hook: '拉丁文 metus (敬畏、小心翼翼)，引申為「對細節極其嚴謹」。',
+            contexts: [
+              { category: '日常社交 (Daily Social)', sentence_en: 'She is **meticulous** about her morning skincare routine.', sentence_zh: '她對早晨的護膚程序極為一絲不苟。', tip: '常接介系詞 about 或 in。' },
+              { category: '職場溝通 (Workplace / Business)', sentence_en: 'His **meticulous** attention to detail prevented a multimillion-dollar oversight.', sentence_zh: '他對細節一絲不苟的專注，避免了一場數百萬美元的疏漏。', tip: '績效考評與推薦信必用金句「meticulous attention to detail」。' },
+              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'The report was the result of two years of **meticulous** investigative journalism.', sentence_zh: '這份報告是歷時兩年縝密調查報導的結晶。', tip: '新聞讚譽調查嚴謹度常用。' },
+              { category: '學術/技術 (Academic / Technical)', sentence_en: 'The researchers maintained **meticulous** logs of every experimental anomaly.', sentence_zh: '研究人員對每一次實驗異常都保留了縝密詳盡的記錄。', tip: '學術方法論中描述數據可信度。' }
+            ]
+          },
+          'ephemeral': {
+            ipa: '/ɪˈfem.ər.əl/',
+            pos: 'adjective',
+            def: '短暫的；轉瞬即逝的；朝生暮死的',
+            hook: '源自希臘文 epi-(在...之上) + hemera(一天)，字面意思是「只有一天的壽命」。',
+            contexts: [
+              { category: '日常社交 (Daily Social)', sentence_en: 'Cherry blossom season is celebrated precisely because its beauty is so **ephemeral**.', sentence_zh: '櫻花季之所以備受讚頌，正是因為它的美麗如此轉瞬即逝。', tip: '描述美麗、青春或快樂的短暫珍貴。' },
+              { category: '職場溝通 (Workplace / Business)', sentence_en: 'Social media hype is often **ephemeral**, so focus on sustainable customer retention.', sentence_zh: '社群炒作往往轉瞬即逝，因此務必專注於可持續的客戶留存。', tip: '商務行銷中提醒同仁勿追逐短期泡沫。' },
+              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'Market analysts warned that the stock surge might prove **ephemeral**.', sentence_zh: '市場分析師警告，這波股市飆升可能證明只是曇花一現。', tip: '財經新聞常與 prove 或 remain 連用。' },
+              { category: '學術/技術 (Academic / Technical)', sentence_en: 'Desert ecosystems rely on **ephemeral** streams that appear solely after flash floods.', sentence_zh: '沙漠生態系統仰賴僅在山洪爆發後短暫出現的季節性溪流。', tip: '地質與生態學專業術語。' }
+            ]
+          },
+          'proactive': {
+            ipa: '/prəʊˈæk.tɪv/',
+            pos: 'adjective',
+            def: '積極主動的；先發制人的；防患於未然的',
+            hook: '字首 pro-(向前) + active(主動)，意指「在事情發生前搶先採取行動」。',
+            contexts: [
+              { category: '日常社交 (Daily Social)', sentence_en: 'Being **proactive** about your health will save you countless headaches later.', sentence_zh: '在健康上採取積極主動的態度，日後能為你省去無數煩惱。', tip: '日常健康與生活規劃常用。' },
+              { category: '職場溝通 (Workplace / Business)', sentence_en: 'We expect senior team members to take a **proactive** role in resolving client friction.', sentence_zh: '我們期望資深同仁在化解客戶摩擦時扮演主動積極的角色。', tip: '職場人設最加分的特質之一。' },
+              { category: '新聞時事 (News / Current Affairs)', sentence_en: 'The central bank adopted **proactive** monetary policies to curb inflation.', sentence_zh: '央行採取了先發制人的貨幣政策以抑制通貨膨脹。', tip: '新聞報導政府政策預防性措施。' },
+              { category: '學術/技術 (Academic / Technical)', sentence_en: '**Proactive** error-handling strategies dramatically improve server uptime.', sentence_zh: '前瞻防患的錯誤處理策略能大幅提高伺服器的運作穩定度。', tip: '資訊工程論文核心觀念。' }
             ]
           }
         };
 
-        if (vocabDB[cleanWord]) {
-          const data = vocabDB[cleanWord];
-          return {
-            deconstruction: {
-              word: cleanWord,
-              ipa: data.ipa,
-              part_of_speech: data.pos,
-              definition_zh: data.def,
-              memory_hook: data.hook
-            },
-            contexts: data.contexts
-          };
+        const parsedWords = [];
+
+        for (const raw of targetWords) {
+          const clean = raw.toLowerCase().replace(/[^a-z-]/g, '').trim();
+          if (!clean) continue;
+
+          if (vocabDB[clean]) {
+            parsedWords.push({
+              deconstruction: {
+                word: clean,
+                ipa: vocabDB[clean].ipa,
+                part_of_speech: vocabDB[clean].pos,
+                definition_zh: vocabDB[clean].def,
+                memory_hook: vocabDB[clean].hook
+              },
+              contexts: vocabDB[clean].contexts
+            });
+          } else {
+            // Algorithmic deconstruction for any arbitrary vocabulary
+            let pos = 'noun';
+            if (clean.endsWith('tion') || clean.endsWith('ment') || clean.endsWith('ity') || clean.endsWith('ness') || clean.endsWith('ance') || clean.endsWith('ence')) pos = 'noun';
+            else if (clean.endsWith('ize') || clean.endsWith('ise') || clean.endsWith('ate') || clean.endsWith('fy')) pos = 'verb';
+            else if (clean.endsWith('ous') || clean.endsWith('ful') || clean.endsWith('less') || clean.endsWith('able') || clean.endsWith('ive') || clean.endsWith('al') || clean.endsWith('ic')) pos = 'adjective';
+            else if (clean.endsWith('ly')) pos = 'adverb';
+
+            const zhDef = await this.translate(clean, 'en', 'zh-TW') || '重要詞彙與概念';
+
+            // Etymology heuristics
+            let hook = `結合常用構詞字根與語境，建議在閱讀例句時反覆朗讀以建立直覺語感。`;
+            if (clean.startsWith('re')) hook = `字首 re- 表「再、回」，象徵動作的回溯或反覆。`;
+            else if (clean.startsWith('in') || clean.startsWith('im') || clean.startsWith('un') || clean.startsWith('dis')) hook = `含有否定或相反字首，留意與正向原字的語義對稱。`;
+            else if (clean.startsWith('con') || clean.startsWith('com') || clean.startsWith('syn')) hook = `字首象徵「共同、匯聚、整合」，強調多方連結與協同。`;
+            else if (clean.startsWith('sub')) hook = `字首 sub- 表「在...之下、次要」，引申為深層或附屬之意。`;
+            else if (clean.startsWith('trans')) hook = `字首 trans- 表「跨越、轉化」，常用於動態轉變的語境。`;
+
+            parsedWords.push({
+              deconstruction: {
+                word: clean,
+                ipa: `/${clean}/`,
+                part_of_speech: pos,
+                definition_zh: zhDef,
+                memory_hook: hook
+              },
+              contexts: [
+                {
+                  category: '日常社交 (Daily Social)',
+                  sentence_en: `I found that incorporating **${clean}** into our conversation clarified our exact intentions.`,
+                  sentence_zh: `我發現將 **${clean}** 融入對話中，能清楚表達我們的具體意向。`,
+                  tip: '日常表達中能準確傳遞細膩心境與觀點。'
+                },
+                {
+                  category: '職場溝通 (Workplace / Business)',
+                  sentence_en: `Our team actively leveraged **${clean}** to optimize current workflow efficiencies.`,
+                  sentence_zh: `我們團隊積極運用 **${clean}** 的思維，以優化當前的工作流程效率。`,
+                  tip: '商業溝通中常作為推動專案效益的關鍵用語。'
+                },
+                {
+                  category: '新聞時事 (News / Current Affairs)',
+                  sentence_en: `Industry leaders highlighted **${clean}** as a decisive factor in modern strategic planning.`,
+                  sentence_zh: `產業領袖強調 **${clean}** 是現代戰略規劃中不可或缺的決定性因素。`,
+                  tip: '時事論述中常用以概括重要趨勢。'
+                },
+                {
+                  category: '學術/技術 (Academic / Technical)',
+                  sentence_en: `Scholars frequently examine **${clean}** to analyze structural patterns within complex systems.`,
+                  sentence_zh: `學者們經常深入探討 **${clean}**，以分析複雜系統中的深層結構模式。`,
+                  tip: '學術論述中精準使用專有名詞能大幅增加說服力。'
+                }
+              ]
+            });
+          }
         }
 
-        // Dynamic generation for any other word
-        let zhDef = await this.translate(cleanWord, 'en', 'zh-TW') || "核心精選英語詞彙";
         return {
-          deconstruction: {
-            word: cleanWord,
-            ipa: `/${cleanWord}/`,
-            part_of_speech: 'word',
-            definition_zh: zhDef,
-            memory_hook: `建議將「${cleanWord}」放入情境例句中反覆朗讀，並結合同義詞強化語意連結。`
-          },
-          contexts: [
-            {
-              category: '日常社交 (Daily Social)',
-              sentence_en: `I found that mastering the word **${cleanWord}** really enriched my daily conversations.`,
-              sentence_zh: `我發現熟練運用 **${cleanWord}** 這個字，極大地豐富了我的日常對話。`,
-              tip: '日常生活中多大聲朗讀該單字，培養自然的語感。'
-            },
-            {
-              category: '職場溝通 (Workplace / Business)',
-              sentence_en: `In professional settings, using **${cleanWord}** appropriately conveys clear thinking.`,
-              sentence_zh: `在職場環境中，得體地使用 **${cleanWord}** 能傳達清晰的思維邏輯。`,
-              tip: '商務溝通中注意用詞的精準性與專業度。'
-            },
-            {
-              category: '新聞時事 (News / Current Affairs)',
-              sentence_en: `Recent reports highlighted how **${cleanWord}** has become a central topic in global discussions.`,
-              sentence_zh: `最近的報導強調了 **${cleanWord}** 如何成為全球討論的焦點議題。`,
-              tip: '新聞英文中常以該單字作為客觀描述的關鍵詞。'
-            },
-            {
-              category: '學術/技術 (Academic / Technical)',
-              sentence_en: `Scholars frequently examine **${cleanWord}** to understand underlying structural patterns.`,
-              sentence_zh: `學者們經常深入探討 **${cleanWord}**，以理解其深層的結構模式。`,
-              tip: '學術論述中適當使用專有名詞能增加論證力。'
-            }
-          ]
+          words: parsedWords
         };
       }
     };
@@ -396,11 +536,14 @@
         data: {
           direct_translation: "Please submit this proposal to me before 3:00 PM tomorrow, and feel free to contact me if you have any questions.",
           scenarios: {
-            professional: "Kindly ensure that this proposal is submitted to me no later than 3:00 PM tomorrow. Please do not hesitate to reach out should you encounter any inquiries or require clarification.",
-            casual: "Can you send over this proposal by 3 PM tomorrow? Let me know anytime if anything comes up!",
-            advanced: "I would appreciate receiving the finalized proposal by 15:00 tomorrow; please feel free to loop back with me on any bottlenecks or queries."
+            professional: "Could you kindly ensure that the finalized proposal is submitted to my attention no later than 3:00 PM tomorrow? Please do not hesitate to reach out should you encounter any inquiries or require clarification.",
+            professional_tip: "職場信件與專案交辦首選，運用 Could you kindly 與 to my attention 展現專業得體與分寸。",
+            casual: "Can you shoot over this proposal by 3 PM tomorrow? Let me know anytime if anything comes up!",
+            casual_tip: "團隊內部 Slack 或同儕閒聊，動詞片語 shoot over 與 comes up 親切無距離感。",
+            advanced: "I would be grateful to receive the finalized proposal by 15:00 tomorrow; please feel free to touch base with me on any potential bottlenecks.",
+            advanced_tip: "高階主管或重要客戶溝通，運用 I would be grateful 與 touch base 呈現高雅精煉的修養。"
           },
-          analysis: "在商務情境中，使用「Kindly ensure」比單純的「Please」更具得體的指令威嚴；而「do not hesitate to reach out」是職場信件標準且親切的收尾表達。在口語中，動詞片語「send over」與「comes up」能使語句自然生動。"
+          analysis: "在商務情境中，使用「Could you kindly ensure」比單純生硬的「Please」更具得體的指令威嚴；而「do not hesitate to reach out」是職場信件標準且親切的收尾表達。在口語中，動詞片語「shoot over」與「comes up」能使語句自然生動。"
         }
       },
       tab2: {
@@ -419,46 +562,63 @@
             explanation: "修飾動詞喜好程度時，母語者最常用「really like」；將「make me feel challenge」簡化為主動動詞「it challenges me」，句意更加精準有力。"
           },
           alternatives: {
-            polite: "I genuinely appreciate this initiative, as it offers both a healthy challenge and a tremendous learning opportunity.",
-            direct: "I enjoy working on this project—it pushes my boundaries and accelerates my learning.",
-            idiomatic: "I'm really invested in this project; it's right up my alley and keeps me on my toes in the best way possible."
+            polite: "I genuinely appreciate this initiative, as it offers both a constructive challenge and a tremendous learning opportunity.",
+            polite_tip: "委婉得體、顧全對方顏面，適合提出異議、客戶溝通或跨部門協調。",
+            direct: "I thoroughly enjoy this project—it pushes my boundaries and accelerates my professional learning curve.",
+            direct_tip: "簡潔扼要、直奔主題，適合主管決策、日常站會或進度彙報。",
+            idiomatic: "I'm really invested in this project; it's right up my alley and keeps me on my toes in the best way possible.",
+            idiomatic_tip: "母語人士口語直覺，運用道地習語與生動修辭，展現高階流暢度。"
           }
         }
       },
       tab3: {
-        prompt: "serendipity",
+        prompt: "serendipity, resilience, pragmatic",
         data: {
-          deconstruction: {
-            word: "serendipity",
-            ipa: "/ˌser.ənˈdɪp.ə.ti/",
-            part_of_speech: "noun [不可數]",
-            definition_zh: "機緣巧合；意外發現珍奇事物的幸運天賦與能力",
-            memory_hook: "源自波斯童話《錫蘭三王子》(The Three Princes of Serendip)，故事中的主角總是不經意地靠機智與機遇發現美好寶藏。"
-          },
-          contexts: [
+          words: [
             {
-              category: "日常社交 (Daily Social)",
-              sentence_en: "Running into my high school best friend at an overseas airport was pure **serendipity**.",
-              sentence_zh: "在國外的機場巧遇我高中的摯友，完全是一場奇妙的機緣巧合。",
-              tip: "常與形容詞 pure 或 a stroke of 搭配，強調不可思議的驚喜緣分。"
+              deconstruction: {
+                word: "serendipity",
+                ipa: "/ˌser.ənˈdɪp.ə.ti/",
+                part_of_speech: "noun [不可數]",
+                definition_zh: "機緣巧合；意外發現珍奇事物的幸運天賦與能力",
+                memory_hook: "源自波斯童話《錫蘭三王子》(The Three Princes of Serendip)，故事中的主角總是不經意地靠機智與機遇發現美好寶藏。"
+              },
+              contexts: [
+                { category: "日常社交 (Daily Social)", sentence_en: "Running into my high school best friend at an overseas airport was pure **serendipity**.", sentence_zh: "在國外的機場巧遇我高中的摯友，完全是一場奇妙的機緣巧合。", tip: "常與形容詞 pure 或 a stroke of 搭配，強調不可思議的驚喜緣分。" },
+                { category: "職場溝通 (Workplace / Business)", sentence_en: "Our flagship product was born out of **serendipity** during a routine lab experiment that went off track.", sentence_zh: "我們的旗艦產品是在一次偏離預期的常規實驗中，憑藉意外的機遇而誕生的。", tip: "在商業創新演講或訪談中，常用來謙遜地描述突破性發明背後的運氣與敏銳洞察。" },
+                { category: "新聞時事 (News / Current Affairs)", sentence_en: "The archaeologist credited sheer **serendipity** for unearthing the millennia-old submerged temple.", sentence_zh: "考古學家將發掘這座千年水下神廟歸功於純粹的幸運奇遇。", tip: "新聞報導常將 credit/owe ... to serendipity 連用，表現重大發現的偶然性。" },
+                { category: "學術/技術 (Academic / Technical)", sentence_en: "Penicillin is classic evidence of scientific **serendipity**, where careful observation turned contamination into discovery.", sentence_zh: "青黴素是科學界機緣巧合的經典例證：細緻入微的觀察將培養皿污染轉化成了劃時代的發現。", tip: "學術界常用來探討科學家如何「抓住意外之美」，區別於單純盲目的運氣。" }
+              ]
             },
             {
-              category: "職場溝通 (Workplace / Business)",
-              sentence_en: "Our flagship product was born out of **serendipity** during a routine lab experiment that went off track.",
-              sentence_zh: "我們的旗艦產品是在一次偏離預期的常規實驗中，憑藉意外的機遇而誕生的。",
-              tip: "在商業創新演講或訪談中，常用來謙遜地描述突破性發明背後的運氣與敏銳洞察。"
+              deconstruction: {
+                word: "resilience",
+                ipa: "/rɪˈzɪl.jəns/",
+                part_of_speech: "noun [不可數]",
+                definition_zh: "韌性；復原力；遭遇挫折後迅速復原的能力",
+                memory_hook: "字根 re-(回) + salire(跳躍)，意指「跳回原狀、彈回」。"
+              },
+              contexts: [
+                { category: "日常社交 (Daily Social)", sentence_en: "She showed remarkable **resilience** after moving to a new city alone.", sentence_zh: "獨自搬到新城市後，她展現了非凡的適應與心理韌性。", tip: "形容個人心理素質極佳，常與 remarkable 或 incredible 搭配。" },
+                { category: "職場溝通 (Workplace / Business)", sentence_en: "Building organizational **resilience** is critical during economic downturns.", sentence_zh: "在經濟衰退期，建立組織的營運韌性至關重要。", tip: "職場管理與企管報告中的高頻詞彙。" },
+                { category: "新聞時事 (News / Current Affairs)", sentence_en: "The local community displayed incredible **resilience** following the typhoon.", sentence_zh: "颱風過後，當地社區展現了令人感佩的復原力。", tip: "新聞報導常與 display 或 demonstrate 連用。" },
+                { category: "學術/技術 (Academic / Technical)", sentence_en: "Psychological **resilience** correlates positively with long-term well-being.", sentence_zh: "心理韌性與長期的身心健康幸福感呈顯著正相關。", tip: "心理學與神經科學論文的高頻關鍵詞。" }
+              ]
             },
             {
-              category: "新聞時事 (News / Current Affairs)",
-              sentence_en: "The archaeologist credited sheer **serendipity** for unearthing the millennia-old submerged temple.",
-              sentence_zh: "考古學家將發掘這座千年水下神廟歸功於純粹的幸運奇遇。",
-              tip: "新聞報導常將 credit/owe ... to serendipity 連用，表現重大發現的偶然性。"
-            },
-            {
-              category: "學術/技術 (Academic / Technical)",
-              sentence_en: "Penicillin is classic evidence of scientific **serendipity**, where careful observation turned contamination into discovery.",
-              sentence_zh: "青黴素是科學界機緣巧合的經典例證：細緻入微的觀察將培養皿污染轉化成了劃時代的發現。",
-              tip: "學術界常用來探討科學家如何「抓住意外之美」，區別於單純盲目的運氣。"
+              deconstruction: {
+                word: "pragmatic",
+                ipa: "/præɡˈmæt.ɪk/",
+                part_of_speech: "adjective",
+                definition_zh: "務實的；重實效的；講求實用主義的",
+                memory_hook: "源自希臘文 pragma (事物、行動)，引申為「從行動與實際效果著眼」。"
+              },
+              contexts: [
+                { category: "日常社交 (Daily Social)", sentence_en: "He took a **pragmatic** approach to his budget by cutting unnecessary subscriptions.", sentence_zh: "他採取務實的方式管理預算，取消了不必要的訂閱服務。", tip: "形容人理性不浮誇，常搭配 approach 或 attitude。" },
+                { category: "職場溝通 (Workplace / Business)", sentence_en: "We need a **pragmatic** roadmap that delivers measurable results within this quarter.", sentence_zh: "我們需要一份能在此季度內交付可衡量成果的務實路線圖。", tip: "商業企劃中極具說服力的肯定用詞。" },
+                { category: "新聞時事 (News / Current Affairs)", sentence_en: "Diplomats praised both sides for reaching a **pragmatic** compromise on border tariffs.", sentence_zh: "外交官讚揚雙方在邊境關稅問題上達成了務實的妥協。", tip: "政經新聞常用「pragmatic compromise / solution」。" },
+                { category: "學術/技術 (Academic / Technical)", sentence_en: "The framework offers a **pragmatic** bridge between abstract theory and empirical implementation.", sentence_zh: "該架構在抽象理論與實證應用之間搭建了一座務實的橋樑。", tip: "論文結論處常用來凸顯研究實用價值。" }
+              ]
             }
           ]
         }
@@ -479,67 +639,98 @@
         return saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
       });
 
-      // Global Modes
-      const [activeTab, setActiveTab] = useState('tab1'); // 'tab1' | 'tab2' | 'tab3'
-      const [blindMode, setBlindMode] = useState(false); // 👁️ 盲聽練習模式
-      const [speechRate, setSpeechRate] = useState(1.0); // 0.8, 1.0, 1.2
-      const [speechAccent, setSpeechAccent] = useState('en-US'); // 'en-US' | 'en-GB'
-
-      // PWA Install State for Android / Pixel
-      const [installPrompt, setInstallPrompt] = useState(null);
-      const [isInstalled, setIsInstalled] = useState(() => window.matchMedia('(display-mode: standalone)').matches);
-
-      useEffect(() => {
-        const handler = (e) => {
-          e.preventDefault();
-          setInstallPrompt(e);
-        };
-        window.addEventListener('beforeinstallprompt', handler);
-        window.addEventListener('appinstalled', () => {
-          setIsInstalled(true);
-          setInstallPrompt(null);
-        });
-        return () => window.removeEventListener('beforeinstallprompt', handler);
-      }, []);
-
-      // Input State
+      // App Active Tab: 'tab1' (中翻英), 'tab2' (英翻中潤飾), 'tab3' (單字深度練習)
+      const [activeTab, setActiveTab] = useState('tab1');
       const [inputText, setInputText] = useState('');
+      const [resultData, setResultData] = useState(null);
       const [isLoading, setIsLoading] = useState(false);
       const [errorMessage, setErrorMessage] = useState('');
 
-      // Results
-      const [resultData, setResultData] = useState(null);
+      // Tab 3 Multi-Word states
+      const [activeWordIndex, setActiveWordIndex] = useState(0);
+      const [vocabViewMode, setVocabViewMode] = useState('focus'); // 'focus' | 'all'
 
-      // Speech State
-      const [playingSentence, setPlayingSentence] = useState(null);
+      // Audio & Speech Synthesis States
+      const [speechRate, setSpeechRate] = useState(1.0); // 0.8, 1.0, 1.2
+      const [speechAccent, setSpeechAccent] = useState('en-US'); // 'en-US' or 'en-GB'
       const [availableVoices, setAvailableVoices] = useState([]);
+      const [playingSentence, setPlayingSentence] = useState(null);
 
-      // Favorites & History
-      const [history, setHistory] = useState(() => {
-        try {
-          return JSON.parse(localStorage.getItem('english_studio_history') || '[]');
-        } catch {
-          return [];
-        }
-      });
+      // Blind Listening Mode State
+      const [blindMode, setBlindMode] = useState(false);
+
+      // Bookmarks & History
       const [favorites, setFavorites] = useState(() => {
         try {
-          return JSON.parse(localStorage.getItem('english_studio_favorites') || '[]');
-        } catch {
-          return [];
-        }
+          const saved = localStorage.getItem('english_studio_favorites');
+          return saved ? JSON.parse(saved) : [];
+        } catch { return []; }
       });
-      const [sidebarTab, setSidebarTab] = useState('favorites'); // 'favorites' | 'history'
-      const [searchQuery, setSearchQuery] = useState('');
+      const [history, setHistory] = useState(() => {
+        try {
+          const saved = localStorage.getItem('english_studio_history');
+          return saved ? JSON.parse(saved) : [];
+        } catch { return []; }
+      });
 
-      // Toast Notification
+      // Toasts notifications
       const [toast, setToast] = useState(null);
       const showToast = useCallback((msg, type = 'info') => {
-        setToast({ msg, type });
-        setTimeout(() => setToast(null), 3000);
+        setToast({ msg, type, id: Date.now() });
+        setTimeout(() => setToast(null), 4000);
       }, []);
 
-      // Theme toggle effect
+      // PWA Install Prompt State
+      const [deferredPrompt, setDeferredPrompt] = useState(null);
+      const [isAppInstalled, setIsAppInstalled] = useState(false);
+
+      useEffect(() => {
+        const handleBeforeInstallPrompt = (e) => {
+          e.preventDefault();
+          setDeferredPrompt(e);
+        };
+        const handleAppInstalled = () => {
+          setIsAppInstalled(true);
+          setDeferredPrompt(null);
+          showToast('感謝安裝 English AI Studio！已加入您的桌面', 'success');
+        };
+
+        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.addEventListener('appinstalled', handleAppInstalled);
+
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+          setIsAppInstalled(true);
+        }
+
+        return () => {
+          window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+          window.removeEventListener('appinstalled', handleAppInstalled);
+        };
+      }, [showToast]);
+
+      const handleInstallApp = async () => {
+        if (!deferredPrompt) {
+          showToast('若未彈出安裝視窗，請點擊 Chrome 右上角選單「加到主畫面」或「安裝應用程式」', 'info');
+          return;
+        }
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          showToast('正在安裝應用程式...', 'info');
+        }
+        setDeferredPrompt(null);
+      };
+
+      // Service Worker Registration
+      useEffect(() => {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('ServiceWorker registered with scope:', reg.scope))
+            .catch(err => console.log('ServiceWorker registration skipped:', err));
+        }
+      }, []);
+
+      // Dark Mode Toggle
       useEffect(() => {
         if (darkMode) {
           document.documentElement.classList.add('dark');
@@ -620,7 +811,20 @@
         }
       }, []);
 
-      // Core Generation Function (Dual Mode: Smart Keyless vs Gemini API)
+      // Normalized wordsList for Tab 3 (supports single word and multi-word list)
+      const wordsList = useMemo(() => {
+        if (!resultData) return [];
+        if (Array.isArray(resultData.words) && resultData.words.length > 0) return resultData.words;
+        if (resultData.deconstruction) return [{ deconstruction: resultData.deconstruction, contexts: resultData.contexts || [] }];
+        return [];
+      }, [resultData]);
+
+      // Reset active word index when result changes
+      useEffect(() => {
+        setActiveWordIndex(0);
+      }, [resultData]);
+
+      // Core Generation Function (Dual Mode: Smart Keyless vs Gemini API with Smart Multi-Model Fallback)
       const handleGenerate = async (presetInput = null) => {
         const queryText = presetInput || inputText.trim();
         if (!queryText) {
@@ -666,28 +870,31 @@
           return;
         }
 
-        // 2. Otherwise: Use Gemini API Mode (with auto-fallback to SmartEngine)
+        // 2. Otherwise: Use Gemini API Mode (with Smart Multi-Model Auto-Fallback)
         let systemPrompt = '';
         let userPrompt = '';
 
         if (activeTab === 'tab1') {
-          systemPrompt = `You are a world-class English teacher. The user gives you a Chinese sentence.
+          systemPrompt = `You are a world-class English teacher and translator. The user gives you a Chinese sentence.
 You MUST respond with STRICT valid JSON matching this exact schema:
 {
   "direct_translation": "Standard accurate English translation",
   "scenarios": {
-    "professional": "Formal, business, workplace wording",
-    "casual": "Natural, native everyday conversational wording",
-    "advanced": "Idiomatic or high-score concise phrasing"
+    "professional": "Executive, formal business wording",
+    "professional_tip": "Traditional Chinese usage tip explaining when and why to use this",
+    "casual": "Natural, native everyday conversational wording with phrasal verbs",
+    "casual_tip": "Traditional Chinese usage tip explaining when and why to use this",
+    "advanced": "Idiomatic, sophisticated or high-score concise phrasing",
+    "advanced_tip": "Traditional Chinese usage tip explaining when and why to use this"
   },
-  "analysis": "Traditional Chinese (繁體中文) explanation of nuances and tips."
+  "analysis": "Traditional Chinese (繁體中文) explanation of vocabulary choices, register nuances, and collocations."
 }`;
-          userPrompt = `多維度翻譯擴充以下中文內容，輸出標準 JSON：\n"${queryText}"`;
+          userPrompt = `多維度翻譯擴充以下中文內容，請確保各情境說法具有真實語境差異，並輸出標準 JSON：\n"${queryText}"`;
         } else if (activeTab === 'tab2') {
-          systemPrompt = `You are an elite bilingual English editor. The user gives you an English sentence.
+          systemPrompt = `You are an elite bilingual English editor and grammar mentor. The user gives you an English sentence.
 You MUST respond with STRICT valid JSON matching this exact schema:
 {
-  "translation": "Accurate Traditional Chinese translation",
+  "translation": "Accurate, fluent Traditional Chinese translation (no translationese)",
   "grammar_polish": {
     "original": "The user's original sentence",
     "corrected": "Polished English sentence",
@@ -695,51 +902,114 @@ You MUST respond with STRICT valid JSON matching this exact schema:
     "explanation": "Traditional Chinese explanation on native writing intuition"
   },
   "alternatives": {
-    "polite": "Diplomatic polite rephrasing",
-    "direct": "Direct decisive rephrasing",
-    "idiomatic": "Idiomatic native expression"
+    "polite": "Diplomatic polite rephrasing (tactful, hedging)",
+    "polite_tip": "Traditional Chinese usage tip",
+    "direct": "Direct decisive rephrasing (punchy, action-oriented)",
+    "direct_tip": "Traditional Chinese usage tip",
+    "idiomatic": "Idiomatic native expression (collocations, figures of speech)",
+    "idiomatic_tip": "Traditional Chinese usage tip"
   }
 }`;
-          userPrompt = `審核潤飾以下英文句子，輸出標準 JSON：\n"${queryText}"`;
+          userPrompt = `審核潤飾以下英文句子，提供高水準的母語改寫與語境替換，輸出標準 JSON：\n"${queryText}"`;
         } else if (activeTab === 'tab3') {
-          systemPrompt = `You are an expert English vocabulary mentor. The user provides an English word.
+          systemPrompt = `You are an expert English vocabulary mentor and linguist.
+The user provides one or more English words (separated by commas or newlines).
+For EACH word, provide thorough IPA pronunciation, part of speech, accurate Traditional Chinese definition, etymology / mnemonic memory hook, and 4 high-quality scenario sentences (Daily Social, Workplace, News, Academic) with the target word highlighted with **word**, Traditional Chinese translation, and usage tips.
+
 You MUST respond with STRICT valid JSON matching this exact schema:
 {
-  "deconstruction": {
-    "word": "The target word",
-    "ipa": "IPA notation like /ˌser.ənˈdɪp.ə.ti/",
-    "part_of_speech": "e.g. noun",
-    "definition_zh": "Traditional Chinese definition",
-    "memory_hook": "Root/Prefix/Suffix etymology OR mnemonic memory hook"
-  },
-  "contexts": [
-    { "category": "日常社交 (Daily Social)", "sentence_en": "Natural English sentence with **word**", "sentence_zh": "Traditional Chinese", "tip": "Usage tip" },
-    { "category": "職場溝通 (Workplace / Business)", "sentence_en": "Workplace English sentence with **word**", "sentence_zh": "Traditional Chinese", "tip": "Usage tip" },
-    { "category": "新聞時事 (News / Current Affairs)", "sentence_en": "Journalistic English sentence with **word**", "sentence_zh": "Traditional Chinese", "tip": "Usage tip" },
-    { "category": "學術/技術 (Academic / Technical)", "sentence_en": "Academic English sentence with **word**", "sentence_zh": "Traditional Chinese", "tip": "Usage tip" }
+  "words": [
+    {
+      "deconstruction": {
+        "word": "Target word",
+        "ipa": "IPA notation like /ˌser.ənˈdɪp.ə.ti/",
+        "part_of_speech": "e.g. noun [不可數]",
+        "definition_zh": "Accurate Traditional Chinese definition",
+        "memory_hook": "Root/Prefix/Suffix etymology OR vivid mnemonic hook"
+      },
+      "contexts": [
+        { "category": "日常社交 (Daily Social)", "sentence_en": "Natural English sentence with **word**", "sentence_zh": "Traditional Chinese", "tip": "Collocation or usage tip" },
+        { "category": "職場溝通 (Workplace / Business)", "sentence_en": "Workplace English sentence with **word**", "sentence_zh": "Traditional Chinese", "tip": "Collocation or usage tip" },
+        { "category": "新聞時事 (News / Current Affairs)", "sentence_en": "Journalistic English sentence with **word**", "sentence_zh": "Traditional Chinese", "tip": "Collocation or usage tip" },
+        { "category": "學術/技術 (Academic / Technical)", "sentence_en": "Academic English sentence with **word**", "sentence_zh": "Traditional Chinese", "tip": "Collocation or usage tip" }
+      ]
+    }
   ]
 }`;
-          userPrompt = `深度剖析以下單字並提供4種情境例句，輸出標準 JSON：\n"${queryText}"`;
+          userPrompt = `深度剖析以下單字清單，為每個單字提供完整音標、詞性、繁中釋義、記憶訣竅與4種情境例句，輸出標準 JSON：\n"${queryText}"`;
         }
 
         try {
-          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
-          const response = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
-              generationConfig: { temperature: 0.3, responseMimeType: "application/json" }
-            })
-          });
+          const cleanKey = apiKey.trim();
+          const primaryModel = (selectedModel || 'gemini-2.0-flash').replace(/^models\//, '').trim();
 
-          if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            const errMsg = errData.error?.message || `HTTP ${response.status}`;
-            throw new Error(errMsg);
+          // Candidates to iterate over in case the chosen model is 404/deprecated on user's tier
+          const modelsToTry = [
+            primaryModel,
+            'gemini-2.0-flash',
+            'gemini-1.5-flash-latest',
+            'gemini-2.5-flash',
+            'gemini-1.5-flash',
+            'gemini-1.5-pro'
+          ].filter((m, i, arr) => arr.indexOf(m) === i);
+
+          let resData = null;
+          let lastErr = null;
+
+          for (const modelName of modelsToTry) {
+            const apiVersions = ['v1beta', 'v1'];
+            let modelSuccess = false;
+
+            for (const ver of apiVersions) {
+              try {
+                const endpoint = `https://generativelanguage.googleapis.com/${ver}/models/${modelName}:generateContent?key=${cleanKey}`;
+                const response = await fetch(endpoint, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
+                    generationConfig: { temperature: 0.3, responseMimeType: "application/json" }
+                  })
+                });
+
+                if (response.ok) {
+                  resData = await response.json();
+                  modelSuccess = true;
+                  break;
+                } else {
+                  const errData = await response.json().catch(() => ({}));
+                  const errMsg = errData.error?.message || `HTTP ${response.status}`;
+
+                  // If error is about responseMimeType (some older models don't support it), retry without it
+                  if (response.status === 400 && (errMsg.includes('responseMimeType') || errMsg.includes('generationConfig'))) {
+                    const retryRes = await fetch(endpoint, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        contents: [{ parts: [{ text: `${systemPrompt}\n\nIMPORTANT: Return ONLY valid JSON format.\n\n${userPrompt}` }] }],
+                        generationConfig: { temperature: 0.3 }
+                      })
+                    });
+                    if (retryRes.ok) {
+                      resData = await retryRes.json();
+                      modelSuccess = true;
+                      break;
+                    }
+                  }
+                  lastErr = new Error(errMsg);
+                }
+              } catch (networkErr) {
+                lastErr = networkErr;
+              }
+            }
+
+            if (modelSuccess && resData) break;
           }
 
-          const resData = await response.json();
+          if (!resData) {
+            throw lastErr || new Error('所有 Gemini 模型連線均未成功');
+          }
+
           const rawText = resData.candidates?.[0]?.content?.parts?.[0]?.text;
           if (!rawText) throw new Error('API 未回傳內容');
 
@@ -767,7 +1037,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
 
         } catch (err) {
           console.warn('Gemini API failed, falling back to SmartEngine:', err.message);
-          showToast(`Gemini API 連線不順，已自動無縫切換免金鑰模式生成！`, 'info');
+          showToast(`Gemini API 連線不順 (${err.message})，已自動切換免金鑰模式生成！`, 'info');
           
           // Graceful fallback to SmartEngine
           let fallbackResult = null;
@@ -833,16 +1103,19 @@ You MUST respond with STRICT valid JSON matching this exact schema:
           let section = `### 【${item.tab === 'tab1' ? '中翻英擴充' : item.tab === 'tab2' ? '英翻中母語潤飾' : '單字深度練習'}】${item.input}\n\n`;
           if (item.tab === 'tab1') {
             section += `**核心直譯**：${item.result.direct_translation}\n\n`;
-            section += `**多情境表達**：\n- 💼 **商務/正式**：${item.result.scenarios.professional}\n- 💬 **道地口語**：${item.result.scenarios.casual}\n- ✨ **進階/精煉**：${item.result.scenarios.advanced}\n\n> **關鍵解析**：${item.result.analysis}\n\n`;
+            section += `**多情境表達**：\n- 💼 **商務/正式**：${item.result.scenarios.professional}\n  💡 *${item.result.scenarios.professional_tip || ''}*\n- 💬 **道地口語**：${item.result.scenarios.casual}\n  💡 *${item.result.scenarios.casual_tip || ''}*\n- ✨ **進階/精煉**：${item.result.scenarios.advanced}\n  💡 *${item.result.scenarios.advanced_tip || ''}*\n\n> **關鍵解析**：${item.result.analysis}\n\n`;
           } else if (item.tab === 'tab2') {
             section += `**精準中譯**：${item.result.translation}\n\n**原句**：${item.result.grammar_polish.original}\n\n**母語修正**：${item.result.grammar_polish.corrected}\n\n**糾錯詳解**：\n`;
             item.result.grammar_polish.issues.forEach(iss => { section += `- ${iss}\n`; });
             section += `\n**換句話說**：\n- 🌸 **委婉禮貌**：${item.result.alternatives.polite}\n- ⚡ **直接果斷**：${item.result.alternatives.direct}\n- 🌟 **地道慣用**：${item.result.alternatives.idiomatic}\n\n`;
           } else if (item.tab === 'tab3') {
-            const d = item.result.deconstruction;
-            section += `**單字**：\`${d.word}\` (${d.ipa}) *${d.part_of_speech}*\n\n**釋義**：${d.definition_zh}\n\n**記憶訣竅**：${d.memory_hook}\n\n**情境例句**：\n`;
-            item.result.contexts.forEach(c => {
-              section += `#### ${c.category}\n- **EN**: ${c.sentence_en}\n- **ZH**: ${c.sentence_zh}\n- 💡 *${c.tip}*\n\n`;
+            const wordsArr = item.result.words || (item.result.deconstruction ? [{ deconstruction: item.result.deconstruction, contexts: item.result.contexts }] : []);
+            wordsArr.forEach((wItem, wIdx) => {
+              const d = wItem.deconstruction;
+              section += `#### 單字 #${wIdx + 1}：\`${d.word}\` (${d.ipa}) *${d.part_of_speech}*\n\n**釋義**：${d.definition_zh}\n\n**記憶訣竅**：${d.memory_hook}\n\n**情境例句**：\n`;
+              (wItem.contexts || []).forEach(c => {
+                section += `##### ${c.category}\n- **EN**: ${c.sentence_en}\n- **ZH**: ${c.sentence_zh}\n- 💡 *${c.tip}*\n\n`;
+              });
             });
           }
           section += `---\n\n`;
@@ -865,204 +1138,150 @@ You MUST respond with STRICT valid JSON matching this exact schema:
         a.download = `english_notes_${new Date().toISOString().slice(0, 10)}.md`;
         a.click();
         URL.revokeObjectURL(url);
-        showToast('已匯出 Markdown 筆記檔', 'success');
+        showToast('已匯出 Markdown 筆記（相容 Notion / Obsidian）', 'success');
       };
-
-      const filteredSidebarItems = useMemo(() => {
-        const source = sidebarTab === 'favorites' ? favorites : history;
-        if (!searchQuery.trim()) return source;
-        const q = searchQuery.toLowerCase();
-        return source.filter(item => item.input.toLowerCase().includes(q));
-      }, [sidebarTab, favorites, history, searchQuery]);
 
       return (
         <div className="flex flex-col min-h-screen">
-          {/* Top Sticky Header */}
-          <header className="sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md transition-colors">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
-              {/* Brand */}
+          {/* Header */}
+          <header className="sticky top-0 z-40 w-full glass-card border-b border-slate-200/80 dark:border-slate-800/80">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+              
+              {/* Brand Logo & Title */}
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
-                  <Icon name="sparkles" className="w-6 h-6" />
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/25">
+                  <span className="text-xl">🎙️</span>
                 </div>
                 <div>
-                  <h1 className="font-display font-bold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                    English AI Studio
-                    <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300 border border-brand-200 dark:border-brand-800">
-                      v2.5
+                  <h1 className="font-display font-extrabold text-lg sm:text-xl text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                    <span>English AI Studio</span>
+                    <span className="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300 border border-brand-200 dark:border-brand-800">
+                      v2.5 PWA
                     </span>
                   </h1>
-                  <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400">
-                    免金鑰即用 × 原生語音沉浸聽力
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block">
+                    智慧多維度學習 · Web Speech 沉浸式盲聽練習
                   </p>
                 </div>
               </div>
 
-              {/* Central Controls: Blind Listening Switch & Accent/Speed */}
+              {/* Top Navigation Actions */}
               <div className="flex items-center gap-2 sm:gap-3">
+                {/* Engine Mode Indicator Pill */}
                 <button
-                  onClick={() => {
-                    setBlindMode(!blindMode);
-                    showToast(blindMode ? '已關閉盲聽模式' : '已開啟盲聽模式！英文文字將被模糊，請先聽寫 🎧', 'info');
-                  }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
-                    blindMode
-                      ? 'bg-amber-500 text-white border-amber-600 shadow-md shadow-amber-500/20 ring-2 ring-amber-400/30'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700'
+                  onClick={() => setIsSettingsOpen(true)}
+                  className={`hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
+                    engineMode === 'smart'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800 hover:bg-emerald-100'
+                      : apiKey
+                      ? 'bg-brand-50 text-brand-700 border-brand-200 dark:bg-brand-950/40 dark:text-brand-300 dark:border-brand-800 hover:bg-brand-100'
+                      : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800 hover:bg-amber-100'
                   }`}
-                  title="開啟後將模糊英文文字，訓練純粹聽覺與聽寫能力"
+                  title="點擊切換免金鑰模式或自訂 Gemini API"
                 >
-                  <Icon name={blindMode ? 'eye-off' : 'eye'} className="w-4 h-4" />
-                  <span className="hidden md:inline">盲聽練習模式</span>
-                  <span className="md:hidden">盲聽</span>
-                  <span className={`w-2 h-2 rounded-full ${blindMode ? 'bg-white animate-pulse' : 'bg-slate-400'}`}></span>
+                  <span className={`w-2 h-2 rounded-full ${engineMode === 'smart' ? 'bg-emerald-500' : apiKey ? 'bg-brand-500' : 'bg-amber-500'}`}></span>
+                  <span>{engineMode === 'smart' ? '免金鑰模式' : apiKey ? 'Gemini API' : '設定金鑰'}</span>
                 </button>
 
-                {/* Accent selector */}
-                <div className="hidden lg:flex items-center rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 text-xs font-medium border border-slate-200 dark:border-slate-700">
+                {/* In-App PWA Install Button */}
+                {!isAppInstalled && (
                   <button
-                    onClick={() => setSpeechAccent('en-US')}
-                    className={`px-2 py-1 rounded-md transition-colors ${speechAccent === 'en-US' ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-xs' : 'text-slate-600 dark:text-slate-400'}`}
+                    onClick={handleInstallApp}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-medium text-xs shadow-md shadow-brand-500/20 transition transform active:scale-95"
+                    title="安裝為手機/桌面獨立 App"
                   >
-                    🇺🇸 美式
-                  </button>
-                  <button
-                    onClick={() => setSpeechAccent('en-GB')}
-                    className={`px-2 py-1 rounded-md transition-colors ${speechAccent === 'en-GB' ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-xs' : 'text-slate-600 dark:text-slate-400'}`}
-                  >
-                    🇬🇧 英式
-                  </button>
-                </div>
-
-                {/* Speed selector */}
-                <div className="hidden lg:flex items-center rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 text-xs font-medium border border-slate-200 dark:border-slate-700">
-                  {[0.8, 1.0, 1.2].map(rate => (
-                    <button
-                      key={rate}
-                      onClick={() => setSpeechRate(rate)}
-                      className={`px-2 py-1 rounded-md transition-colors ${speechRate === rate ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-xs' : 'text-slate-600 dark:text-slate-400'}`}
-                    >
-                      {rate === 0.8 ? '🐢 0.8x' : rate === 1.0 ? '1.0x' : '⚡ 1.2x'}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Right Utility Buttons */}
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                {/* Mobile PWA Install Button */}
-                {!isInstalled && (
-                  <button
-                    onClick={async () => {
-                      if (installPrompt) {
-                        installPrompt.prompt();
-                        const choice = await installPrompt.userChoice;
-                        if (choice && choice.outcome === 'accepted') {
-                          setInstallPrompt(null);
-                          showToast('感謝安裝 English AI Studio！', 'success');
-                        }
-                      } else {
-                        showToast('提示：請點選 Chrome 右上角選單「⋮」> 點選「安裝應用程式」或「加到主畫面」', 'info');
-                      }
-                    }}
-                    className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-sm border border-emerald-400/30"
-                    title="安裝為手機獨立 App"
-                  >
-                    <span>📲 安裝 App</span>
+                    <span>📲</span>
+                    <span className="hidden sm:inline">安裝 App</span>
                   </button>
                 )}
 
-                <button
-                  onClick={() => setIsSidebarOpen(true)}
-                  className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors relative"
-                  title="收藏與歷史紀錄"
-                >
-                  <Icon name="bookmark" className="w-5 h-5" />
-                  {favorites.length > 0 && (
-                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-brand-500 ring-2 ring-white dark:ring-slate-900"></span>
-                  )}
-                </button>
-
+                {/* Dark Mode Toggle */}
                 <button
                   onClick={() => setDarkMode(!darkMode)}
-                  className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors"
-                  title="切換主題外觀"
+                  className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                  title={darkMode ? '切換明亮模式' : '切換暗黑模式'}
                 >
                   <Icon name={darkMode ? 'sun' : 'moon'} className="w-5 h-5" />
                 </button>
 
-                {/* Engine Mode & Settings Button */}
+                {/* Bookmarks / History Drawer Button */}
+                <button
+                  onClick={() => setIsSidebarOpen(true)}
+                  className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition relative"
+                  title="開啟收藏與歷史紀錄"
+                >
+                  <Icon name="bookmark" className="w-5 h-5" />
+                  {favorites.length > 0 && (
+                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-slate-900"></span>
+                  )}
+                </button>
+
+                {/* Settings Modal Button */}
                 <button
                   onClick={() => setIsSettingsOpen(true)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
-                    engineMode === 'smart'
-                      ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
-                      : apiKey
-                      ? 'bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-300 dark:border-brand-800'
-                      : 'bg-amber-50 hover:bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-300 dark:border-amber-800'
-                  }`}
-                  title="切換運作引擎或設定"
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium text-xs transition"
+                  title="引擎與發音設定"
                 >
-                  <span className={`w-2 h-2 rounded-full ${engineMode === 'smart' ? 'bg-emerald-500' : apiKey ? 'bg-brand-500' : 'bg-amber-500'}`}></span>
-                  <span className="hidden sm:inline">
-                    {engineMode === 'smart' ? '免金鑰模式' : apiKey ? 'Gemini API' : '設定金鑰'}
-                  </span>
-                  <Icon name="settings" className="w-3.5 h-3.5 ml-0.5 opacity-70" />
+                  <Icon name="settings" className="w-4 h-4 text-brand-500" />
+                  <span className="hidden sm:inline">偏好設定</span>
                 </button>
               </div>
             </div>
           </header>
 
-          {/* Blind Mode Banner */}
-          {blindMode && (
-            <div className="bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs py-2 px-4 text-center font-medium shadow-inner flex items-center justify-center gap-2">
-              <Icon name="eye-off" className="w-4 h-4 shrink-0" />
-              <span>「盲聽練習模式」運作中：所有英文句子已隱藏，點擊播放鈕專注聆聽並在輸入框完成聽寫！</span>
+          {/* Toast Notification */}
+          {toast && (
+            <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl shadow-xl glass-card border border-slate-200 dark:border-slate-800 text-xs sm:text-sm animate-bounce">
+              <span className="text-base">
+                {toast.type === 'success' ? '✅' : toast.type === 'error' ? '❌' : 'ℹ️'}
+              </span>
+              <span className="font-medium text-slate-800 dark:text-slate-100">{toast.msg}</span>
             </div>
           )}
 
-          {/* Main Layout Area */}
-          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+          {/* Main Workspace Container */}
+          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
             
-            {/* Tab Navigation Selector */}
-            <div className="flex justify-center">
-              <div className="inline-flex p-1.5 bg-slate-200/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-300/60 dark:border-slate-700/60 max-w-full overflow-x-auto shadow-inner">
-                <button
-                  onClick={() => { setActiveTab('tab1'); setResultData(null); }}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
-                    activeTab === 'tab1'
-                      ? 'bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-300 shadow-md shadow-black/5'
-                      : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                  }`}
-                >
-                  <span className="text-base">🇨🇳 ➡️ 🇺🇸</span>
-                  <span>中翻英・多維擴充</span>
-                </button>
+            {/* Navigation Tabs */}
+            <div className="flex p-1.5 rounded-2xl bg-slate-200/60 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 max-w-2xl mx-auto shadow-inner">
+              <button
+                type="button"
+                onClick={() => { setActiveTab('tab1'); setErrorMessage(''); }}
+                className={`flex-1 py-2.5 px-3 rounded-xl font-display font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                  activeTab === 'tab1'
+                    ? 'bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-md ring-1 ring-black/5 dark:ring-white/5'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
+              >
+                <span>🌐</span>
+                <span>中翻英多維擴充</span>
+              </button>
 
-                <button
-                  onClick={() => { setActiveTab('tab2'); setResultData(null); }}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
-                    activeTab === 'tab2'
-                      ? 'bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-300 shadow-md shadow-black/5'
-                      : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                  }`}
-                >
-                  <span className="text-base">✍️ ➡️ 💎</span>
-                  <span>英翻中・糾錯與升級</span>
-                </button>
+              <button
+                type="button"
+                onClick={() => { setActiveTab('tab2'); setErrorMessage(''); }}
+                className={`flex-1 py-2.5 px-3 rounded-xl font-display font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                  activeTab === 'tab2'
+                    ? 'bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-md ring-1 ring-black/5 dark:ring-white/5'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
+              >
+                <span>✍️</span>
+                <span>英翻中與母語潤飾</span>
+              </button>
 
-                <button
-                  onClick={() => { setActiveTab('tab3'); setResultData(null); }}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
-                    activeTab === 'tab3'
-                      ? 'bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-300 shadow-md shadow-black/5'
-                      : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
-                  }`}
-                >
-                  <span className="text-base">📚 ➡️ 🧠</span>
-                  <span>陌生單字・深度情境</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => { setActiveTab('tab3'); setErrorMessage(''); }}
+                className={`flex-1 py-2.5 px-3 rounded-xl font-display font-semibold text-xs sm:text-sm transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                  activeTab === 'tab3'
+                    ? 'bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-md ring-1 ring-black/5 dark:ring-white/5'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
+              >
+                <span>📚</span>
+                <span>陌生單字深度練習</span>
+              </button>
             </div>
 
             {/* Input Card */}
@@ -1072,7 +1291,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                   <span className="w-2.5 h-2.5 rounded-full bg-brand-500"></span>
                   {activeTab === 'tab1' && '請輸入欲表達的中文句子或生活情境：'}
                   {activeTab === 'tab2' && '請輸入你想檢視糾錯的英文句子：'}
-                  {activeTab === 'tab3' && '請輸入欲深度學習的英文單字（如 serendipity、resilience）：'}
+                  {activeTab === 'tab3' && '請輸入欲深度學習的英文單字（支援以逗號「,」一次輸入多個單字批次學習）：'}
                 </label>
 
                 {/* Quick Sample Button */}
@@ -1103,7 +1322,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       ? '例如：這份企劃書請在明天下午三點前交給我，若有任何問題隨時與我聯繫。'
                       : activeTab === 'tab2'
                       ? '例如：I very like this project because it make me feel very challenge and learn much.'
-                      : '例如：serendipity 或 resilience'
+                      : '例如：serendipity, resilience, pragmatic（支援以逗號分隔多個單字同時學習）'
                   }
                   className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/60 p-4 text-sm sm:text-base text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:focus:ring-brand-400 transition"
                 ></textarea>
@@ -1119,73 +1338,151 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                 )}
               </div>
 
-              {/* Bottom Actions */}
-              <div className="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-200 dark:border-emerald-800">
-                    <Icon name="zap" className="w-3 h-3" />
-                    <span>免金鑰模式已就緒</span>
-                  </span>
-                  <span className="hidden md:inline">無需 API Key，隨時隨地立即使用</span>
-                </div>
-
-                <div className="flex items-center gap-2">
+              {/* Tab 3 Quick Word Tags */}
+              {activeTab === 'tab3' && (
+                <div className="mt-2.5 flex items-center gap-2 flex-wrap">
+                  <span className="text-xs text-slate-400">💡 快速帶入推薦詞組：</span>
                   <button
-                    onClick={() => handleGenerate()}
-                    disabled={isLoading}
-                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-medium text-sm text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 active:scale-[0.98] transition-all shadow-md shadow-brand-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                    type="button"
+                    onClick={() => setInputText('serendipity, resilience, pragmatic')}
+                    className="text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-950 dark:hover:text-brand-300 transition text-slate-600 dark:text-slate-300"
                   >
-                    {isLoading ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span>智慧分析生成中...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Icon name="sparkles" className="w-4 h-4" />
-                        <span>開始智慧生成</span>
-                      </>
-                    )}
+                    💎 核心高階：serendipity, resilience, pragmatic
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInputText('meticulous, proactive, ubiquitous')}
+                    className="text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-950 dark:hover:text-brand-300 transition text-slate-600 dark:text-slate-300"
+                  >
+                    💼 職場必備：meticulous, proactive, ubiquitous
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setInputText('ephemeral, empathy, lucid')}
+                    className="text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-brand-950 dark:hover:text-brand-300 transition text-slate-600 dark:text-slate-300"
+                  >
+                    🎯 雅思常考：ephemeral, empathy, lucid
                   </button>
                 </div>
+              )}
+
+              {/* Controls bar under textarea */}
+              <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {/* Speed selection */}
+                  <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl text-xs font-semibold">
+                    <span className="px-2 text-slate-500">語速:</span>
+                    {[0.8, 1.0, 1.2].map((rate) => (
+                      <button
+                        key={rate}
+                        type="button"
+                        onClick={() => setSpeechRate(rate)}
+                        className={`px-2 py-1 rounded-lg transition ${
+                          speechRate === rate
+                            ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-xs'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                        }`}
+                      >
+                        {rate}x
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Accent selection */}
+                  <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl text-xs font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => setSpeechAccent('en-US')}
+                      className={`px-2.5 py-1 rounded-lg transition ${
+                        speechAccent === 'en-US'
+                          ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-xs'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                      }`}
+                    >
+                      🇺🇸 美式
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSpeechAccent('en-GB')}
+                      className={`px-2.5 py-1 rounded-lg transition ${
+                        speechAccent === 'en-GB'
+                          ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-400 shadow-xs'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                      }`}
+                    >
+                      🇬🇧 英式
+                    </button>
+                  </div>
+
+                  {/* Blind listening mode toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setBlindMode(!blindMode)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition ${
+                      blindMode
+                        ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border-amber-300 dark:border-amber-700 shadow-xs'
+                        : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border-transparent'
+                    }`}
+                    title="開啟盲聽練習：自動隱藏英文原文，透過純聽力聽寫檢驗自己的聽音辨字能力"
+                  >
+                    <Icon name={blindMode ? 'eye-off' : 'eye'} className="w-4 h-4" />
+                    <span>👁️ 盲聽練習模式 {blindMode ? '已啟用' : '已關閉'}</span>
+                  </button>
+                </div>
+
+                {/* Generate Action Button */}
+                <button
+                  type="button"
+                  onClick={() => handleGenerate()}
+                  disabled={isLoading}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-brand-600 hover:bg-brand-500 active:scale-95 text-white font-display font-bold text-sm shadow-lg shadow-brand-500/25 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? (
+                    <>
+                      <Icon name="refresh" className="w-4 h-4 animate-spin" />
+                      <span>AI 深度剖析中...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="sparkles" className="w-4 h-4" />
+                      <span>開始智慧生成 (Ctrl+Enter)</span>
+                    </>
+                  )}
+                </button>
               </div>
 
-              {/* Error Message */}
               {errorMessage && (
-                <div className="mt-4 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-300 text-xs flex items-start gap-2.5">
-                  <Icon name="info" className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
-                  <p className="font-semibold">{errorMessage}</p>
+                <div className="mt-3 p-3 rounded-xl bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300 text-xs border border-red-200 dark:border-red-900">
+                  {errorMessage}
                 </div>
               )}
             </div>
 
-            {/* Results Presentation Area */}
+            {/* Results Display Area */}
             {resultData && (
               <div className="space-y-6 animate-fadeIn">
                 
-                {/* Result Header & Actions */}
-                <div className="flex items-center justify-between">
-                  <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>✨ 學習剖析成果</span>
-                    <span className="text-xs font-normal text-slate-500">
-                      （可隨時開啟上方盲聽模式練習聽寫）
-                    </span>
-                  </h2>
+                {/* Result Action Bar */}
+                <div className="flex items-center justify-between px-2">
+                  <div className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <h3 className="font-display font-bold text-base text-slate-800 dark:text-slate-200">
+                      學習分析結果
+                    </h3>
+                  </div>
 
                   <div className="flex items-center gap-2">
+                    {/* Star Favorite Button */}
                     <button
                       onClick={() => toggleStar({ tab: activeTab, input: inputText.trim(), result: resultData })}
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition border ${
                         isCurrentResultStarred
-                          ? 'bg-amber-50 text-amber-600 border-amber-300 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800'
-                          : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50'
+                          ? 'bg-amber-50 text-amber-600 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
+                          : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300'
                       }`}
                     >
-                      <Icon name={isCurrentResultStarred ? 'star' : 'star-outline'} className={`w-4 h-4 ${isCurrentResultStarred ? 'text-amber-500' : ''}`} />
-                      <span>{isCurrentResultStarred ? '已收藏' : '收藏本結果'}</span>
+                      <Icon name={isCurrentResultStarred ? 'star' : 'star-outline'} className="w-4 h-4 text-amber-500" />
+                      <span>{isCurrentResultStarred ? '已收藏' : '收藏此項'}</span>
                     </button>
                   </div>
                 </div>
@@ -1211,6 +1508,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       <SentenceAudioCard
                         title="💼 商務/正式"
                         subtitle="職場信件、會議與報告首選"
+                        tip={resultData.scenarios?.professional_tip || "語氣嚴謹得體，重視指令分寸與對受話者的尊重。"}
                         badge="Formal"
                         badgeColor="bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border-purple-200 dark:border-purple-800"
                         sentence={resultData.scenarios?.professional}
@@ -1226,6 +1524,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       <SentenceAudioCard
                         title="💬 道地口語"
                         subtitle="日常社交、母語者最自然聊法"
+                        tip={resultData.scenarios?.casual_tip || "以動詞片語與縮寫取代死板直譯，在口語中極其自然。"}
                         badge="Casual"
                         badgeColor="bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
                         sentence={resultData.scenarios?.casual}
@@ -1241,6 +1540,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       <SentenceAudioCard
                         title="✨ 進階/精煉"
                         subtitle="高分句型、道地成語片語"
+                        tip={resultData.scenarios?.advanced_tip || "運用典雅語法與搭配詞，在寫作與公開演講中展現高級底蘊。"}
                         badge="Idiomatic"
                         badgeColor="bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border-amber-200 dark:border-amber-800"
                         sentence={resultData.scenarios?.advanced}
@@ -1353,12 +1653,13 @@ You MUST respond with STRICT valid JSON matching this exact schema:
 
                     <div>
                       <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2">
-                        <span>🔄 3 種進階語氣改寫版本 (換句話說)</span>
+                        <span>🔄 3 種進階語氣改寫版本 (換句話說 / Paraphrasing)</span>
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <SentenceAudioCard
-                          title="🌸 委婉禮貌"
+                          title="🌸 委婉得體"
                           subtitle="謙和得體、顧全對方感受"
+                          tip={resultData.alternatives?.polite_tip || "委婉客氣、顧全顏面，適合提出異議、客戶溝通或跨部門協調。"}
                           badge="Diplomatic"
                           badgeColor="bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300 border-pink-200 dark:border-pink-800"
                           sentence={resultData.alternatives?.polite}
@@ -1374,6 +1675,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                         <SentenceAudioCard
                           title="⚡ 直接果斷"
                           subtitle="俐落精準、展現自信與效率"
+                          tip={resultData.alternatives?.direct_tip || "簡潔扼要、直奔主題，適合主管決策、日常站會或進度彙報。"}
                           badge="Decisive"
                           badgeColor="bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border-blue-200 dark:border-blue-800"
                           sentence={resultData.alternatives?.direct}
@@ -1389,6 +1691,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                         <SentenceAudioCard
                           title="🌟 地道慣用"
                           subtitle="母語人士直覺的高級用詞"
+                          tip={resultData.alternatives?.idiomatic_tip || "母語人士口語直覺，運用道地習語與生動修辭，展現高階流暢度。"}
                           badge="Native"
                           badgeColor="bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800"
                           sentence={resultData.alternatives?.idiomatic}
@@ -1405,113 +1708,195 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                   </div>
                 )}
 
-                {/* TAB 3 CONTENT: 陌生單字深度練習 */}
-                {activeTab === 'tab3' && resultData.deconstruction && (
+                {/* TAB 3 CONTENT: 陌生單字深度練習 (支援單一與多個單字批次) */}
+                {activeTab === 'tab3' && wordsList.length > 0 && (
                   <div className="space-y-6">
-                    <div className="glass-card rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-md relative overflow-hidden">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
-                        <div>
-                          <div className="flex items-center gap-3 flex-wrap">
-                            <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tight">
-                              {resultData.deconstruction.word}
-                            </h3>
-                            <span className="font-mono text-sm px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                              {resultData.deconstruction.ipa}
-                            </span>
-                            <span className="text-xs px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300 font-semibold border border-brand-200 dark:border-brand-800">
-                              {resultData.deconstruction.part_of_speech}
-                            </span>
-                          </div>
-                          <p className="text-base sm:text-lg font-medium text-slate-800 dark:text-slate-100 mt-2">
-                            {resultData.deconstruction.definition_zh}
-                          </p>
+                    {/* Multi-word Navigation Bar (shown when multiple words entered) */}
+                    {wordsList.length > 1 && (
+                      <div className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+                          <span className="text-xs font-bold text-slate-500 shrink-0">批次清單 ({wordsList.length})：</span>
+                          {wordsList.map((wItem, idx) => {
+                            const wName = wItem.deconstruction?.word || `單字 ${idx + 1}`;
+                            const isActive = activeWordIndex === idx;
+                            return (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => {
+                                  setActiveWordIndex(idx);
+                                  if (vocabViewMode === 'all') setVocabViewMode('focus');
+                                }}
+                                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shrink-0 ${
+                                  isActive && vocabViewMode === 'focus'
+                                    ? 'bg-brand-600 text-white shadow-sm ring-2 ring-brand-400/30'
+                                    : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-brand-300'
+                                }`}
+                              >
+                                <span>#{idx + 1}</span>
+                                <span className="font-mono">{wName}</span>
+                              </button>
+                            );
+                          })}
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        {/* View mode toggle */}
+                        <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-auto">
                           <button
-                            onClick={() => playSpeech(resultData.deconstruction.word)}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950 dark:hover:bg-brand-900 dark:text-brand-300 border border-brand-200 dark:border-brand-800 font-semibold text-xs transition"
+                            type="button"
+                            onClick={() => setVocabViewMode('focus')}
+                            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                              vocabViewMode === 'focus'
+                                ? 'bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300 border border-brand-200 dark:border-brand-800'
+                                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                            }`}
                           >
-                            <Icon name="volume" className="w-4 h-4" />
-                            <span>單字發音 ({speechAccent})</span>
+                            🎯 逐字精讀
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setVocabViewMode('all')}
+                            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                              vocabViewMode === 'all'
+                                ? 'bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300 border border-brand-200 dark:border-brand-800'
+                                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                            }`}
+                          >
+                            📑 全部展開
                           </button>
                         </div>
                       </div>
+                    )}
 
-                      {resultData.deconstruction.memory_hook && (
-                        <div className="mt-4 p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 flex items-start gap-3">
-                          <span className="text-xl">💡</span>
-                          <div>
-                            <span className="text-xs font-bold text-amber-800 dark:text-amber-300 block mb-0.5">
-                              字根字首與記憶訣竅 (Memory Hook)
-                            </span>
-                            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                              {resultData.deconstruction.memory_hook}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    {/* Word Cards Display */}
+                    {(vocabViewMode === 'focus' && wordsList[activeWordIndex]
+                      ? [wordsList[activeWordIndex]]
+                      : wordsList
+                    ).map((currentWordItem, wIndex) => {
+                      const dec = currentWordItem.deconstruction;
+                      const ctxs = currentWordItem.contexts || [];
+                      const actualIndex = vocabViewMode === 'focus' ? activeWordIndex : wIndex;
 
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                          <span>🌐 4 大核心情境例句練習 (支援逐句慢速/正常朗讀與盲聽)</span>
-                        </h4>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {resultData.contexts?.map((ctx, idx) => (
-                          <div
-                            key={idx}
-                            className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-5 flex flex-col justify-between shadow-xs hover:border-brand-300 dark:hover:border-brand-700 transition"
-                          >
-                            <div>
-                              <div className="flex items-center justify-between gap-2 mb-3">
-                                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                                  {ctx.category}
-                                </span>
-
-                                <div className="flex items-center gap-1.5">
-                                  <button
-                                    onClick={() => playSpeech(ctx.sentence_en)}
-                                    className="p-1.5 rounded-lg text-brand-600 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-950 transition"
-                                    title="播放此例句"
-                                  >
-                                    <Icon name={playingSentence === ctx.sentence_en ? 'pause' : 'volume'} className="w-4 h-4" />
-                                  </button>
-                                  <button
-                                    onClick={() => copyToClipboard(ctx.sentence_en)}
-                                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
-                                    title="複製英文句子"
-                                  >
-                                    <Icon name="copy" className="w-3.5 h-3.5" />
-                                  </button>
+                      return (
+                        <div key={actualIndex} className="space-y-6 pt-1">
+                          {/* Top Card */}
+                          <div className="glass-card rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-md relative overflow-hidden">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                              <div>
+                                <div className="flex items-center gap-3 flex-wrap">
+                                  {wordsList.length > 1 && (
+                                    <span className="text-xs px-2 py-0.5 rounded-md bg-brand-500 text-white font-bold">
+                                      #{actualIndex + 1} / {wordsList.length}
+                                    </span>
+                                  )}
+                                  <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tight">
+                                    {dec.word}
+                                  </h3>
+                                  {dec.ipa && (
+                                    <span className="font-mono text-sm px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                      {dec.ipa}
+                                    </span>
+                                  )}
+                                  {dec.part_of_speech && (
+                                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300 font-semibold border border-brand-200 dark:border-brand-800">
+                                      {dec.part_of_speech}
+                                    </span>
+                                  )}
                                 </div>
+                                <p className="text-base sm:text-lg font-medium text-slate-800 dark:text-slate-100 mt-2">
+                                  {dec.definition_zh}
+                                </p>
                               </div>
 
-                              <BlindSentenceBox
-                                sentence={ctx.sentence_en}
-                                blindMode={blindMode}
-                                onPlay={() => playSpeech(ctx.sentence_en)}
-                                highlightWord={resultData.deconstruction.word}
-                              />
-
-                              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2">
-                                {ctx.sentence_zh}
-                              </p>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => playSpeech(dec.word)}
+                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950 dark:hover:bg-brand-900 dark:text-brand-300 border border-brand-200 dark:border-brand-800 font-semibold text-xs transition"
+                                >
+                                  <Icon name="volume" className="w-4 h-4" />
+                                  <span>單字發音 ({speechAccent})</span>
+                                </button>
+                              </div>
                             </div>
 
-                            {ctx.tip && (
-                              <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs text-slate-500 dark:text-slate-400 flex items-start gap-1.5">
-                                <span className="text-brand-500 font-bold">小撇步：</span>
-                                <span>{ctx.tip}</span>
+                            {dec.memory_hook && (
+                              <div className="mt-4 p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 flex items-start gap-3">
+                                <span className="text-xl">💡</span>
+                                <div>
+                                  <span className="text-xs font-bold text-amber-800 dark:text-amber-300 block mb-0.5">
+                                    字根字首與記憶訣竅 (Memory Hook)
+                                  </span>
+                                  <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                                    {dec.memory_hook}
+                                  </p>
+                                </div>
                               </div>
                             )}
                           </div>
-                        ))}
-                      </div>
-                    </div>
+
+                          {/* 4 Context Scenarios */}
+                          <div>
+                            <div className="flex items-center justify-between mb-3">
+                              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                <span>🌐 「{dec.word}」4 大核心情境例句練習 (支援慢速/正常朗讀與盲聽)</span>
+                              </h4>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {ctxs.map((ctx, idx) => (
+                                <div
+                                  key={idx}
+                                  className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-5 flex flex-col justify-between shadow-xs hover:border-brand-300 dark:hover:border-brand-700 transition"
+                                >
+                                  <div>
+                                    <div className="flex items-center justify-between gap-2 mb-3">
+                                      <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                        {ctx.category}
+                                      </span>
+
+                                      <div className="flex items-center gap-1.5">
+                                        <button
+                                          onClick={() => playSpeech(ctx.sentence_en)}
+                                          className="p-1.5 rounded-lg text-brand-600 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-950 transition"
+                                          title="播放此例句"
+                                        >
+                                          <Icon name={playingSentence === ctx.sentence_en ? 'pause' : 'volume'} className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                          onClick={() => copyToClipboard(ctx.sentence_en)}
+                                          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+                                          title="複製英文句子"
+                                        >
+                                          <Icon name="copy" className="w-3.5 h-3.5" />
+                                        </button>
+                                      </div>
+                                    </div>
+
+                                    <BlindSentenceBox
+                                      sentence={ctx.sentence_en}
+                                      blindMode={blindMode}
+                                      onPlay={() => playSpeech(ctx.sentence_en)}
+                                      highlightWord={dec.word}
+                                    />
+
+                                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2">
+                                      {ctx.sentence_zh}
+                                    </p>
+                                  </div>
+
+                                  {ctx.tip && (
+                                    <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs text-slate-500 dark:text-slate-400 flex items-start gap-1.5">
+                                      <span className="text-brand-500 font-bold">小撇步：</span>
+                                      <span>{ctx.tip}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -1550,66 +1935,45 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                 localStorage.setItem('gemini_api_key', newKey);
                 localStorage.setItem('gemini_model', newModel);
                 setIsSettingsOpen(false);
-                showToast(newMode === 'smart' ? '已切換為「免金鑰模式」！' : '設定已儲存！', 'success');
+                showToast('設定已成功儲存！', 'success');
               }}
-              onTestSpeech={(accent, rate) => {
-                playSpeech('Hello! Welcome to English AI Studio. Enjoy your listening and speaking practice!', accent, rate);
-              }}
+              onTestSpeech={(accent, rate) => playSpeech("Welcome to English AI Studio! Master English through immersive listening and intelligent practice.", accent, rate)}
               showToast={showToast}
             />
           )}
 
-          {/* Sidebar Drawer */}
+          {/* Favorites & History Sidebar Drawer */}
           {isSidebarOpen && (
-            <SidebarDrawer
-              sidebarTab={sidebarTab}
-              setSidebarTab={setSidebarTab}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              items={filteredSidebarItems}
+            <FavoritesDrawer
               favorites={favorites}
+              history={history}
+              activeTab={activeTab}
               onClose={() => setIsSidebarOpen(false)}
               onSelectItem={(item) => {
                 setActiveTab(item.tab);
                 setInputText(item.input);
                 setResultData(item.result);
                 setIsSidebarOpen(false);
-                showToast(`已載入 ${item.input}`, 'info');
+                showToast(`已載入「${item.input.slice(0, 15)}...」`, 'info');
               }}
               onToggleStar={toggleStar}
               onClearHistory={() => {
-                if (confirm('確定要清空所有歷史紀錄嗎？（收藏夾不會受影響）')) {
-                  setHistory([]);
-                  showToast('歷史紀錄已清空', 'info');
-                }
+                setHistory([]);
+                showToast('已清空歷史紀錄', 'info');
               }}
-              onExportJson={exportJson}
               onExportMarkdown={exportMarkdown}
+              onExportJson={exportJson}
             />
-          )}
-
-          {/* Toast Alert */}
-          {toast && (
-            <div className="fixed bottom-6 right-6 z-50 animate-bounce">
-              <div className={`px-4 py-2.5 rounded-2xl shadow-xl text-xs sm:text-sm font-semibold flex items-center gap-2 border ${
-                toast.type === 'error'
-                  ? 'bg-red-600 text-white border-red-700 shadow-red-500/20'
-                  : toast.type === 'success'
-                  ? 'bg-emerald-600 text-white border-emerald-700 shadow-emerald-500/20'
-                  : 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-700 shadow-black/20'
-              }`}>
-                <span>{toast.msg}</span>
-              </div>
-            </div>
           )}
         </div>
       );
     }
 
-    // --- Interactive Sentence Card Component ---
+    // --- Sub-Component: Sentence Audio Card (with Scenario Tips) ---
     function SentenceAudioCard({
       title,
       subtitle,
+      tip,
       badge,
       badgeColor,
       sentence,
@@ -1645,9 +2009,16 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                 onPlay={onPlay}
               />
             </div>
+
+            {tip && (
+              <div className="mt-2 text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800/80 flex items-start gap-1.5">
+                <span className="text-brand-500 font-bold shrink-0">💡 語境：</span>
+                <span className="leading-relaxed">{tip}</span>
+              </div>
+            )}
           </div>
 
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2 mt-2">
             <div className="flex items-center gap-1.5">
               <button
                 onClick={isPlaying ? onStop : onPlay}
@@ -1679,7 +2050,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       );
     }
 
-    // --- Blind Listening & Dictation Box Component ---
+    // --- Sub-Component: Blind Listening & Dictation Box Component ---
     function BlindSentenceBox({ sentence, blindMode, onPlay, highlightWord }) {
       const [revealed, setRevealed] = useState(false);
       const [dictationInput, setDictationInput] = useState('');
@@ -1729,41 +2100,23 @@ You MUST respond with STRICT valid JSON matching this exact schema:
         const diff = [];
         let uIdx = 0;
 
-        for (let i = 0; i < targetWords.length; i++) {
-          const tWord = targetWords[i];
-          const uWord = userWords[uIdx];
-
-          if (uWord === tWord) {
+        targetWords.forEach((word) => {
+          if (uIdx < userWords.length && userWords[uIdx] === word) {
             matches++;
-            diff.push({ word: tWord, status: 'correct' });
+            diff.push({ word, status: 'correct' });
             uIdx++;
-          } else if (uIdx < userWords.length && userWords.slice(uIdx).includes(tWord)) {
-            while (uIdx < userWords.length && userWords[uIdx] !== tWord) {
-              diff.push({ word: userWords[uIdx], status: 'extra' });
-              uIdx++;
-            }
-            if (uIdx < userWords.length && userWords[uIdx] === tWord) {
-              matches++;
-              diff.push({ word: tWord, status: 'correct' });
-              uIdx++;
-            }
           } else {
-            diff.push({ word: tWord, status: 'missing' });
+            diff.push({ word, status: 'missing' });
           }
-        }
+        });
 
-        while (uIdx < userWords.length) {
-          diff.push({ word: userWords[uIdx], status: 'extra' });
-          uIdx++;
-        }
-
-        const accuracy = Math.round((matches / Math.max(targetWords.length, userWords.length)) * 100);
+        const accuracy = Math.round((matches / targetWords.length) * 100);
         setCheckResult({ accuracy, diff });
       };
 
       if (!blindMode) {
         return (
-          <p className="text-sm sm:text-base font-normal text-slate-900 dark:text-white leading-relaxed">
+          <p className="text-base sm:text-lg font-medium text-slate-800 dark:text-slate-100 leading-relaxed font-sans">
             {renderSentenceText()}
           </p>
         );
@@ -1771,93 +2124,73 @@ You MUST respond with STRICT valid JSON matching this exact schema:
 
       return (
         <div className="space-y-3">
-          <div className="relative p-3 rounded-xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 overflow-hidden">
-            <p className={`text-sm sm:text-base font-normal text-slate-900 dark:text-white leading-relaxed ${revealed ? '' : 'blind-blur'}`}>
+          <div className="relative p-4 rounded-xl bg-slate-100/70 dark:bg-slate-900/70 border border-slate-200/80 dark:border-slate-800 overflow-hidden">
+            <p className={`text-base sm:text-lg font-medium text-slate-800 dark:text-slate-100 leading-relaxed blind-blur ${revealed ? 'revealed' : ''}`}>
               {renderSentenceText()}
             </p>
 
             {!revealed && (
-              <div className="absolute inset-0 flex items-center justify-center gap-2 bg-slate-900/10 dark:bg-slate-950/20 backdrop-blur-[2px]">
-                <button
-                  type="button"
-                  onClick={onPlay}
-                  className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs shadow-md flex items-center gap-1.5 transition active:scale-95"
-                >
-                  <Icon name="volume" className="w-3.5 h-3.5" />
-                  <span>聽音訊</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRevealed(true)}
-                  className="px-3 py-1.5 rounded-lg bg-white/90 dark:bg-slate-800/90 hover:bg-white text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-xs flex items-center gap-1.5 transition"
-                >
-                  <Icon name="eye" className="w-3.5 h-3.5" />
-                  <span>看答案</span>
-                </button>
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/10 backdrop-blur-[6px] p-2 text-center">
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
+                  <span>🎧 原文已遮蔽（聽力聽寫訓練中）</span>
+                </span>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  先聽發音，在下方輸入聽寫，完成後揭曉答案！
+                </p>
               </div>
             )}
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2">
               <input
                 type="text"
                 value={dictationInput}
                 onChange={(e) => setDictationInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleCheckDictation();
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleCheckDictation();
+                  }
                 }}
-                placeholder="在此輸入你聽到的英文句子進行聽寫..."
-                className="flex-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                placeholder="在此輸入您聽到的英文句子..."
+                className="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs sm:text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-brand-500 focus:outline-none"
               />
               <button
                 type="button"
                 onClick={handleCheckDictation}
-                className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium text-xs whitespace-nowrap transition"
+                className="px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-xs"
               >
                 比對
               </button>
-              {revealed && (
-                <button
-                  type="button"
-                  onClick={() => setRevealed(false)}
-                  className="p-1.5 text-slate-400 hover:text-slate-600"
-                  title="重新隱藏"
-                >
-                  <Icon name="eye-off" className="w-4 h-4" />
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => setRevealed(!revealed)}
+                className="px-3 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold"
+              >
+                {revealed ? '再次遮蔽' : '揭曉原文'}
+              </button>
             </div>
 
             {checkResult && (
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">
-                    聽寫準確率評估：
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs space-y-1.5 animate-fadeIn">
+                <div className="flex items-center justify-between font-bold">
+                  <span className={checkResult.accuracy >= 80 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}>
+                    🎯 聽寫準確率：{checkResult.accuracy}%
                   </span>
-                  <span className={`font-mono font-bold px-2 py-0.5 rounded ${
-                    checkResult.accuracy >= 90
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                      : checkResult.accuracy >= 70
-                      ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
-                      : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'
-                  }`}>
-                    {checkResult.accuracy}% {checkResult.accuracy === 100 ? '🎉 完美！' : checkResult.accuracy >= 80 ? '💪 很棒！' : '加油！'}
+                  <span className="text-slate-400 font-normal">
+                    {checkResult.accuracy === 100 ? '太神了！完全聽對！🎉' : '點擊「揭曉原文」對照漏聽單字'}
                   </span>
                 </div>
-
-                <div className="flex flex-wrap gap-1 items-center pt-1">
+                <div className="flex flex-wrap gap-1 pt-1">
                   {checkResult.diff.map((item, idx) => (
                     <span
                       key={idx}
                       className={`px-1.5 py-0.5 rounded text-[11px] font-mono ${
                         item.status === 'correct'
                           ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                          : item.status === 'missing'
-                          ? 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 line-through'
-                          : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                          : 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 line-through'
                       }`}
-                      title={item.status === 'correct' ? '完全符合' : item.status === 'missing' ? '漏聽或拼錯' : '多打的字詞'}
                     >
                       {item.word}
                     </span>
@@ -1870,7 +2203,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       );
     }
 
-    // --- Settings Modal Component (With Mode Toggle) ---
+    // --- Sub-Component: Settings Modal (with Smart Model Auto-Detection) ---
     function SettingsModal({
       engineMode,
       apiKey,
@@ -1892,35 +2225,105 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       const [isTestingApi, setIsTestingApi] = useState(false);
       const [testApiResult, setTestApiResult] = useState(null);
 
-      const handleTestApiKey = async () => {
+      // Available models dynamically detected or preset
+      const [availableModelsList, setAvailableModelsList] = useState([
+        { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash（推薦：最新次世代極速模型，配額充裕）' },
+        { id: 'gemini-1.5-flash-latest', name: 'Gemini 1.5 Flash Latest（穩健高配額版）' },
+        { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash（最新推理強化版）' },
+        { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro（深度複雜推理）' }
+      ]);
+
+      // Detect and Test Models
+      const handleDetectAndTestModels = async () => {
         if (!keyInput.trim()) {
-          setTestApiResult({ ok: false, msg: '請先輸入 API Key 再測試！' });
+          setTestApiResult({ ok: false, msg: '請先輸入 API Key 再進行偵測！' });
           return;
         }
 
         setIsTestingApi(true);
         setTestApiResult(null);
 
-        // Try gemini-2.0-flash or selected model
-        try {
-          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelInput}:generateContent?key=${keyInput.trim()}`;
-          const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{ parts: [{ text: "Hello" }] }],
-              generationConfig: { maxOutputTokens: 5 }
-            })
-          });
+        const cleanKey = keyInput.trim();
+        let detected = [];
+        let detectedVersion = 'v1beta';
 
+        try {
+          // 1. Try querying models list from v1beta
+          let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`);
           if (!res.ok) {
-            const errJson = await res.json().catch(() => ({}));
-            throw new Error(errJson.error?.message || `HTTP ${res.status}`);
+            // Try v1
+            res = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${cleanKey}`);
+            if (res.ok) detectedVersion = 'v1';
           }
 
-          setTestApiResult({ ok: true, msg: '連線成功！Gemini API 金鑰有效且具備訪問權限。' });
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data.models)) {
+              detected = data.models
+                .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+                .map(m => {
+                  const id = m.name.replace(/^models\//, '');
+                  let label = m.displayName || id;
+                  if (id.includes('2.0-flash')) label += ' ⭐ (推薦最新極速)';
+                  else if (id.includes('1.5-flash')) label += ' (高相容穩健)';
+                  return { id, name: `${label} [${id}]` };
+                });
+            }
+          }
+
+          if (detected.length > 0) {
+            setAvailableModelsList(detected);
+            const hasCurrent = detected.some(m => m.id === modelInput.replace(/^models\//, ''));
+            if (!hasCurrent) {
+              const best = detected.find(m => m.id.includes('2.0-flash')) || detected[0];
+              setModelInput(best.id);
+            }
+            setTestApiResult({
+              ok: true,
+              msg: `✅ 驗證成功！已透過 ${detectedVersion} 偵測到您帳號支援的 ${detected.length} 個模型，已自動為您選定可用模型！`
+            });
+            return;
+          }
+
+          // If models list couldn't be queried directly, test generateContent with candidate models
+          const testModels = ['gemini-2.0-flash', 'gemini-1.5-flash-latest', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+          let testedModel = null;
+
+          for (const mName of testModels) {
+            for (const v of ['v1beta', 'v1']) {
+              try {
+                const testRes = await fetch(`https://generativelanguage.googleapis.com/${v}/models/${mName}:generateContent?key=${cleanKey}`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    contents: [{ parts: [{ text: "Hi" }] }],
+                    generationConfig: { maxOutputTokens: 2 }
+                  })
+                });
+                if (testRes.ok) {
+                  testedModel = mName;
+                  break;
+                }
+              } catch (_) {}
+            }
+            if (testedModel) break;
+          }
+
+          if (testedModel) {
+            setModelInput(testedModel);
+            setTestApiResult({
+              ok: true,
+              msg: `✅ 連線成功！已自動為您驗證並套用有效模型：${testedModel}`
+            });
+          } else {
+            throw new Error('無法連線至 Gemini 模型，請檢查 API Key 是否正確或是否有專案存取權限。');
+          }
+
         } catch (err) {
-          setTestApiResult({ ok: false, msg: `驗證失敗：${err.message}` });
+          setTestApiResult({
+            ok: false,
+            msg: `連線失敗：${err.message}。若持續失敗，可隨時無縫切換免金鑰模式！`
+          });
         } finally {
           setIsTestingApi(false);
         }
@@ -1928,7 +2331,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
 
       return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-          <div className="glass-card w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-5">
+          <div className="glass-card w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
             
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
@@ -1996,9 +2399,9 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                 <div className="p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs flex items-start gap-2">
                   <Icon name="check" className="w-4 h-4 shrink-0 mt-0.5 text-emerald-600" />
                   <div>
-                    <p className="font-bold">免金鑰模式已啟動！</p>
+                    <p className="font-bold">免金鑰智慧引擎 2.0 已啟動！</p>
                     <p className="mt-0.5 text-slate-600 dark:text-slate-400">
-                      您不需要申請或輸入任何 API Key，系統使用內建智慧語意轉換與開放翻譯引擎，包含多維度擴充、台式英文糾錯與單字例句，隨時開手機就能用！
+                      您不需要申請或輸入任何 API Key，系統使用內建智慧語意重構、台式英文糾錯與單字例句庫，隨時開手機就能用！
                     </p>
                   </div>
                 </div>
@@ -2040,21 +2443,27 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       </button>
                     </div>
 
-                    <div className="mt-2 flex items-center gap-2">
+                    <div className="mt-2.5 flex items-center gap-2 flex-wrap">
                       <button
                         type="button"
-                        onClick={handleTestApiKey}
+                        onClick={handleDetectAndTestModels}
                         disabled={isTestingApi || !keyInput.trim()}
-                        className="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs transition disabled:opacity-50"
+                        className="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs transition disabled:opacity-50 flex items-center gap-1.5 shadow-xs"
                       >
-                        {isTestingApi ? '連線測試中...' : '測試金鑰連線'}
+                        <Icon name="refresh" className={`w-3.5 h-3.5 ${isTestingApi ? 'animate-spin' : ''}`} />
+                        <span>{isTestingApi ? '偵測驗證中...' : '⚡ 一鍵自動偵測我帳號支援的模型'}</span>
                       </button>
-                      {testApiResult && (
-                        <span className={`text-xs ${testApiResult.ok ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-                          {testApiResult.msg}
-                        </span>
-                      )}
                     </div>
+
+                    {testApiResult && (
+                      <div className={`mt-2 p-2.5 rounded-xl text-xs border ${
+                        testApiResult.ok
+                          ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 text-emerald-800 dark:text-emerald-300'
+                          : 'bg-red-50 dark:bg-red-950/40 border-red-200 text-red-800 dark:text-red-300'
+                      }`}>
+                        {testApiResult.msg}
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -2066,10 +2475,13 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       onChange={(e) => setModelInput(e.target.value)}
                       className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none"
                     >
-                      <option value="gemini-2.0-flash">Gemini 2.0 Flash（推薦：最新次世代極速模型）</option>
-                      <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash Latest（穩健高配額版）</option>
-                      <option value="gemini-1.5-pro">Gemini 1.5 Pro（深度複雜推理）</option>
+                      {availableModelsList.map(m => (
+                        <option key={m.id} value={m.id}>{m.name}</option>
+                      ))}
                     </select>
+                    <p className="text-[11px] text-slate-400 mt-1">
+                      💡 提示：若過去使用 1.5-flash 報錯，建議切換至 <strong>Gemini 2.0 Flash</strong>，反應速度更快且免費額度充足！
+                    </p>
                   </div>
                 </div>
               )}
@@ -2099,218 +2511,189 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       onChange={(e) => setRateInput(parseFloat(e.target.value))}
                       className="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs"
                     >
-                      <option value="0.8">🐢 0.8x（慢速跟讀練習）</option>
-                      <option value="1.0">⚡ 1.0x（正常自然語速）</option>
-                      <option value="1.2">🚀 1.2x（挑戰進階聽力）</option>
+                      <option value={0.8}>0.8x (慢速，適合初學聽音)</option>
+                      <option value={1.0}>1.0x (正常母語語速)</option>
+                      <option value={1.2}>1.2x (挑戰高難度速聽)</option>
                     </select>
                   </div>
                 </div>
 
-                <div className="mt-2.5 flex items-center justify-between">
-                  <span className="text-[11px] text-slate-400">
-                    偵測到系統語音：{availableVoices.length} 種聲音可用
-                  </span>
+                <div className="mt-2.5">
                   <button
                     type="button"
                     onClick={() => onTestSpeech(accentInput, rateInput)}
                     className="text-xs text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1 font-medium"
                   >
                     <Icon name="volume" className="w-3.5 h-3.5" />
-                    試聽語音發音
+                    <span>試聽目前的發音與語速設定</span>
                   </button>
                 </div>
               </div>
+
+              {/* 3. PWA Troubleshooting Advice */}
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400 space-y-1">
+                <span className="font-bold text-slate-700 dark:text-slate-300 block">📱 手機 PWA 安裝須知：</span>
+                <p>• Pixel 或 Android Chrome 若曾開啟過舊版，可透過 Chrome 選單「設定 → 網站設定 → 儲存的資料 → 清除」以強制載入最新 PWA 規格。</p>
+              </div>
+
             </div>
 
-            {/* Modal Actions */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
+            {/* Modal Action Buttons */}
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2.5">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold transition"
               >
                 取消
               </button>
               <button
                 type="button"
                 onClick={() => onSave(modeInput, keyInput.trim(), modelInput, rateInput, accentInput)}
-                className="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-brand-600 hover:bg-brand-500 transition shadow-md shadow-brand-500/20"
+                className="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold shadow-md shadow-brand-500/20 transition"
               >
                 儲存設定
               </button>
             </div>
+
           </div>
         </div>
       );
     }
 
-    // --- Sidebar Drawer Component ---
-    function SidebarDrawer({
-      sidebarTab,
-      setSidebarTab,
-      searchQuery,
-      setSearchQuery,
-      items,
+    // --- Sub-Component: Favorites & History Drawer ---
+    function FavoritesDrawer({
       favorites,
+      history,
+      activeTab,
       onClose,
       onSelectItem,
       onToggleStar,
       onClearHistory,
-      onExportJson,
-      onExportMarkdown
+      onExportMarkdown,
+      onExportJson
     }) {
+      const [view, setView] = useState('favorites'); // 'favorites' | 'history'
+
+      const currentList = view === 'favorites' ? favorites : history;
+
       return (
         <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 backdrop-blur-xs animate-fadeIn">
-          <div className="glass-card w-full max-w-md h-full border-l border-slate-200 dark:border-slate-800 flex flex-col shadow-2xl">
-            
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-              <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
-                <button
-                  onClick={() => setSidebarTab('favorites')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                    sidebarTab === 'favorites'
-                      ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-xs'
-                      : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
-                  }`}
-                >
-                  ⭐ 我的收藏 ({favorites.length})
-                </button>
-                <button
-                  onClick={() => setSidebarTab('history')}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                    sidebarTab === 'history'
-                      ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-xs'
-                      : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
-                  }`}
-                >
-                  🕒 歷史紀錄
-                </button>
-              </div>
-
-              <button
-                onClick={onClose}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-              >
-                <Icon name="x" className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="p-3 border-b border-slate-100 dark:border-slate-800">
-              <div className="relative">
-                <Icon name="search" className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="搜尋關鍵字或單字..."
-                  className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500"
-                />
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              {items.length === 0 ? (
-                <div className="text-center py-12 text-slate-400 text-xs">
-                  <p>尚無任何{sidebarTab === 'favorites' ? '收藏項目' : '歷史紀錄'}</p>
-                  <p className="mt-1 text-[11px]">可隨時點擊結果卡片右上角的 ⭐ 進行收藏！</p>
+          <div className="glass-card w-full max-w-md h-full border-l border-slate-200 dark:border-slate-800 p-5 shadow-2xl flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2">
+                  <span className="p-2 rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950 dark:text-amber-400">
+                    <Icon name="bookmark" className="w-5 h-5" />
+                  </span>
+                  <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">
+                    學習庫存與歷史
+                  </h3>
                 </div>
-              ) : (
-                items.map((item, idx) => {
-                  const isStarred = favorites.some(f => f.input === item.input && f.tab === item.tab);
-                  return (
-                    <div
-                      key={idx}
-                      className="group p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 hover:border-brand-400 dark:hover:border-brand-600 transition shadow-xs flex flex-col justify-between gap-2"
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
-                          {item.tab === 'tab1' ? '🇨🇳 中翻英' : item.tab === 'tab2' ? '✍️ 英潤飾' : '📚 單字'}
-                        </span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onToggleStar(item);
-                          }}
-                          className="text-slate-400 hover:text-amber-500 p-1"
-                        >
-                          <Icon name={isStarred ? 'star' : 'star-outline'} className={`w-4 h-4 ${isStarred ? 'text-amber-500' : ''}`} />
-                        </button>
-                      </div>
+                <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                  <Icon name="x" className="w-5 h-5" />
+                </button>
+              </div>
 
-                      <div
-                        onClick={() => onSelectItem(item)}
-                        className="cursor-pointer"
-                      >
-                        <p className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100 line-clamp-2">
+              {/* Toggle Favorites vs History */}
+              <div className="flex gap-2 my-4 p-1 rounded-xl bg-slate-100 dark:bg-slate-900 text-xs font-semibold">
+                <button
+                  onClick={() => setView('favorites')}
+                  className={`flex-1 py-1.5 rounded-lg transition ${
+                    view === 'favorites'
+                      ? 'bg-white dark:bg-slate-800 text-amber-600 dark:text-amber-400 shadow-xs'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  ⭐ 精選收藏 ({favorites.length})
+                </button>
+                <button
+                  onClick={() => setView('history')}
+                  className={`flex-1 py-1.5 rounded-lg transition ${
+                    view === 'history'
+                      ? 'bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-400 shadow-xs'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  🕒 歷史足跡 ({history.length})
+                </button>
+              </div>
+
+              {/* Items List */}
+              <div className="space-y-3 overflow-y-auto max-h-[calc(100vh-250px)] pr-1">
+                {currentList.length === 0 ? (
+                  <div className="py-12 text-center text-slate-400 text-xs">
+                    <span>{view === 'favorites' ? '目前尚無收藏項目，可點擊星號加入收藏 ⭐' : '尚無歷史紀錄'}</span>
+                  </div>
+                ) : (
+                  currentList.map((item) => (
+                    <div
+                      key={item.id}
+                      className="p-3.5 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white/70 dark:bg-slate-900/70 hover:border-brand-300 dark:hover:border-brand-700 transition flex items-start justify-between gap-3 group"
+                    >
+                      <div className="flex-1 cursor-pointer" onClick={() => onSelectItem(item)}>
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500">
+                            {item.tab === 'tab1' ? '中翻英擴充' : item.tab === 'tab2' ? '英翻中潤飾' : '單字練習'}
+                          </span>
+                        </div>
+                        <p className="text-xs font-bold text-slate-800 dark:text-slate-200 line-clamp-2">
                           {item.input}
                         </p>
-                        <p className="text-[11px] text-slate-400 mt-1 line-clamp-1">
-                          {item.tab === 'tab1' && item.result?.direct_translation}
-                          {item.tab === 'tab2' && item.result?.grammar_polish?.corrected}
-                          {item.tab === 'tab3' && item.result?.deconstruction?.definition_zh}
-                        </p>
                       </div>
+
+                      <button
+                        onClick={() => onToggleStar(item)}
+                        className="p-1 text-slate-400 hover:text-amber-500"
+                        title="切換收藏狀態"
+                      >
+                        <Icon name={favorites.some(f => f.input === item.input && f.tab === item.tab) ? 'star' : 'star-outline'} className="w-4 h-4 text-amber-500" />
+                      </button>
                     </div>
-                  );
-                })
-              )}
+                  ))
+                )}
+              </div>
             </div>
 
-            <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between gap-2 text-xs">
-              <div className="flex items-center gap-1.5">
+            {/* Bottom Actions */}
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+              <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={onExportMarkdown}
-                  className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 flex items-center gap-1 font-medium transition"
-                  title="匯出為 Markdown 筆記"
+                  className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition"
                 >
                   <Icon name="download" className="w-3.5 h-3.5" />
-                  <span>MD 筆記</span>
+                  <span>匯出 MD 筆記</span>
                 </button>
 
                 <button
                   onClick={onExportJson}
-                  className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 flex items-center gap-1 font-medium transition"
-                  title="匯出 JSON 備份"
+                  className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs flex items-center justify-center gap-1.5 transition"
                 >
                   <Icon name="download" className="w-3.5 h-3.5" />
                   <span>JSON 備份</span>
                 </button>
               </div>
 
-              {sidebarTab === 'history' && items.length > 0 && (
+              {view === 'history' && history.length > 0 && (
                 <button
                   onClick={onClearHistory}
-                  className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg transition"
-                  title="清空歷史紀錄"
+                  className="w-full py-1.5 text-center text-xs text-red-500 hover:text-red-700 transition flex items-center justify-center gap-1"
                 >
-                  <Icon name="trash" className="w-4 h-4" />
+                  <Icon name="trash" className="w-3.5 h-3.5" />
+                  <span>清空所有歷史紀錄</span>
                 </button>
               )}
             </div>
+
           </div>
         </div>
       );
     }
 
-    // Render the App
+    // --- Render Application Root ---
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
-  </script>
-
-  <!-- PWA Service Worker Registration -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js', { scope: './' })
-          .then((reg) => {
-            console.log('PWA ServiceWorker registered with scope:', reg.scope);
-            reg.update();
-          })
-          .catch((err) => {
-            console.warn('PWA ServiceWorker registration failed:', err);
-          });
-      });
-    }
   </script>
 </body>
 </html>
