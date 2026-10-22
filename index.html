@@ -749,8 +749,11 @@
     function App() {
       // Engine Mode: 'smart' (Zero API, default) or 'api' (Gemini API)
       const [engineMode, setEngineMode] = useState(() => localStorage.getItem('english_engine_mode') || 'smart');
-      const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
-      const [selectedModel, setSelectedModel] = useState(() => localStorage.getItem('gemini_model') || 'gemini-2.0-flash');
+      const [selectedModel, setSelectedModel] = useState(() => {
+        const saved = localStorage.getItem('gemini_model');
+        if (!saved || saved.includes('1.5-pro')) return 'gemini-2.0-flash';
+        return saved;
+      });
       
       const [isSettingsOpen, setIsSettingsOpen] = useState(false);
       const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -1203,71 +1206,96 @@ You MUST respond with STRICT valid JSON matching this exact schema:
 
         try {
           const cleanKey = apiKey.trim();
-          const primaryModel = (selectedModel || 'gemini-2.0-flash').replace(/^models\//, '').trim();
+          let primaryModel = (selectedModel || 'gemini-2.0-flash').replace(/^models\//, '').trim();
 
+          // Prioritize primaryModel, followed by gemini-2.0-flash and gemini-1.5-flash
           const modelsToTry = [
             primaryModel,
             'gemini-2.0-flash',
-            'gemini-1.5-flash-latest',
-            'gemini-2.5-flash',
-            'gemini-1.5-flash',
-            'gemini-1.5-pro'
-          ].filter((m, i, arr) => arr.indexOf(m) === i);
+            'gemini-1.5-flash'
+          ].filter((m, i, arr) => m && arr.indexOf(m) === i);
 
           let resData = null;
           let lastErr = null;
 
           for (const modelName of modelsToTry) {
-            const apiVersions = ['v1beta', 'v1'];
-            let modelSuccess = false;
+            try {
+              // Canonical Gemini endpoint is ALWAYS v1beta
+              const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${cleanKey}`;
+              const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
+                  generationConfig: { temperature: 0.3, responseMimeType: "application/json" }
+                })
+              });
 
-            for (const ver of apiVersions) {
-              try {
-                const endpoint = `https://generativelanguage.googleapis.com/${ver}/models/${modelName}:generateContent?key=${cleanKey}`;
-                const response = await fetch(endpoint, {
+              if (response.ok) {
+                resData = await response.json();
+                break;
+              }
+
+              const errData = await response.json().catch(() => ({}));
+              const rawMsg = errData.error?.message || `HTTP ${response.status}`;
+              console.warn(`Gemini API call to ${modelName} failed (${response.status}):`, rawMsg);
+
+              // 1. Unrecoverable Auth / Key Errors -> STOP immediately and show real reason
+              if (rawMsg.includes('API key not valid') || rawMsg.includes('API_KEY_INVALID')) {
+                throw new Error('API Key 無效或未開通，請在「⚙️ 設定」中重新檢查金鑰');
+              }
+              if (response.status === 403 || rawMsg.includes('PERMISSION_DENIED') || rawMsg.includes('blocked')) {
+                throw new Error('API Key 存取被拒 (403)，請確認 Google Cloud Console 未鎖定網址或 IP 限制');
+              }
+              if (rawMsg.includes('location') || rawMsg.includes('Location')) {
+                throw new Error('目前連線地區不支援 Gemini API，請檢查網路或 VPN');
+              }
+
+              // 2. Rate Limit (429) -> If primary was 1.5-pro (2 RPM limit), fall back to 2.0-flash (15 RPM); otherwise stop
+              if (response.status === 429 || rawMsg.includes('RESOURCE_EXHAUSTED')) {
+                if (modelName.includes('pro')) {
+                  console.warn('Pro model hit 2 RPM rate limit, attempting fallback to gemini-2.0-flash...');
+                  lastErr = new Error('Gemini 1.5 Pro 已達 2 RPM 頻率上限 (429)');
+                  continue; // Try gemini-2.0-flash next
+                } else {
+                  throw new Error('已達 Gemini 免費頻率限制 (429 Too Many Requests)，請稍候 30 秒再試');
+                }
+              }
+
+              // 3. Fallback for generationConfig responseMimeType if 400
+              if (response.status === 400 && (rawMsg.includes('responseMimeType') || rawMsg.includes('generationConfig'))) {
+                const retryRes = await fetch(endpoint, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    contents: [{ parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }],
-                    generationConfig: { temperature: 0.3, responseMimeType: "application/json" }
+                    contents: [{ parts: [{ text: `${systemPrompt}\n\nIMPORTANT: Return ONLY valid JSON format.\n\n${userPrompt}` }] }],
+                    generationConfig: { temperature: 0.3 }
                   })
                 });
-
-                if (response.ok) {
-                  resData = await response.json();
-                  modelSuccess = true;
+                if (retryRes.ok) {
+                  resData = await retryRes.json();
                   break;
-                } else {
-                  const errData = await response.json().catch(() => ({}));
-                  const errMsg = errData.error?.message || `HTTP ${response.status}`;
-
-                  if (response.status === 400 && (errMsg.includes('responseMimeType') || errMsg.includes('generationConfig'))) {
-                    const retryRes = await fetch(endpoint, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        contents: [{ parts: [{ text: `${systemPrompt}\n\nIMPORTANT: Return ONLY valid JSON format.\n\n${userPrompt}` }] }],
-                        generationConfig: { temperature: 0.3 }
-                      })
-                    });
-                    if (retryRes.ok) {
-                      resData = await retryRes.json();
-                      modelSuccess = true;
-                      break;
-                    }
-                  }
-                  lastErr = new Error(errMsg);
                 }
-              } catch (networkErr) {
-                lastErr = networkErr;
+              }
+
+              // 4. Overloaded (503 / 500) -> Wait 1 sec and try next model
+              if (response.status === 503 || response.status === 500) {
+                lastErr = new Error(`Google 伺服器尖峰繁忙 (${response.status})`);
+                await new Promise(r => setTimeout(r, 1000));
+                continue;
+              }
+
+              lastErr = new Error(rawMsg);
+            } catch (networkErr) {
+              lastErr = networkErr;
+              if (networkErr.message.includes('API Key') || networkErr.message.includes('403') || networkErr.message.includes('429')) {
+                throw networkErr; // Rethrow fatal errors immediately
               }
             }
-
-            if (modelSuccess && resData) break;
           }
 
           if (!resData) {
-            throw lastErr || new Error('所有 Gemini 模型連線均未成功');
+            throw lastErr || new Error('Gemini API 連線未成功');
           }
 
           // Record API usage & quota (Feature 4)
@@ -2749,10 +2777,10 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       const [testApiResult, setTestApiResult] = useState(null);
 
       const [availableModelsList, setAvailableModelsList] = useState([
-        { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash（推薦：最新次世代極速模型，配額充裕）' },
-        { id: 'gemini-1.5-flash-latest', name: 'Gemini 1.5 Flash Latest（穩健高配額版）' },
+        { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash ⭐（首選推薦：次世代極速，額度 15 RPM / 1,500 RPD）' },
+        { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash（穩健相容版，額度 15 RPM / 1,500 RPD）' },
         { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash（最新推理強化版）' },
-        { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro（深度複雜推理）' }
+        { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro（深度複雜推理 ⚠️ 免費層限速 2 RPM，容易超額）' }
       ]);
 
       const handleDetectAndTestModels = async () => {
@@ -2766,81 +2794,81 @@ You MUST respond with STRICT valid JSON matching this exact schema:
 
         const cleanKey = keyInput.trim();
         let detected = [];
-        let detectedVersion = 'v1beta';
 
         try {
-          let res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`);
+          // Standard endpoint is ALWAYS v1beta
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${cleanKey}`);
           if (!res.ok) {
-            res = await fetch(`https://generativelanguage.googleapis.com/v1/models?key=${cleanKey}`);
-            if (res.ok) detectedVersion = 'v1';
+            const errData = await res.json().catch(() => ({}));
+            const rawMsg = errData.error?.message || `HTTP ${res.status}`;
+            if (rawMsg.includes('API key not valid') || rawMsg.includes('API_KEY_INVALID')) {
+              throw new Error('❌ API Key 無效，請至 Google AI Studio 重新複製金鑰（通常以 AIzaSy 開頭）');
+            } else if (res.status === 403 || rawMsg.includes('blocked') || rawMsg.includes('PERMISSION_DENIED')) {
+              throw new Error('❌ 存取受拒 (403)，此金鑰可能在 Google Cloud Console 被設定了網址或 IP 限制，請移除限制或加入當前網址');
+            } else if (rawMsg.includes('location') || rawMsg.includes('Location')) {
+              throw new Error('❌ 您所在的連線地區或 VPN 節點不支援 Gemini API');
+            } else if (res.status === 429) {
+              throw new Error('⚠️ 此 API Key 目前已觸發頻率限制 (429 Too Many Requests)，請稍候 30 秒再試');
+            } else {
+              throw new Error(`連線失敗：${rawMsg}`);
+            }
           }
 
-          if (res.ok) {
-            const data = await res.json();
-            if (Array.isArray(data.models)) {
-              detected = data.models
-                .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
-                .map(m => {
-                  const id = m.name.replace(/^models\//, '');
-                  let label = m.displayName || id;
-                  if (id.includes('2.0-flash')) label += ' ⭐ (推薦最新極速)';
-                  else if (id.includes('1.5-flash')) label += ' (高相容穩健)';
-                  return { id, name: `${label} [${id}]` };
-                });
-            }
+          const data = await res.json();
+          if (Array.isArray(data.models)) {
+            detected = data.models
+              .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
+              .map(m => {
+                const id = m.name.replace(/^models\//, '');
+                let label = m.displayName || id;
+                if (id === 'gemini-2.0-flash') label += ' ⭐ (首選推薦・最新極速・15 RPM)';
+                else if (id.includes('1.5-flash')) label += ' (穩健高額度・15 RPM)';
+                else if (id.includes('pro')) label += ' (深度推理・⚠️限速 2 RPM 易超額)';
+                return { id, name: `${label} [${id}]` };
+              });
           }
 
           if (detected.length > 0) {
             setAvailableModelsList(detected);
             const hasCurrent = detected.some(m => m.id === modelInput.replace(/^models\//, ''));
-            if (!hasCurrent) {
-              const best = detected.find(m => m.id.includes('2.0-flash')) || detected[0];
+            if (!hasCurrent || modelInput.includes('1.5-pro')) {
+              const best = detected.find(m => m.id === 'gemini-2.0-flash') ||
+                           detected.find(m => m.id.includes('2.0-flash')) ||
+                           detected.find(m => m.id === 'gemini-1.5-flash') ||
+                           detected[0];
               setModelInput(best.id);
             }
             setTestApiResult({
               ok: true,
-              msg: `✅ 驗證成功！已透過 ${detectedVersion} 偵測到您帳號支援的 ${detected.length} 個模型，已自動為您選定可用模型！`
+              msg: `✅ 驗證成功！已成功連線 Google AI Studio，偵測到 ${detected.length} 個可用模型，已自動為您選定推薦的高配額極速模型！`
             });
             return;
           }
 
-          const testModels = ['gemini-2.0-flash', 'gemini-1.5-flash-latest', 'gemini-2.5-flash', 'gemini-1.5-flash'];
-          let testedModel = null;
-
-          for (const mName of testModels) {
-            for (const v of ['v1beta', 'v1']) {
-              try {
-                const testRes = await fetch(`https://generativelanguage.googleapis.com/${v}/models/${mName}:generateContent?key=${cleanKey}`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                    contents: [{ parts: [{ text: "Hi" }] }],
-                    generationConfig: { maxOutputTokens: 2 }
-                  })
-                });
-                if (testRes.ok) {
-                  testedModel = mName;
-                  break;
-                }
-              } catch (_) {}
-            }
-            if (testedModel) break;
-          }
-
-          if (testedModel) {
-            setModelInput(testedModel);
+          // Single ping test with gemini-2.0-flash
+          const testRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${cleanKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: "ping" }] }],
+              generationConfig: { maxOutputTokens: 2 }
+            })
+          });
+          if (testRes.ok) {
+            setModelInput('gemini-2.0-flash');
             setTestApiResult({
               ok: true,
-              msg: `✅ 連線成功！已自動為您驗證並套用有效模型：${testedModel}`
+              msg: `✅ 連線成功！已自動驗證並套用最新極速模型：gemini-2.0-flash`
             });
           } else {
-            throw new Error('無法連線至 Gemini 模型，請檢查 API Key 是否正確或是否有專案存取權限。');
+            const errData = await testRes.json().catch(() => ({}));
+            throw new Error(errData.error?.message || `HTTP ${testRes.status}`);
           }
 
         } catch (err) {
           setTestApiResult({
             ok: false,
-            msg: `連線失敗：${err.message}。若持續失敗，可隨時無縫切換免金鑰模式！`
+            msg: `${err.message}。若持續失敗，可隨時切換回「🟢 免金鑰模式」！`
           });
         } finally {
           setIsTestingApi(false);
