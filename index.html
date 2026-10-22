@@ -789,6 +789,7 @@
     function App() {
       // Engine Mode: 'smart' (Zero API, default) or 'api' (Gemini API)
       const [engineMode, setEngineMode] = useState(() => localStorage.getItem('english_engine_mode') || 'smart');
+      const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
       const [selectedModel, setSelectedModel] = useState(() => {
         const saved = localStorage.getItem('gemini_model');
         if (!saved || saved.includes('1.5-pro')) return 'gemini-2.0-flash';

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'english-ai-studio-v7';
+const CACHE_NAME = 'english-ai-studio-v8';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
