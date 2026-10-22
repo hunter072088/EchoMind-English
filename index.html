@@ -62,10 +62,10 @@
     };
   </script>
 
-  <!-- React 18 & Babel Standalone (Zero-config static deployment) -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- React 18 & Babel Standalone (High-availability Anycast CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.10/babel.min.js"></script>
 
   <style>
     /* Custom scrollbar and glassmorphism helpers */
@@ -129,7 +129,47 @@
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200 antialiased selection:bg-brand-500 selection:text-white">
-  <div id="root"></div>
+  <div id="root">
+    <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #0f172a; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; text-align: center; padding: 24px;">
+      <div style="width: 64px; height: 64px; border-radius: 18px; background: linear-gradient(135deg, #4f46e5, #7c3aed); display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4); margin-bottom: 20px;">
+        🎙️
+      </div>
+      <h1 style="font-size: 20px; font-weight: 700; margin: 0 0 8px 0; color: #ffffff;">English AI Studio</h1>
+      <p style="font-size: 14px; color: #94a3b8; margin: 0 0 20px 0;">正在啟動智慧英語學習環境...</p>
+
+      <!-- Fail-safe emergency recovery button shown after 4 seconds if not mounted -->
+      <div id="load-fallback" style="display: none; max-width: 320px; background: rgba(30, 41, 59, 0.95); border: 1px solid rgba(71, 85, 105, 0.7); border-radius: 16px; padding: 16px; margin-top: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+        <p style="font-size: 12px; color: #cbd5e1; margin: 0 0 12px 0; line-height: 1.5;">若載入停留過久，可能是先前瀏覽器快取衝突，點擊下方即可一鍵重整修復：</p>
+        <button onclick="window.emergencyRecovery()" style="width: 100%; padding: 10px 16px; background: #4f46e5; color: white; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;">
+          🔄 重新整理並清除快取
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.emergencyRecovery = async function() {
+      try {
+        localStorage.removeItem('english_studio_tab_states');
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map(k => caches.delete(k)));
+        }
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(r => r.unregister()));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      window.location.href = window.location.pathname + '?reset=' + Date.now();
+    };
+
+    setTimeout(function() {
+      var fallback = document.getElementById('load-fallback');
+      if (fallback) fallback.style.display = 'block';
+    }, 4000);
+  </script>
 
   <!-- Main Application Script (Babel/JSX) -->
   <script type="text/babel">
@@ -905,11 +945,14 @@
         setDeferredPrompt(null);
       };
 
-      // Service Worker Registration
+      // Service Worker Registration & Auto-Update
       useEffect(() => {
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('ServiceWorker registered with scope:', reg.scope))
+            .then(reg => {
+              console.log('ServiceWorker registered with scope:', reg.scope);
+              reg.update().catch(() => {});
+            })
             .catch(err => console.log('ServiceWorker registration skipped:', err));
         }
       }, []);
@@ -998,9 +1041,19 @@
       // Normalized wordsList for Tab 3 (supports single word and multi-word list)
       const wordsList = useMemo(() => {
         if (!currentResult) return [];
-        if (Array.isArray(currentResult.words) && currentResult.words.length > 0) return currentResult.words;
-        if (currentResult.deconstruction) return [{ deconstruction: currentResult.deconstruction, contexts: currentResult.contexts || [] }];
-        return [];
+        let list = [];
+        if (Array.isArray(currentResult.words) && currentResult.words.length > 0) {
+          list = currentResult.words;
+        } else if (currentResult.deconstruction) {
+          list = [{ deconstruction: currentResult.deconstruction, contexts: currentResult.contexts || [] }];
+        } else if (Array.isArray(currentResult) && currentResult.length > 0) {
+          list = currentResult;
+        }
+        return list.map(item => {
+          if (!item) return { deconstruction: {}, contexts: [] };
+          if (item.deconstruction) return { deconstruction: item.deconstruction, contexts: Array.isArray(item.contexts) ? item.contexts : [] };
+          return { deconstruction: item, contexts: Array.isArray(item.contexts) ? item.contexts : [] };
+        });
       }, [currentResult]);
 
       // Reset active word index when result changes
@@ -2082,7 +2135,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                         </div>
                       </div>
 
-                      {currentResult.grammar_polish?.issues && currentResult.grammar_polish.issues.length > 0 && (
+                      {Array.isArray(currentResult.grammar_polish?.issues) && currentResult.grammar_polish.issues.length > 0 && (
                         <div className="pt-2">
                           <span className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-2">
                             🔍 偵測到的語病與台式英文解析：
@@ -2233,9 +2286,10 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                       ? [wordsList[activeWordIndex]]
                       : wordsList
                     ).map((currentWordItem, wIndex) => {
-                      const dec = currentWordItem.deconstruction;
-                      const ctxs = currentWordItem.contexts || [];
+                      const dec = currentWordItem?.deconstruction || currentWordItem || {};
+                      const ctxs = Array.isArray(currentWordItem?.contexts) ? currentWordItem.contexts : [];
                       const actualIndex = vocabViewMode === 'focus' ? activeWordIndex : wIndex;
+                      const wordName = dec.word || 'Vocabulary';
 
                       return (
                         <div key={actualIndex} className="space-y-6 pt-1">
@@ -2250,7 +2304,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                                     </span>
                                   )}
                                   <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tight">
-                                    {dec.word}
+                                    {wordName}
                                   </h3>
                                   {dec.ipa && (
                                     <span className="font-mono text-sm px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
@@ -2264,13 +2318,13 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                                   )}
                                 </div>
                                 <p className="text-base sm:text-lg font-medium text-slate-800 dark:text-slate-100 mt-2">
-                                  {dec.definition_zh}
+                                  {dec.definition_zh || ''}
                                 </p>
                               </div>
 
                               <div className="flex items-center gap-2">
                                 <button
-                                  onClick={() => playSpeech(dec.word)}
+                                  onClick={() => playSpeech(wordName)}
                                   className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950 dark:hover:bg-brand-900 dark:text-brand-300 border border-brand-200 dark:border-brand-800 font-semibold text-xs transition"
                                 >
                                   <Icon name="volume" className="w-4 h-4" />
@@ -2278,15 +2332,15 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                                 </button>
                                 
                                 <button
-                                  onClick={() => handleCollectWord(dec.word, dec.definition_zh, '')}
+                                  onClick={() => handleCollectWord(wordName, dec.definition_zh || '', '')}
                                   className={`p-2 rounded-xl border transition ${
-                                    savedVocab.some(v => v.word.toLowerCase() === dec.word.toLowerCase())
+                                    savedVocab.some(v => v?.word && v.word.toLowerCase() === wordName.toLowerCase())
                                       ? 'bg-amber-100 text-amber-700 border-amber-300'
                                       : 'bg-white dark:bg-slate-800 text-slate-500 hover:text-amber-500 border-slate-200 dark:border-slate-700'
                                   }`}
                                   title="加入單字庫"
                                 >
-                                  <Icon name={savedVocab.some(v => v.word.toLowerCase() === dec.word.toLowerCase()) ? 'star' : 'star-outline'} className="w-4 h-4 text-amber-500" />
+                                  <Icon name={savedVocab.some(v => v?.word && v.word.toLowerCase() === wordName.toLowerCase()) ? 'star' : 'star-outline'} className="w-4 h-4 text-amber-500" />
                                 </button>
                               </div>
                             </div>
@@ -2333,7 +2387,7 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                           <div>
                             <div className="flex items-center justify-between mb-3">
                               <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                                <span>🌐 「{dec.word}」4 大核心情境例句練習 (點擊單字可加入個人單字庫)</span>
+                                <span>🌐 「{wordName}」4 大核心情境例句練習 (點擊單字可加入個人單字庫)</span>
                               </h4>
                             </div>
 
@@ -2346,19 +2400,19 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                                   <div>
                                     <div className="flex items-center justify-between gap-2 mb-3">
                                       <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                                        {ctx.category}
+                                        {ctx.category || '情境例句'}
                                       </span>
 
                                       <div className="flex items-center gap-1.5">
                                         <button
-                                          onClick={() => playSpeech(ctx.sentence_en)}
+                                          onClick={() => playSpeech(ctx.sentence_en || '')}
                                           className="p-1.5 rounded-lg text-brand-600 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-950 transition"
                                           title="播放此例句"
                                         >
                                           <Icon name={playingSentence === ctx.sentence_en ? 'pause' : 'volume'} className="w-4 h-4" />
                                         </button>
                                         <button
-                                          onClick={() => copyToClipboard(ctx.sentence_en)}
+                                          onClick={() => copyToClipboard(ctx.sentence_en || '')}
                                           className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
                                           title="複製英文句子"
                                         >
@@ -2368,15 +2422,15 @@ You MUST respond with STRICT valid JSON matching this exact schema:
                                     </div>
 
                                     <BlindSentenceBox
-                                      sentence={ctx.sentence_en}
+                                      sentence={ctx.sentence_en || ''}
                                       blindMode={blindMode}
-                                      onPlay={() => playSpeech(ctx.sentence_en)}
-                                      highlightWord={dec.word}
+                                      onPlay={() => playSpeech(ctx.sentence_en || '')}
+                                      highlightWord={wordName}
                                       onWordInteract={handleWordInteract}
                                     />
 
                                     <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2">
-                                      {ctx.sentence_zh}
+                                      {ctx.sentence_zh || ''}
                                     </p>
                                   </div>
 
@@ -3356,9 +3410,107 @@ You MUST respond with STRICT valid JSON matching this exact schema:
       );
     }
 
+    // --- Resilient Error Boundary ---
+    class ErrorBoundary extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+      }
+
+      static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+      }
+
+      componentDidCatch(error, errorInfo) {
+        console.error('English AI Studio Caught Error:', error, errorInfo);
+      }
+
+      handleResetState = () => {
+        try {
+          localStorage.removeItem('english_studio_tab_states');
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(regs => {
+              regs.forEach(reg => reg.update());
+            });
+          }
+        } catch (e) {
+          console.error(e);
+        }
+        window.location.reload();
+      };
+
+      handleFullRepair = async () => {
+        try {
+          localStorage.removeItem('english_studio_tab_states');
+          if ('caches' in window) {
+            const keys = await caches.keys();
+            await Promise.all(keys.map(k => caches.delete(k)));
+          }
+          if ('serviceWorker' in navigator) {
+            const regs = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(regs.map(r => r.unregister()));
+          }
+        } catch (e) {
+          console.error('Repair error:', e);
+        }
+        window.location.href = window.location.pathname + '?nocache=' + Date.now();
+      };
+
+      render() {
+        if (this.state.hasError) {
+          return (
+            <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center p-4">
+              <div className="max-w-md w-full bg-slate-800/95 border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl text-center space-y-5">
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-3xl shadow-inner">
+                  🛡️
+                </div>
+                <div className="space-y-2">
+                  <h2 className="text-xl font-bold text-white">應用程式載入中遇到了問題</h2>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    可能是暫存的歷史頁面資料格式不相容或舊版快取衝突。點擊下方按鈕即可自動自我修復並重新載入！
+                  </p>
+                </div>
+
+                <div className="space-y-2.5 pt-2">
+                  <button
+                    onClick={this.handleResetState}
+                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 hover:from-indigo-600 hover:to-purple-700 transition active:scale-[0.98]"
+                  >
+                    🔄 快速修復並重新載入
+                  </button>
+
+                  <button
+                    onClick={this.handleFullRepair}
+                    className="w-full py-2.5 px-4 rounded-xl bg-slate-700/60 hover:bg-slate-700 text-slate-300 font-medium text-xs border border-slate-600/50 transition active:scale-[0.98]"
+                  >
+                    🧹 徹底清除快取並重啟 (一鍵自我修復)
+                  </button>
+                </div>
+
+                {this.state.error && (
+                  <details className="text-left bg-slate-950/60 rounded-xl p-3 text-[11px] text-red-400 font-mono overflow-auto max-h-32 border border-red-500/20">
+                    <summary className="cursor-pointer text-slate-400 hover:text-slate-200 mb-1 select-none font-sans font-medium">
+                      查看錯誤詳情
+                    </summary>
+                    <pre className="whitespace-pre-wrap">{String(this.state.error?.stack || this.state.error?.message || this.state.error)}</pre>
+                  </details>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        return this.props.children;
+      }
+    }
+
     // --- Render Application Root ---
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    root.render(
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    );
   </script>
 </body>
 </html>

@@ -1,5 +1,6 @@
-const CACHE_NAME = 'english-ai-studio-v5';
+const CACHE_NAME = 'english-ai-studio-v7';
 const PRECACHE_ASSETS = [
+  './',
   './index.html',
   './manifest.json',
   './assets/icon-192.png',
@@ -12,7 +13,6 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // Individual caching using Promise.allSettled so installation never fails
       return Promise.allSettled(
         PRECACHE_ASSETS.map((asset) => cache.add(asset).catch((err) => console.warn('Cache error for', asset, err)))
       );
@@ -47,24 +47,25 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Navigation requests: Network first with index.html cache fallback
-  if (request.mode === 'navigate') {
+  // Navigation requests: Network first with index.html fallback
+  if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response && response.status === 200) {
+          if (response && response.ok) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
           }
           return response;
         })
         .catch(async () => {
-          const cached = (await caches.match(request)) || (await caches.match('./index.html'));
+          const cache = await caches.open(CACHE_NAME);
+          const cached = (await cache.match(request)) ||
+                         (await cache.match('./index.html')) ||
+                         (await cache.match('./')) ||
+                         (await caches.match('./index.html'));
           if (cached) return cached;
-          return new Response('English AI Studio Offline', {
-            status: 200,
-            headers: { 'Content-Type': 'text/html; charset=utf-8' }
-          });
+          return fetch('./index.html').catch(() => new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }));
         })
     );
     return;
@@ -74,13 +75,17 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;
-      return fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const clone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-        }
-        return networkResponse;
-      });
+      return fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.ok) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return new Response('', { status: 408, statusText: 'Offline or resource not reachable' });
+        });
     })
   );
 });
