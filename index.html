@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English AI Studio | 智慧英語學習與沉浸式聽力工坊</title>
+  <meta name="description" content="結合 Google Gemini API 與瀏覽器原生 Web Speech API 的現代化英語學習工具，具備多維度中翻英、英翻中母語潤飾、陌生單字深度練習與互動式盲聽聽寫練習。">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎙️</text></svg>">
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            display: ['Outfit', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            }
+          },
+          animation: {
+            'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'sound-wave': 'soundWave 1.2s ease-in-out infinite alternate',
+          },
+          keyframes: {
+            soundWave: {
+              '0%': { height: '4px' },
+              '100%': { height: '16px' }
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- React 18 & Babel Standalone (Zero-config static deployment) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Custom scrollbar and glassmorphism helpers */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.4);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(156, 163, 175, 0.7);
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .dark .glass-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    /* Blur shield for blind listening mode */
+    .blind-blur {
+      filter: blur(8px);
+      user-select: none;
+      -webkit-user-select: none;
+      pointer-events: none;
+      transition: filter 0.25s ease;
+    }
+    .blind-blur.revealed {
+      filter: blur(0px);
+      user-select: auto;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200 antialiased selection:bg-brand-500 selection:text-white">
+  <div id="root"></div>
+
+  <!-- Main Application Script (Babel/JSX) -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+    // --- SVG Icon Components (Zero external icon dependency, instant & reactive) ---
+    const Icon = ({ name, className = "w-5 h-5", ...props }) => {
+      switch (name) {
+        case 'settings':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
+        case 'play':
+          return <svg className={className} fill="currentColor" viewBox="0 0 24 24" {...props}><path d="M5 3l14 9-14 9V3z" /></svg>;
+        case 'pause':
+          return <svg className={className} fill="currentColor" viewBox="0 0 24 24" {...props}><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" /></svg>;
+        case 'volume':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>;
+        case 'star':
+          return <svg className={className} fill="currentColor" viewBox="0 0 24 24" {...props}><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></svg>;
+        case 'star-outline':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>;
+        case 'copy':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>;
+        case 'check':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>;
+        case 'eye':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>;
+        case 'eye-off':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" /></svg>;
+        case 'sparkles':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>;
+        case 'sun':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>;
+        case 'moon':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>;
+        case 'bookmark':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" /></svg>;
+        case 'history':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+        case 'download':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>;
+        case 'trash':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>;
+        case 'search':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
+        case 'x':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>;
+        case 'info':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+        case 'key':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>;
+        case 'arrow-right':
+          return <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} {...props}><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>;
+        default:
+          return null;
+      }
+    };
+
+    // --- High Quality Preset Quick Samples for Testing ---
+    const SAMPLE_DATA = {
+      tab1: {
+        prompt: "這份企劃書請在明天下午三點前交給我，若有任何問題隨時與我聯繫。",
+        data: {
+          direct_translation: "Please submit this proposal to me before 3:00 PM tomorrow, and feel free to contact me if you have any questions.",
+          scenarios: {
+            professional: "Kindly ensure that this proposal is submitted to me no later than 3:00 PM tomorrow. Please do not hesitate to reach out should you encounter any inquiries or require clarification.",
+            casual: "Can you send over this proposal by 3 PM tomorrow? Let me know anytime if anything comes up!",
+            advanced: "I would appreciate receiving the finalized proposal by 15:00 tomorrow; please feel free to loop back with me on any bottlenecks or queries."
+          },
+          analysis: "在商務情境中，使用「Kindly ensure」比單純的「Please」更具得體的指令威嚴；而「do not hesitate to reach out」是職場信件標準且親切的收尾表達。在口語中，動詞片語「send over」與「comes up」能使語句自然生動。"
+        }
+      },
+      tab2: {
+        prompt: "I very like this project because it make me feel very challenge and learn much.",
+        data: {
+          translation: "我非常喜歡這個專案，因為它讓我感到充滿挑戰，且收穫良多。",
+          grammar_polish: {
+            original: "I very like this project because it make me feel very challenge and learn much.",
+            corrected: "I really like this project because it challenges me and helps me learn a lot.",
+            issues: [
+              "台式英文 (Chinglish)：英文中不可說「very like」，副詞 very 不能直接修飾普通動詞 like，應使用「really like」或「like ... very much」。",
+              "主詞動名詞單複數一致性：it 為單數第三人稱，其後動詞應為「makes」而非「make」。",
+              "詞性誤用：challenge 本身可作及物動詞或名詞，或使用形容詞「challenging」，不能說「feel very challenge」。",
+              "副詞搭配錯誤：「learn much」在現代美語中極不自然，應改為「learn a lot」或「gain substantial insights」。"
+            ],
+            explanation: "修飾動詞喜好程度時，母語者最常用「really like」；將「make me feel challenge」簡化為主動動詞「it challenges me」，句意更加精準有力。"
+          },
+          alternatives: {
+            polite: "I genuinely appreciate this initiative, as it offers both a healthy challenge and a tremendous learning opportunity.",
+            direct: "I enjoy working on this project—it pushes my boundaries and accelerates my learning.",
+            idiomatic: "I'm really invested in this project; it's right up my alley and keeps me on my toes in the best way possible."
+          }
+        }
+      },
+      tab3: {
+        prompt: "serendipity",
+        data: {
+          deconstruction: {
+            word: "serendipity",
+            ipa: "/ˌser.ənˈdɪp.ə.ti/",
+            part_of_speech: "noun [不可數]",
+            definition_zh: "機緣巧合；意外發現珍奇事物的幸運天賦與能力",
+            memory_hook: "源自波斯童話《錫蘭三王子》(The Three Princes of Serendip)，故事中的主角總是不經意地靠機智與機遇發現美好寶藏。"
+          },
+          contexts: [
+            {
+              category: "日常社交 (Daily Social)",
+              sentence_en: "Running into my high school best friend at an overseas airport was pure **serendipity**.",
+              sentence_zh: "在國外的機場巧遇我高中的摯友，完全是一場奇妙的機緣巧合。",
+              tip: "常與形容詞 pure 或 a stroke of 搭配，強調不可思議的驚喜緣分。"
+            },
+            {
+              category: "職場溝通 (Workplace / Business)",
+              sentence_en: "Our flagship product was born out of **serendipity** during a routine lab experiment that went off track.",
+              sentence_zh: "我們的旗艦產品是在一次偏離預期的常規實驗中，憑藉意外的機遇而誕生的。",
+              tip: "在商業創新演講或訪談中，常用來謙遜地描述突破性發明背後的運氣與敏銳洞察。"
+            },
+            {
+              category: "新聞時事 (News / Current Affairs)",
+              sentence_en: "The archaeologist credited sheer **serendipity** for unearthing the millennia-old submerged temple.",
+              sentence_zh: "考古學家將發掘這座千年水下神廟歸功於純粹的幸運奇遇。",
+              tip: "新聞報導常將 credit/owe ... to serendipity 連用，表現重大發現的偶然性。"
+            },
+            {
+              category: "學術/技術 (Academic / Technical)",
+              sentence_en: "Penicillin is classic evidence of scientific **serendipity**, where careful observation turned contamination into discovery.",
+              sentence_zh: "青黴素是科學界機緣巧合的經典例證：細緻入微的觀察將培養皿污染轉化成了劃時代的發現。",
+              tip: "學術界常用來探討科學家如何「抓住意外之美」，區別於單純盲目的運氣。"
+            }
+          ]
+        }
+      }
+    };
+
+    // --- Main Application Component ---
+    function App() {
+      // Configuration & Keys
+      const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+      const [selectedModel, setSelectedModel] = useState(() => localStorage.getItem('gemini_model') || 'gemini-1.5-flash');
+      const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+      const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+      const [darkMode, setDarkMode] = useState(() => {
+        const saved = localStorage.getItem('app_theme');
+        return saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      });
+
+      // Global Modes
+      const [activeTab, setActiveTab] = useState('tab1'); // 'tab1' | 'tab2' | 'tab3'
+      const [blindMode, setBlindMode] = useState(false); // 👁️ 盲聽練習模式
+      const [speechRate, setSpeechRate] = useState(1.0); // 0.8, 1.0, 1.2
+      const [speechAccent, setSpeechAccent] = useState('en-US'); // 'en-US' | 'en-GB'
+
+      // Input State
+      const [inputText, setInputText] = useState('');
+      const [isLoading, setIsLoading] = useState(false);
+      const [errorMessage, setErrorMessage] = useState('');
+
+      // Results
+      const [resultData, setResultData] = useState(null);
+
+      // Speech State
+      const [playingSentence, setPlayingSentence] = useState(null);
+      const [availableVoices, setAvailableVoices] = useState([]);
+
+      // Favorites & History
+      const [history, setHistory] = useState(() => {
+        try {
+          return JSON.parse(localStorage.getItem('english_studio_history') || '[]');
+        } catch {
+          return [];
+        }
+      });
+      const [favorites, setFavorites] = useState(() => {
+        try {
+          return JSON.parse(localStorage.getItem('english_studio_favorites') || '[]');
+        } catch {
+          return [];
+        }
+      });
+      const [sidebarTab, setSidebarTab] = useState('favorites'); // 'favorites' | 'history'
+      const [searchQuery, setSearchQuery] = useState('');
+
+      // Toast Notification
+      const [toast, setToast] = useState(null);
+      const showToast = useCallback((msg, type = 'info') => {
+        setToast({ msg, type });
+        setTimeout(() => setToast(null), 3000);
+      }, []);
+
+      // Theme toggle effect
+      useEffect(() => {
+        if (darkMode) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('app_theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('app_theme', 'light');
+        }
+      }, [darkMode]);
+
+      // Save History and Favorites to LocalStorage
+      useEffect(() => {
+        localStorage.setItem('english_studio_history', JSON.stringify(history.slice(0, 60)));
+      }, [history]);
+
+      useEffect(() => {
+        localStorage.setItem('english_studio_favorites', JSON.stringify(favorites));
+      }, [favorites]);
+
+      // Initialize Speech Synthesis Voices
+      useEffect(() => {
+        if (!('speechSynthesis' in window)) return;
+        const updateVoices = () => {
+          const voices = window.speechSynthesis.getVoices();
+          setAvailableVoices(voices);
+        };
+        updateVoices();
+        window.speechSynthesis.onvoiceschanged = updateVoices;
+        return () => {
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+          }
+        };
+      }, []);
+
+      // Speech Synthesis Utterance Function
+      const playSpeech = useCallback((text, customAccent, customRate) => {
+        if (!('speechSynthesis' in window)) {
+          showToast('您的瀏覽器不支援 Web Speech API 語音發音', 'error');
+          return;
+        }
+
+        const rate = customRate !== undefined ? customRate : speechRate;
+        const accent = customAccent || speechAccent;
+
+        // Cancel previous speech
+        window.speechSynthesis.cancel();
+
+        // Clean out markdown asterisks or code formatting
+        const cleanText = text.replace(/[*_#`~[\]]/g, '').trim();
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.rate = rate;
+        utterance.pitch = 1.0;
+
+        // Intelligent voice matching
+        const voices = availableVoices.length > 0 ? availableVoices : window.speechSynthesis.getVoices();
+        const targetLang = accent === 'en-GB' ? 'en-GB' : 'en-US';
+
+        const matchedVoice = voices.find(v => (v.lang.replace('_', '-') === targetLang) &&
+          (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Premium') || v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('Jenny') || v.name.includes('Oliver')))
+          || voices.find(v => v.lang.replace('_', '-') === targetLang)
+          || voices.find(v => v.lang.replace('_', '-').startsWith(targetLang.split('-')[0]))
+          || null;
+
+        if (matchedVoice) {
+          utterance.voice = matchedVoice;
+        }
+        utterance.lang = targetLang;
+
+        utterance.onstart = () => {
+          setPlayingSentence(text);
+        };
+        utterance.onend = () => {
+          setPlayingSentence(null);
+        };
+        utterance.onerror = () => {
+          setPlayingSentence(null);
+        };
+
+        window.speechSynthesis.speak(utterance);
+      }, [speechRate, speechAccent, availableVoices, showToast]);
+
+      const stopSpeech = useCallback(() => {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          setPlayingSentence(null);
+        }
+      }, []);
+
+      // Gemini API Request Function
+      const handleGenerate = async (presetInput = null) => {
+        const queryText = presetInput || inputText.trim();
+        if (!queryText) {
+          setErrorMessage('請先輸入內容再開始生成！');
+          return;
+        }
+
+        setErrorMessage('');
+        setIsLoading(true);
+        stopSpeech();
+
+        // Check if API key exists. If not, prompt with option to use demo mode or open settings
+        if (!apiKey) {
+          setIsLoading(false);
+          setIsSettingsOpen(true);
+          showToast('請先設定您的 Gemini API Key，或開啟示範預覽模式！', 'error');
+          return;
+        }
+
+        // Construct Prompts by Tab
+        let systemPrompt = '';
+        let userPrompt = '';
+
+        if (activeTab === 'tab1') {
+          systemPrompt = `You are a world-class English teacher and translator. The user gives you a Chinese sentence or scenario.
+You MUST respond with STRICT valid JSON matching this exact schema:
+{
+  "direct_translation": "Standard accurate English translation",
+  "scenarios": {
+    "professional": "Formal, business, workplace email or meeting wording",
+    "casual": "Natural, native everyday conversational wording",
+    "advanced": "Idiomatic, concise or high-score phrasing using smart vocabulary"
+  },
+  "analysis": "Traditional Chinese (繁體中文) explanation of nuance differences, key word choices, and tips."
+}`;
+          userPrompt = `請將以下中文內容進行專業多維度翻譯擴充，並輸出標準 JSON：
+"${queryText}"`;
+        } else if (activeTab === 'tab2') {
+          systemPrompt = `You are an elite bilingual English editor and native writing coach. The user gives you an English sentence they wrote.
+You MUST respond with STRICT valid JSON matching this exact schema:
+{
+  "translation": "Accurate Traditional Chinese (繁體中文) translation",
+  "grammar_polish": {
+    "original": "The user's original sentence",
+    "corrected": "The corrected, polished, native-sounding English sentence",
+    "issues": [
+      "Traditional Chinese bullet-point: Explain specific grammar mistake, awkward Chinglish, or preposition issue"
+    ],
+    "explanation": "Traditional Chinese comprehensive explanation on why the change was made and native writing intuition"
+  },
+  "alternatives": {
+    "polite": "Diplomatic, polite and thoughtful rephrasing",
+    "direct": "Direct, crisp, assertive and decisive rephrasing",
+    "idiomatic": "Highly idiomatic, native colloquial expression or proverb"
+  }
+}`;
+          userPrompt = `請審核並潤飾以下英文句子，找出文法錯誤與不自然之處，並輸出標準 JSON：
+"${queryText}"`;
+        } else if (activeTab === 'tab3') {
+          systemPrompt = `You are an expert lexicographer and English vocabulary mentor. The user provides one or more English words.
+You MUST respond with STRICT valid JSON matching this exact schema:
+{
+  "deconstruction": {
+    "word": "The target word",
+    "ipa": "KK phonetic or IPA notation like /ˌser.ənˈdɪp.ə.ti/",
+    "part_of_speech": "e.g. noun, verb, adj.",
+    "definition_zh": "Core Traditional Chinese (繁體中文) definition",
+    "memory_hook": "Root/Prefix/Suffix etymology OR mnemonic memory hook in Traditional Chinese"
+  },
+  "contexts": [
+    {
+      "category": "日常社交 (Daily Social)",
+      "sentence_en": "Natural English sentence with the target word highlighted with double asterisks e.g. **word**",
+      "sentence_zh": "Traditional Chinese translation",
+      "tip": "Traditional Chinese practical usage tip or collocations"
+    },
+    {
+      "category": "職場溝通 (Workplace / Business)",
+      "sentence_en": "Workplace English sentence with **word**",
+      "sentence_zh": "Traditional Chinese translation",
+      "tip": "Practical usage tip in business context"
+    },
+    {
+      "category": "新聞時事 (News / Current Affairs)",
+      "sentence_en": "Journalistic English sentence with **word**",
+      "sentence_zh": "Traditional Chinese translation",
+      "tip": "Usage tip in formal or journalistic context"
+    },
+    {
+      "category": "學術/技術 (Academic / Technical)",
+      "sentence_en": "Academic English sentence with **word**",
+      "sentence_zh": "Traditional Chinese translation",
+      "tip": "Academic usage tip and connotations"
+    }
+  ]
+}`;
+          userPrompt = `請深度剖析以下單字並提供 4 種情境實用例句，輸出標準 JSON：
+"${queryText}"`;
+        }
+
+        try {
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent?key=${apiKey}`;
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [
+                    { text: `${systemPrompt}\n\n${userPrompt}` }
+                  ]
+                }
+              ],
+              generationConfig: {
+                temperature: 0.3,
+                responseMimeType: "application/json"
+              }
+            })
+          });
+
+          if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            const errMsg = errData.error?.message || `HTTP ${response.status}: ${response.statusText}`;
+            throw new Error(errMsg);
+          }
+
+          const resData = await response.json();
+          const rawText = resData.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (!rawText) {
+            throw new Error('Gemini API 未回傳有效內容，請稍後重試。');
+          }
+
+          // Safe JSON parsing (handles potential code fences)
+          let parsed;
+          try {
+            parsed = JSON.parse(rawText);
+          } catch {
+            const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              parsed = JSON.parse(jsonMatch[0]);
+            } else {
+              throw new Error('無法解析 AI 回傳之 JSON 結構。');
+            }
+          }
+
+          setResultData(parsed);
+
+          // Add to History
+          const historyItem = {
+            id: Date.now().toString(),
+            timestamp: new Date().toISOString(),
+            tab: activeTab,
+            input: queryText,
+            result: parsed,
+            starred: false
+          };
+          setHistory(prev => [historyItem, ...prev.filter(h => h.input !== queryText)]);
+          showToast('生成成功！已自動保存至紀錄', 'success');
+
+        } catch (err) {
+          console.error(err);
+          setErrorMessage(`連線或解析失敗：${err.message}`);
+          showToast(`錯誤：${err.message}`, 'error');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      // Load Quick Sample
+      const handleLoadSample = () => {
+        const sample = SAMPLE_DATA[activeTab];
+        if (sample) {
+          setInputText(sample.prompt);
+          setResultData(sample.data);
+          setErrorMessage('');
+          showToast('已載入示範資料！可直接體驗聽力播放與盲聽聽寫', 'info');
+        }
+      };
+
+      // Star / Unstar
+      const toggleStar = (item) => {
+        const isFav = favorites.some(f => f.input === item.input && f.tab === item.tab);
+        if (isFav) {
+          setFavorites(prev => prev.filter(f => !(f.input === item.input && f.tab === item.tab)));
+          showToast('已取消收藏', 'info');
+        } else {
+          const newFav = { ...item, id: Date.now().toString(), starred: true };
+          setFavorites(prev => [newFav, ...prev]);
+          showToast('已加入收藏夾 ⭐', 'success');
+        }
+      };
+
+      const isCurrentResultStarred = useMemo(() => {
+        if (!resultData || !inputText) return false;
+        return favorites.some(f => f.input === inputText.trim() && f.tab === activeTab);
+      }, [favorites, resultData, inputText, activeTab]);
+
+      // Copy text helper
+      const copyToClipboard = (text) => {
+        navigator.clipboard.writeText(text);
+        showToast('已複製到剪貼簿 📋', 'success');
+      };
+
+      // Export JSON backup
+      const exportJson = () => {
+        const data = {
+          exportDate: new Date().toISOString(),
+          favorites,
+          history
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `english_studio_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('已下載 JSON 備份檔', 'success');
+      };
+
+      // Export Markdown Learning Notes
+      const exportMarkdown = () => {
+        let md = `# 📘 English AI Studio 學習筆記\n\n*匯出時間：${new Date().toLocaleString('zh-TW')}*\n\n---\n\n`;
+
+        const renderItemMd = (item) => {
+          let section = `### 【${item.tab === 'tab1' ? '中翻英擴充' : item.tab === 'tab2' ? '英翻中母語潤飾' : '單字深度練習'}】${item.input}\n\n`;
+          if (item.tab === 'tab1') {
+            section += `**核心直譯**：${item.result.direct_translation}\n\n`;
+            section += `**多情境表達**：\n`;
+            section += `- 💼 **商務/正式**：${item.result.scenarios.professional}\n`;
+            section += `- 💬 **道地口語**：${item.result.scenarios.casual}\n`;
+            section += `- ✨ **進階/精煉**：${item.result.scenarios.advanced}\n\n`;
+            section += `> **關鍵解析**：${item.result.analysis}\n\n`;
+          } else if (item.tab === 'tab2') {
+            section += `**精準中譯**：${item.result.translation}\n\n`;
+            section += `**原句**：${item.result.grammar_polish.original}\n\n`;
+            section += `**母語修正**：${item.result.grammar_polish.corrected}\n\n`;
+            section += `**糾錯詳解**：\n`;
+            item.result.grammar_polish.issues.forEach(iss => {
+              section += `- ${iss}\n`;
+            });
+            section += `\n**換句話說**：\n`;
+            section += `- 🌸 **委婉禮貌**：${item.result.alternatives.polite}\n`;
+            section += `- ⚡ **直接果斷**：${item.result.alternatives.direct}\n`;
+            section += `- 🌟 **地道慣用**：${item.result.alternatives.idiomatic}\n\n`;
+          } else if (item.tab === 'tab3') {
+            const d = item.result.deconstruction;
+            section += `**單字**：\`${d.word}\` (${d.ipa}) *${d.part_of_speech}*\n\n`;
+            section += `**釋義**：${d.definition_zh}\n\n`;
+            section += `**記憶訣竅**：${d.memory_hook}\n\n`;
+            section += `**情境例句**：\n`;
+            item.result.contexts.forEach(c => {
+              section += `#### ${c.category}\n`;
+              section += `- **EN**: ${c.sentence_en}\n`;
+              section += `- **ZH**: ${c.sentence_zh}\n`;
+              section += `- 💡 *${c.tip}*\n\n`;
+            });
+          }
+          section += `---\n\n`;
+          return section;
+        };
+
+        if (favorites.length > 0) {
+          md += `## ⭐ 我的精選收藏 (${favorites.length})\n\n`;
+          favorites.forEach(f => { md += renderItemMd(f); });
+        }
+
+        if (history.length > 0) {
+          md += `## 🕒 歷史學習紀錄 (${history.length})\n\n`;
+          history.forEach(h => { md += renderItemMd(h); });
+        }
+
+        const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `english_notes_${new Date().toISOString().slice(0, 10)}.md`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('已匯出 Markdown 筆記檔', 'success');
+      };
+
+      // Filtered sidebar items
+      const filteredSidebarItems = useMemo(() => {
+        const source = sidebarTab === 'favorites' ? favorites : history;
+        if (!searchQuery.trim()) return source;
+        const q = searchQuery.toLowerCase();
+        return source.filter(item => item.input.toLowerCase().includes(q));
+      }, [sidebarTab, favorites, history, searchQuery]);
+
+      return (
+        <div className="flex flex-col min-h-screen">
+          {/* Top Sticky Header */}
+          <header className="sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md transition-colors">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+              {/* App Brand */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+                  <Icon name="sparkles" className="w-6 h-6" />
+                </div>
+                <div>
+                  <h1 className="font-display font-bold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                    English AI Studio
+                    <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300 border border-brand-200 dark:border-brand-800">
+                      v2.0
+                    </span>
+                  </h1>
+                  <p className="hidden sm:block text-xs text-slate-500 dark:text-slate-400">
+                    Gemini 智慧擴充 × 原生語音沉浸聽力
+                  </p>
+                </div>
+              </div>
+
+              {/* Central Controls: Blind Listening Switch & Accent/Speed */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* 👁️ 盲聽模式 Toggle */}
+                <button
+                  onClick={() => {
+                    setBlindMode(!blindMode);
+                    showToast(blindMode ? '已關閉盲聽模式' : '已開啟盲聽模式！英文文字將被模糊，請先聽寫 🎧', 'info');
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                    blindMode
+                      ? 'bg-amber-500 text-white border-amber-600 shadow-md shadow-amber-500/20 ring-2 ring-amber-400/30'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700'
+                  }`}
+                  title="開啟後將模糊英文文字，訓練純粹聽覺與聽寫能力"
+                >
+                  <Icon name={blindMode ? 'eye-off' : 'eye'} className="w-4 h-4" />
+                  <span className="hidden md:inline">盲聽練習模式</span>
+                  <span className="md:hidden">盲聽</span>
+                  <span className={`w-2 h-2 rounded-full ${blindMode ? 'bg-white animate-pulse' : 'bg-slate-400'}`}></span>
+                </button>
+
+                {/* Accent selector */}
+                <div className="hidden lg:flex items-center rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 text-xs font-medium border border-slate-200 dark:border-slate-700">
+                  <button
+                    onClick={() => setSpeechAccent('en-US')}
+                    className={`px-2 py-1 rounded-md transition-colors ${speechAccent === 'en-US' ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-xs' : 'text-slate-600 dark:text-slate-400'}`}
+                  >
+                    🇺🇸 美式
+                  </button>
+                  <button
+                    onClick={() => setSpeechAccent('en-GB')}
+                    className={`px-2 py-1 rounded-md transition-colors ${speechAccent === 'en-GB' ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-xs' : 'text-slate-600 dark:text-slate-400'}`}
+                  >
+                    🇬🇧 英式
+                  </button>
+                </div>
+
+                {/* Speed selector */}
+                <div className="hidden lg:flex items-center rounded-lg bg-slate-100 dark:bg-slate-800 p-0.5 text-xs font-medium border border-slate-200 dark:border-slate-700">
+                  {[0.8, 1.0, 1.2].map(rate => (
+                    <button
+                      key={rate}
+                      onClick={() => setSpeechRate(rate)}
+                      className={`px-2 py-1 rounded-md transition-colors ${speechRate === rate ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-xs' : 'text-slate-600 dark:text-slate-400'}`}
+                    >
+                      {rate === 0.8 ? '🐢 0.8x' : rate === 1.0 ? '1.0x' : '⚡ 1.2x'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Utility Buttons */}
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                {/* Favorites & History Drawer Toggle */}
+                <button
+                  onClick={() => setIsSidebarOpen(true)}
+                  className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors relative"
+                  title="收藏與歷史紀錄"
+                >
+                  <Icon name="bookmark" className="w-5 h-5" />
+                  {favorites.length > 0 && (
+                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-brand-500 ring-2 ring-white dark:ring-slate-900"></span>
+                  )}
+                </button>
+
+                {/* Dark / Light Toggle */}
+                <button
+                  onClick={() => setDarkMode(!darkMode)}
+                  className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors"
+                  title="切換主題外觀"
+                >
+                  <Icon name={darkMode ? 'sun' : 'moon'} className="w-5 h-5" />
+                </button>
+
+                {/* Settings Button */}
+                <button
+                  onClick={() => setIsSettingsOpen(true)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                    apiKey
+                      ? 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700'
+                      : 'bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-300 border border-red-200 dark:border-red-800 animate-pulse'
+                  }`}
+                  title="API Key 與語音設定"
+                >
+                  <Icon name="settings" className="w-4 h-4" />
+                  <span className="hidden sm:inline">{apiKey ? 'API 設定' : '設定金鑰'}</span>
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {/* Subheader / Mode Banner when Blind Mode is ON */}
+          {blindMode && (
+            <div className="bg-gradient-to-r from-amber-500 to-amber-600 text-white text-xs py-2 px-4 text-center font-medium shadow-inner flex items-center justify-center gap-2">
+              <Icon name="eye-off" className="w-4 h-4 shrink-0" />
+              <span>「盲聽練習模式」運作中：所有英文句子已隱藏，點擊播放鈕專注聆聽並在輸入框完成聽寫！</span>
+            </div>
+          )}
+
+          {/* Main Layout Area */}
+          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+            
+            {/* Tab Navigation Selector */}
+            <div className="flex justify-center">
+              <div className="inline-flex p-1.5 bg-slate-200/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-300/60 dark:border-slate-700/60 max-w-full overflow-x-auto shadow-inner">
+                <button
+                  onClick={() => { setActiveTab('tab1'); setResultData(null); }}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
+                    activeTab === 'tab1'
+                      ? 'bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-300 shadow-md shadow-black/5'
+                      : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                  }`}
+                >
+                  <span className="text-base">🇨🇳 ➡️ 🇺🇸</span>
+                  <span>中翻英・多維擴充</span>
+                </button>
+
+                <button
+                  onClick={() => { setActiveTab('tab2'); setResultData(null); }}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
+                    activeTab === 'tab2'
+                      ? 'bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-300 shadow-md shadow-black/5'
+                      : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                  }`}
+                >
+                  <span className="text-base">✍️ ➡️ 💎</span>
+                  <span>英翻中・糾錯與升級</span>
+                </button>
+
+                <button
+                  onClick={() => { setActiveTab('tab3'); setResultData(null); }}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
+                    activeTab === 'tab3'
+                      ? 'bg-white dark:bg-slate-900 text-brand-600 dark:text-brand-300 shadow-md shadow-black/5'
+                      : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                  }`}
+                >
+                  <span className="text-base">📚 ➡️ 🧠</span>
+                  <span>陌生單字・深度情境</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Input Card */}
+            <div className="glass-card rounded-3xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-xl shadow-slate-200/50 dark:shadow-none">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <label className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-brand-500"></span>
+                  {activeTab === 'tab1' && '請輸入欲表達的中文句子或生活情境：'}
+                  {activeTab === 'tab2' && '請輸入你想檢視糾錯的英文句子：'}
+                  {activeTab === 'tab3' && '請輸入欲深度學習的英文單字（如 serendipity、ubiquitous）：'}
+                </label>
+
+                {/* Quick Sample Button */}
+                <button
+                  type="button"
+                  onClick={handleLoadSample}
+                  className="inline-flex items-center gap-1.5 text-xs text-brand-600 dark:text-brand-400 hover:underline font-medium self-start sm:self-auto"
+                >
+                  <Icon name="sparkles" className="w-3.5 h-3.5" />
+                  載入示範資料快速體驗
+                </button>
+              </div>
+
+              {/* Text Area */}
+              <div className="relative">
+                <textarea
+                  rows={activeTab === 'tab3' ? 2 : 3}
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                      e.preventDefault();
+                      handleGenerate();
+                    }
+                  }}
+                  placeholder={
+                    activeTab === 'tab1'
+                      ? '例如：這份提案請在明天下午三點前發給我，若有任何問題隨時與我聯繫。'
+                      : activeTab === 'tab2'
+                      ? '例如：I very like this project because it make me feel challenge and learn much.'
+                      : '例如：resilience 或 serendipity'
+                  }
+                  className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/60 p-4 text-sm sm:text-base text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:focus:ring-brand-400 transition"
+                ></textarea>
+
+                {inputText && (
+                  <button
+                    onClick={() => setInputText('')}
+                    className="absolute right-3 top-3 p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                    title="清空輸入"
+                  >
+                    <Icon name="x" className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* Bottom Actions of Input Card */}
+              <div className="mt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <span className="text-xs text-slate-400 dark:text-slate-500 hidden sm:inline">
+                  提示：按 <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono text-[11px]">Ctrl</kbd> + <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 font-mono text-[11px]">Enter</kbd> 快速送出
+                </span>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleGenerate()}
+                    disabled={isLoading}
+                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-medium text-sm text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 active:scale-[0.98] transition-all shadow-md shadow-brand-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>AI 深度剖析中...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="sparkles" className="w-4 h-4" />
+                        <span>開始智慧生成</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Error Message */}
+              {errorMessage && (
+                <div className="mt-4 p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-300 text-xs flex items-start gap-2.5">
+                  <Icon name="info" className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+                  <div className="flex-1">
+                    <p className="font-semibold">{errorMessage}</p>
+                    <p className="mt-1 text-slate-500 dark:text-slate-400">
+                      若尚未配置 API Key，請點擊右上角「⚙️ API Key 設定」填入金鑰，或點擊「載入示範資料」立即免金鑰體驗！
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Results Presentation Area */}
+            {resultData && (
+              <div className="space-y-6 animate-fadeIn">
+                
+                {/* Result Header & Actions */}
+                <div className="flex items-center justify-between">
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <span>✨ AI 學習剖析成果</span>
+                    <span className="text-xs font-normal text-slate-500">
+                      （可隨時切換上方盲聽模式練習）
+                    </span>
+                  </h2>
+
+                  <div className="flex items-center gap-2">
+                    {/* Star Favorite Button */}
+                    <button
+                      onClick={() => toggleStar({ tab: activeTab, input: inputText.trim(), result: resultData })}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors ${
+                        isCurrentResultStarred
+                          ? 'bg-amber-50 text-amber-600 border-amber-300 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800'
+                          : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      <Icon name={isCurrentResultStarred ? 'star' : 'star-outline'} className={`w-4 h-4 ${isCurrentResultStarred ? 'text-amber-500' : ''}`} />
+                      <span>{isCurrentResultStarred ? '已收藏' : '收藏本結果'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* TAB 1 CONTENT: 中翻英多維擴充 */}
+                {activeTab === 'tab1' && (
+                  <div className="space-y-5">
+                    {/* 1. 核心直譯卡片 */}
+                    <SentenceAudioCard
+                      title="📌 核心標準直譯"
+                      badge="Standard Accurate"
+                      badgeColor="bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border-blue-200 dark:border-blue-800"
+                      sentence={resultData.direct_translation}
+                      blindMode={blindMode}
+                      speechRate={speechRate}
+                      speechAccent={speechAccent}
+                      isPlaying={playingSentence === resultData.direct_translation}
+                      onPlay={() => playSpeech(resultData.direct_translation)}
+                      onStop={stopSpeech}
+                      onCopy={() => copyToClipboard(resultData.direct_translation)}
+                    />
+
+                    {/* 2. 三種情境說法卡片 */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* 💼 商務/正式 */}
+                      <SentenceAudioCard
+                        title="💼 商務/正式"
+                        subtitle="職場信件、會議與報告首選"
+                        badge="Formal"
+                        badgeColor="bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300 border-purple-200 dark:border-purple-800"
+                        sentence={resultData.scenarios?.professional}
+                        blindMode={blindMode}
+                        speechRate={speechRate}
+                        speechAccent={speechAccent}
+                        isPlaying={playingSentence === resultData.scenarios?.professional}
+                        onPlay={() => playSpeech(resultData.scenarios?.professional)}
+                        onStop={stopSpeech}
+                        onCopy={() => copyToClipboard(resultData.scenarios?.professional)}
+                      />
+
+                      {/* 💬 道地口語 */}
+                      <SentenceAudioCard
+                        title="💬 道地口語"
+                        subtitle="日常社交、母語者最自然聊法"
+                        badge="Casual"
+                        badgeColor="bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
+                        sentence={resultData.scenarios?.casual}
+                        blindMode={blindMode}
+                        speechRate={speechRate}
+                        speechAccent={speechAccent}
+                        isPlaying={playingSentence === resultData.scenarios?.casual}
+                        onPlay={() => playSpeech(resultData.scenarios?.casual)}
+                        onStop={stopSpeech}
+                        onCopy={() => copyToClipboard(resultData.scenarios?.casual)}
+                      />
+
+                      {/* ✨ 進階/精煉 */}
+                      <SentenceAudioCard
+                        title="✨ 進階/精煉"
+                        subtitle="高分句型、道地成語片語"
+                        badge="Idiomatic"
+                        badgeColor="bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 border-amber-200 dark:border-amber-800"
+                        sentence={resultData.scenarios?.advanced}
+                        blindMode={blindMode}
+                        speechRate={speechRate}
+                        speechAccent={speechAccent}
+                        isPlaying={playingSentence === resultData.scenarios?.advanced}
+                        onPlay={() => playSpeech(resultData.scenarios?.advanced)}
+                        onStop={stopSpeech}
+                        onCopy={() => copyToClipboard(resultData.scenarios?.advanced)}
+                      />
+                    </div>
+
+                    {/* 3. 關鍵解析卡片 */}
+                    {resultData.analysis && (
+                      <div className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 mb-2">
+                          <span className="p-1 rounded-lg bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-400">
+                            <Icon name="info" className="w-4 h-4" />
+                          </span>
+                          <span>語氣差異與關鍵解析</span>
+                        </h3>
+                        <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line pl-7">
+                          {resultData.analysis}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* TAB 2 CONTENT: 英翻中與母語潤飾 */}
+                {activeTab === 'tab2' && (
+                  <div className="space-y-5">
+                    {/* 1. 精準中譯 */}
+                    <div className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5">
+                      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">精準繁體中譯</span>
+                      <p className="text-base sm:text-lg font-medium text-slate-800 dark:text-slate-100 mt-1">
+                        {resultData.translation}
+                      </p>
+                    </div>
+
+                    {/* 2. 文法與用字修正 (Grammar & Polish) */}
+                    <div className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-5 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                          <span>母語潤飾與糾錯對比</span>
+                        </h3>
+                        <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                          Polished Version
+                        </span>
+                      </div>
+
+                      {/* Original vs Corrected */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 rounded-xl bg-red-50/60 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40">
+                          <span className="text-xs font-semibold text-red-600 dark:text-red-400 block mb-1">❌ 原始輸入</span>
+                          <p className="text-sm font-mono text-slate-700 dark:text-slate-300 line-through decoration-red-400">
+                            {resultData.grammar_polish?.original}
+                          </p>
+                        </div>
+
+                        <div className="p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 relative">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">✅ 修正後版本 (可朗讀聽力)</span>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => playSpeech(resultData.grammar_polish?.corrected)}
+                                className="p-1 text-emerald-700 dark:text-emerald-300 hover:scale-110 transition"
+                                title="朗讀修正後句子"
+                              >
+                                <Icon name={playingSentence === resultData.grammar_polish?.corrected ? 'pause' : 'volume'} className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => copyToClipboard(resultData.grammar_polish?.corrected)}
+                                className="p-1 text-slate-500 hover:text-slate-700"
+                                title="複製句子"
+                              >
+                                <Icon name="copy" className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Blind mode handling for corrected sentence */}
+                          <BlindSentenceBox
+                            sentence={resultData.grammar_polish?.corrected}
+                            blindMode={blindMode}
+                            onPlay={() => playSpeech(resultData.grammar_polish?.corrected)}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Issues list */}
+                      {resultData.grammar_polish?.issues && resultData.grammar_polish.issues.length > 0 && (
+                        <div className="pt-2">
+                          <span className="text-xs font-bold text-slate-600 dark:text-slate-400 block mb-2">
+                            🔍 偵測到的語病與台式英文解析：
+                          </span>
+                          <ul className="space-y-2">
+                            {resultData.grammar_polish.issues.map((issue, idx) => (
+                              <li key={idx} className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 flex items-start gap-2 bg-slate-50 dark:bg-slate-900/50 p-2.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
+                                <span className="text-amber-500 font-bold shrink-0">#{idx + 1}</span>
+                                <span>{issue}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Overall explanation */}
+                      {resultData.grammar_polish?.explanation && (
+                        <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-slate-800 pt-3">
+                          <p><strong className="text-slate-800 dark:text-slate-200">💡 專家建議：</strong>{resultData.grammar_polish.explanation}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 3. 三種進階換句話說 */}
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-3 flex items-center gap-2">
+                        <span>🔄 3 種進階語氣改寫版本 (換句話說)</span>
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <SentenceAudioCard
+                          title="🌸 委婉禮貌"
+                          subtitle="謙和得體、顧全對方感受"
+                          badge="Diplomatic"
+                          badgeColor="bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300 border-pink-200 dark:border-pink-800"
+                          sentence={resultData.alternatives?.polite}
+                          blindMode={blindMode}
+                          speechRate={speechRate}
+                          speechAccent={speechAccent}
+                          isPlaying={playingSentence === resultData.alternatives?.polite}
+                          onPlay={() => playSpeech(resultData.alternatives?.polite)}
+                          onStop={stopSpeech}
+                          onCopy={() => copyToClipboard(resultData.alternatives?.polite)}
+                        />
+
+                        <SentenceAudioCard
+                          title="⚡ 直接果斷"
+                          subtitle="俐落精準、展現自信與效率"
+                          badge="Decisive"
+                          badgeColor="bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border-blue-200 dark:border-blue-800"
+                          sentence={resultData.alternatives?.direct}
+                          blindMode={blindMode}
+                          speechRate={speechRate}
+                          speechAccent={speechAccent}
+                          isPlaying={playingSentence === resultData.alternatives?.direct}
+                          onPlay={() => playSpeech(resultData.alternatives?.direct)}
+                          onStop={stopSpeech}
+                          onCopy={() => copyToClipboard(resultData.alternatives?.direct)}
+                        />
+
+                        <SentenceAudioCard
+                          title="🌟 地道慣用"
+                          subtitle="母語人士直覺的高級用詞"
+                          badge="Native"
+                          badgeColor="bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800"
+                          sentence={resultData.alternatives?.idiomatic}
+                          blindMode={blindMode}
+                          speechRate={speechRate}
+                          speechAccent={speechAccent}
+                          isPlaying={playingSentence === resultData.alternatives?.idiomatic}
+                          onPlay={() => playSpeech(resultData.alternatives?.idiomatic)}
+                          onStop={stopSpeech}
+                          onCopy={() => copyToClipboard(resultData.alternatives?.idiomatic)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 3 CONTENT: 陌生單字深度練習 */}
+                {activeTab === 'tab3' && resultData.deconstruction && (
+                  <div className="space-y-6">
+                    {/* 1. 單字解構卡 */}
+                    <div className="glass-card rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-md relative overflow-hidden">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                        <div>
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tight">
+                              {resultData.deconstruction.word}
+                            </h3>
+                            <span className="font-mono text-sm px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                              {resultData.deconstruction.ipa}
+                            </span>
+                            <span className="text-xs px-2.5 py-0.5 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300 font-semibold border border-brand-200 dark:border-brand-800">
+                              {resultData.deconstruction.part_of_speech}
+                            </span>
+                          </div>
+                          <p className="text-base sm:text-lg font-medium text-slate-800 dark:text-slate-100 mt-2">
+                            {resultData.deconstruction.definition_zh}
+                          </p>
+                        </div>
+
+                        {/* Pronunciation button for the headword */}
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => playSpeech(resultData.deconstruction.word)}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 dark:bg-brand-950 dark:hover:bg-brand-900 dark:text-brand-300 border border-brand-200 dark:border-brand-800 font-semibold text-xs transition"
+                          >
+                            <Icon name="volume" className="w-4 h-4" />
+                            <span>發音 ({speechAccent})</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Memory hook & Etymology */}
+                      {resultData.deconstruction.memory_hook && (
+                        <div className="mt-4 p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 flex items-start gap-3">
+                          <span className="text-xl">💡</span>
+                          <div>
+                            <span className="text-xs font-bold text-amber-800 dark:text-amber-300 block mb-0.5">
+                              字根字首與記憶訣竅 (Memory Hook)
+                            </span>
+                            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                              {resultData.deconstruction.memory_hook}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 2. 四種不同情境例句與對話練習 */}
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                          <span>🌐 4 大核心情境例句練習 (支援逐句慢速/正常朗讀與盲聽)</span>
+                        </h4>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {resultData.contexts?.map((ctx, idx) => (
+                          <div
+                            key={idx}
+                            className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-5 flex flex-col justify-between shadow-xs hover:border-brand-300 dark:hover:border-brand-700 transition"
+                          >
+                            <div>
+                              {/* Category Badge & Controls */}
+                              <div className="flex items-center justify-between gap-2 mb-3">
+                                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                                  {ctx.category}
+                                </span>
+
+                                <div className="flex items-center gap-1.5">
+                                  <button
+                                    onClick={() => playSpeech(ctx.sentence_en)}
+                                    className="p-1.5 rounded-lg text-brand-600 hover:bg-brand-50 dark:text-brand-400 dark:hover:bg-brand-950 transition"
+                                    title="播放此例句"
+                                  >
+                                    <Icon name={playingSentence === ctx.sentence_en ? 'pause' : 'volume'} className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    onClick={() => copyToClipboard(ctx.sentence_en)}
+                                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+                                    title="複製英文句子"
+                                  >
+                                    <Icon name="copy" className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* English Sentence with Blind Mode */}
+                              <BlindSentenceBox
+                                sentence={ctx.sentence_en}
+                                blindMode={blindMode}
+                                onPlay={() => playSpeech(ctx.sentence_en)}
+                                highlightWord={resultData.deconstruction.word}
+                              />
+
+                              {/* Chinese Translation */}
+                              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2">
+                                {ctx.sentence_zh}
+                              </p>
+                            </div>
+
+                            {/* Practical Tip */}
+                            {ctx.tip && (
+                              <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 text-xs text-slate-500 dark:text-slate-400 flex items-start gap-1.5">
+                                <span className="text-brand-500 font-bold">小撇步：</span>
+                                <span>{ctx.tip}</span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </main>
+
+          {/* Footer */}
+          <footer className="border-t border-slate-200 dark:border-slate-800 py-6 mt-12 bg-white/50 dark:bg-slate-900/50 text-center text-xs text-slate-500 dark:text-slate-400">
+            <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <p>English AI Studio © 2026. 專為高效語言學習者打造，無後端依賴，可直接靜態託管於 GitHub Pages。</p>
+              <div className="flex items-center gap-4">
+                <button onClick={() => setIsSettingsOpen(true)} className="hover:text-brand-600 transition">金鑰設定</button>
+                <button onClick={exportMarkdown} className="hover:text-brand-600 transition">匯出筆記</button>
+                <button onClick={exportJson} className="hover:text-brand-600 transition">JSON 備份</button>
+              </div>
+            </div>
+          </footer>
+
+          {/* Settings Modal (⚙️ API Key & Audio Config) */}
+          {isSettingsOpen && (
+            <SettingsModal
+              apiKey={apiKey}
+              selectedModel={selectedModel}
+              speechRate={speechRate}
+              speechAccent={speechAccent}
+              availableVoices={availableVoices}
+              onClose={() => setIsSettingsOpen(false)}
+              onSave={(newKey, newModel, newRate, newAccent) => {
+                setApiKey(newKey);
+                setSelectedModel(newModel);
+                setSpeechRate(newRate);
+                setSpeechAccent(newAccent);
+                localStorage.setItem('gemini_api_key', newKey);
+                localStorage.setItem('gemini_model', newModel);
+                setIsSettingsOpen(false);
+                showToast('設定已成功儲存至瀏覽器本地！', 'success');
+              }}
+              onTestSpeech={(accent, rate) => {
+                playSpeech('Hello! Welcome to English AI Studio. Enjoy your listening and speaking practice!', accent, rate);
+              }}
+              showToast={showToast}
+            />
+          )}
+
+          {/* Sidebar Drawer (⭐ Favorites & History) */}
+          {isSidebarOpen && (
+            <SidebarDrawer
+              sidebarTab={sidebarTab}
+              setSidebarTab={setSidebarTab}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              items={filteredSidebarItems}
+              favorites={favorites}
+              onClose={() => setIsSidebarOpen(false)}
+              onSelectItem={(item) => {
+                setActiveTab(item.tab);
+                setInputText(item.input);
+                setResultData(item.result);
+                setIsSidebarOpen(false);
+                showToast(`已載入 ${item.input}`, 'info');
+              }}
+              onToggleStar={toggleStar}
+              onClearHistory={() => {
+                if (confirm('確定要清空所有歷史紀錄嗎？（收藏夾不會受影響）')) {
+                  setHistory([]);
+                  showToast('歷史紀錄已清空', 'info');
+                }
+              }}
+              onExportJson={exportJson}
+              onExportMarkdown={exportMarkdown}
+            />
+          )}
+
+          {/* Floating Toast Alert */}
+          {toast && (
+            <div className="fixed bottom-6 right-6 z-50 animate-bounce">
+              <div className={`px-4 py-2.5 rounded-2xl shadow-xl text-xs sm:text-sm font-semibold flex items-center gap-2 border ${
+                toast.type === 'error'
+                  ? 'bg-red-600 text-white border-red-700 shadow-red-500/20'
+                  : toast.type === 'success'
+                  ? 'bg-emerald-600 text-white border-emerald-700 shadow-emerald-500/20'
+                  : 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-700 shadow-black/20'
+              }`}>
+                <span>{toast.msg}</span>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // --- Interactive Sentence Card with Audio Controls & Dictation ---
+    function SentenceAudioCard({
+      title,
+      subtitle,
+      badge,
+      badgeColor,
+      sentence,
+      blindMode,
+      speechRate,
+      speechAccent,
+      isPlaying,
+      onPlay,
+      onStop,
+      onCopy
+    }) {
+      if (!sentence) return null;
+
+      return (
+        <div className="glass-card rounded-2xl border border-slate-200 dark:border-slate-800 p-5 flex flex-col justify-between shadow-xs hover:shadow-md transition-all">
+          <div>
+            {/* Card Header */}
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div>
+                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{title}</h4>
+                {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
+              </div>
+              {badge && (
+                <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${badgeColor}`}>
+                  {badge}
+                </span>
+              )}
+            </div>
+
+            {/* Sentence Container (with Blind listening capability) */}
+            <div className="my-3">
+              <BlindSentenceBox
+                sentence={sentence}
+                blindMode={blindMode}
+                onPlay={onPlay}
+              />
+            </div>
+          </div>
+
+          {/* Bottom Audio Controller Bar */}
+          <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={isPlaying ? onStop : onPlay}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                  isPlaying
+                    ? 'bg-brand-600 text-white shadow-sm ring-2 ring-brand-400/30'
+                    : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
+                }`}
+                title="播放語音發音"
+              >
+                <Icon name={isPlaying ? 'pause' : 'play'} className="w-3.5 h-3.5" />
+                <span>{isPlaying ? '暫停' : '播放'}</span>
+              </button>
+
+              <span className="text-[11px] font-mono text-slate-400 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
+                {speechAccent === 'en-GB' ? 'UK' : 'US'} · {speechRate}x
+              </span>
+            </div>
+
+            <button
+              onClick={onCopy}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+              title="複製英文句子"
+            >
+              <Icon name="copy" className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // --- Blind Listening & Dictation Interactive Box ---
+    function BlindSentenceBox({ sentence, blindMode, onPlay, highlightWord }) {
+      const [revealed, setRevealed] = useState(false);
+      const [dictationInput, setDictationInput] = useState('');
+      const [checkResult, setCheckResult] = useState(null);
+
+      // Reset state if blind mode toggled off
+      useEffect(() => {
+        if (!blindMode) {
+          setRevealed(false);
+          setCheckResult(null);
+        }
+      }, [blindMode]);
+
+      // Highlight target word in text
+      const renderSentenceText = () => {
+        if (!highlightWord) {
+          // Clean double asterisks if Gemini wrapped it
+          const parts = sentence.split(/(\*\*.*?\*\*)/g);
+          return parts.map((part, i) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+              return <strong key={i} className="text-brand-600 dark:text-brand-400 font-bold">{part.slice(2, -2)}</strong>;
+            }
+            return part;
+          });
+        }
+
+        // Highlight matching word case-insensitively
+        const regex = new RegExp(`(${highlightWord})`, 'gi');
+        const parts = sentence.split(regex);
+        return parts.map((part, i) => (
+          regex.test(part) ? (
+            <strong key={i} className="text-brand-600 dark:text-brand-400 font-bold bg-brand-50 dark:bg-brand-950/60 px-1 rounded">
+              {part}
+            </strong>
+          ) : part
+        ));
+      };
+
+      // Evaluate Dictation Match
+      const handleCheckDictation = () => {
+        if (!dictationInput.trim()) return;
+
+        const normalize = (str) =>
+          str.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim().split(/\s+/).filter(Boolean);
+
+        const targetWords = normalize(sentence);
+        const userWords = normalize(dictationInput);
+
+        if (targetWords.length === 0) return;
+
+        let matches = 0;
+        const diff = [];
+        let uIdx = 0;
+
+        for (let i = 0; i < targetWords.length; i++) {
+          const tWord = targetWords[i];
+          const uWord = userWords[uIdx];
+
+          if (uWord === tWord) {
+            matches++;
+            diff.push({ word: tWord, status: 'correct' });
+            uIdx++;
+          } else if (uIdx < userWords.length && userWords.slice(uIdx).includes(tWord)) {
+            while (uIdx < userWords.length && userWords[uIdx] !== tWord) {
+              diff.push({ word: userWords[uIdx], status: 'extra' });
+              uIdx++;
+            }
+            if (uIdx < userWords.length && userWords[uIdx] === tWord) {
+              matches++;
+              diff.push({ word: tWord, status: 'correct' });
+              uIdx++;
+            }
+          } else {
+            diff.push({ word: tWord, status: 'missing' });
+          }
+        }
+
+        while (uIdx < userWords.length) {
+          diff.push({ word: userWords[uIdx], status: 'extra' });
+          uIdx++;
+        }
+
+        const accuracy = Math.round((matches / Math.max(targetWords.length, userWords.length)) * 100);
+        setCheckResult({ accuracy, diff });
+      };
+
+      if (!blindMode) {
+        return (
+          <p className="text-sm sm:text-base font-normal text-slate-900 dark:text-white leading-relaxed">
+            {renderSentenceText()}
+          </p>
+        );
+      }
+
+      return (
+        <div className="space-y-3">
+          {/* Obscured Sentence */}
+          <div className="relative p-3 rounded-xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 overflow-hidden">
+            <p className={`text-sm sm:text-base font-normal text-slate-900 dark:text-white leading-relaxed ${revealed ? '' : 'blind-blur'}`}>
+              {renderSentenceText()}
+            </p>
+
+            {!revealed && (
+              <div className="absolute inset-0 flex items-center justify-center gap-2 bg-slate-900/10 dark:bg-slate-950/20 backdrop-blur-[2px]">
+                <button
+                  type="button"
+                  onClick={onPlay}
+                  className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs shadow-md flex items-center gap-1.5 transition active:scale-95"
+                >
+                  <Icon name="volume" className="w-3.5 h-3.5" />
+                  <span>聽音訊</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRevealed(true)}
+                  className="px-3 py-1.5 rounded-lg bg-white/90 dark:bg-slate-800/90 hover:bg-white text-slate-700 dark:text-slate-200 text-xs font-semibold shadow-xs flex items-center gap-1.5 transition"
+                >
+                  <Icon name="eye" className="w-3.5 h-3.5" />
+                  <span>看答案</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Dictation Input Box */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={dictationInput}
+                onChange={(e) => setDictationInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleCheckDictation();
+                }}
+                placeholder="在此輸入你聽到的英文句子進行聽寫..."
+                className="flex-1 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs sm:text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+              <button
+                type="button"
+                onClick={handleCheckDictation}
+                className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-medium text-xs whitespace-nowrap transition"
+              >
+                比對
+              </button>
+              {revealed && (
+                <button
+                  type="button"
+                  onClick={() => setRevealed(false)}
+                  className="p-1.5 text-slate-400 hover:text-slate-600"
+                  title="重新隱藏"
+                >
+                  <Icon name="eye-off" className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Check Result Feedback */}
+            {checkResult && (
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">
+                    聽寫準確率評估：
+                  </span>
+                  <span className={`font-mono font-bold px-2 py-0.5 rounded ${
+                    checkResult.accuracy >= 90
+                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                      : checkResult.accuracy >= 70
+                      ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
+                      : 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300'
+                  }`}>
+                    {checkResult.accuracy}% {checkResult.accuracy === 100 ? '🎉 完美！' : checkResult.accuracy >= 80 ? '💪 很棒！' : '加油！'}
+                  </span>
+                </div>
+
+                {/* Diff Words breakdown */}
+                <div className="flex flex-wrap gap-1 items-center pt-1">
+                  {checkResult.diff.map((item, idx) => (
+                    <span
+                      key={idx}
+                      className={`px-1.5 py-0.5 rounded text-[11px] font-mono ${
+                        item.status === 'correct'
+                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                          : item.status === 'missing'
+                          ? 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 line-through'
+                          : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                      }`}
+                      title={item.status === 'correct' ? '完全符合' : item.status === 'missing' ? '漏聽或拼錯' : '多打的字詞'}
+                    >
+                      {item.word}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // --- Settings Modal Component ---
+    function SettingsModal({
+      apiKey,
+      selectedModel,
+      speechRate,
+      speechAccent,
+      availableVoices,
+      onClose,
+      onSave,
+      onTestSpeech,
+      showToast
+    }) {
+      const [keyInput, setKeyInput] = useState(apiKey);
+      const [modelInput, setModelInput] = useState(selectedModel);
+      const [rateInput, setRateInput] = useState(speechRate);
+      const [accentInput, setAccentInput] = useState(speechAccent);
+      const [showKey, setShowKey] = useState(false);
+      const [isTestingApi, setIsTestingApi] = useState(false);
+      const [testApiResult, setTestApiResult] = useState(null);
+
+      // Test API Key Live
+      const handleTestApiKey = async () => {
+        if (!keyInput.trim()) {
+          setTestApiResult({ ok: false, msg: '請先輸入 API Key 再測試！' });
+          return;
+        }
+
+        setIsTestingApi(true);
+        setTestApiResult(null);
+
+        try {
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelInput}:generateContent?key=${keyInput.trim()}`;
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: "Hello" }] }],
+              generationConfig: { maxOutputTokens: 5 }
+            })
+          });
+
+          if (!res.ok) {
+            const errJson = await res.json().catch(() => ({}));
+            throw new Error(errJson.error?.message || `HTTP ${res.status}`);
+          }
+
+          setTestApiResult({ ok: true, msg: '連線成功！Gemini API 金鑰有效且具備訪問權限。' });
+        } catch (err) {
+          setTestApiResult({ ok: false, msg: `驗證失敗：${err.message}` });
+        } finally {
+          setIsTestingApi(false);
+        }
+      };
+
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+          <div className="glass-card w-full max-w-lg rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-6">
+            
+            {/* Modal Title */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <span className="p-2 rounded-xl bg-brand-100 text-brand-600 dark:bg-brand-950 dark:text-brand-300">
+                  <Icon name="settings" className="w-5 h-5" />
+                </span>
+                <h3 className="font-display font-bold text-lg text-slate-900 dark:text-white">
+                  偏好設定與金鑰配置
+                </h3>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              >
+                <Icon name="x" className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs sm:text-sm">
+              {/* Gemini API Key */}
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                    <Icon name="key" className="w-4 h-4 text-brand-500" />
+                    <span>Gemini API Key</span>
+                  </label>
+                  <a
+                    href="https://aistudio.google.com/app/apikey"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-brand-600 dark:text-brand-400 hover:underline inline-flex items-center gap-1"
+                  >
+                    免費獲取 API Key ↗
+                  </a>
+                </div>
+
+                <div className="relative">
+                  <input
+                    type={showKey ? 'text' : 'password'}
+                    value={keyInput}
+                    onChange={(e) => setKeyInput(e.target.value)}
+                    placeholder="貼上您的 AI Studio Gemini API Key (AIzaSy...)"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-mono text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none pr-16"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowKey(!showKey)}
+                    className="absolute right-2.5 top-2.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  >
+                    {showKey ? '隱藏' : '顯示'}
+                  </button>
+                </div>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+                  🔒 金鑰僅儲存於您本地瀏覽器的 <code className="font-mono">localStorage</code>，絕不會上傳或洩露至任何第三方伺服器。
+                </p>
+
+                {/* Test Connection Button */}
+                <div className="mt-2 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleTestApiKey}
+                    disabled={isTestingApi || !keyInput.trim()}
+                    className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-medium text-xs transition disabled:opacity-50"
+                  >
+                    {isTestingApi ? '連線測試中...' : '測試金鑰連線'}
+                  </button>
+                  {testApiResult && (
+                    <span className={`text-xs ${testApiResult.ok ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+                      {testApiResult.msg}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Gemini Model Select */}
+              <div>
+                <label className="font-bold text-slate-800 dark:text-slate-200 block mb-1.5">
+                  AI 模型選擇 (Gemini Models)
+                </label>
+                <select
+                  value={modelInput}
+                  onChange={(e) => setModelInput(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none"
+                >
+                  <option value="gemini-1.5-flash">Gemini 1.5 Flash（推薦：高速、高配額且經濟）</option>
+                  <option value="gemini-2.0-flash">Gemini 2.0 Flash（次世代極速模型）</option>
+                  <option value="gemini-1.5-pro">Gemini 1.5 Pro（深度複雜推理）</option>
+                </select>
+              </div>
+
+              {/* Speech Config (Accent & Rate) */}
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <label className="font-bold text-slate-800 dark:text-slate-200 block mb-2">
+                  🎙️ 預設發音口音與語速
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-xs text-slate-500 block mb-1">口音偏好</span>
+                    <select
+                      value={accentInput}
+                      onChange={(e) => setAccentInput(e.target.value)}
+                      className="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs"
+                    >
+                      <option value="en-US">🇺🇸 美式發音 (en-US)</option>
+                      <option value="en-GB">🇬🇧 英式發音 (en-GB)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <span className="text-xs text-slate-500 block mb-1">預設播放速度</span>
+                    <select
+                      value={rateInput}
+                      onChange={(e) => setRateInput(parseFloat(e.target.value))}
+                      className="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-xs"
+                    >
+                      <option value="0.8">🐢 0.8x（慢速跟讀練習）</option>
+                      <option value="1.0">⚡ 1.0x（正常自然語速）</option>
+                      <option value="1.2">🚀 1.2x（挑戰進階聽力）</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="mt-2.5 flex items-center justify-between">
+                  <span className="text-[11px] text-slate-400">
+                    偵測到系統語音引擎：{availableVoices.length} 種聲音可用
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onTestSpeech(accentInput, rateInput)}
+                    className="text-xs text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1 font-medium"
+                  >
+                    <Icon name="volume" className="w-3.5 h-3.5" />
+                    試聽語音發音
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                onClick={() => onSave(keyInput.trim(), modelInput, rateInput, accentInput)}
+                className="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-brand-600 hover:bg-brand-500 transition shadow-md shadow-brand-500/20"
+              >
+                儲存設定
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- Sidebar Drawer (⭐ Favorites & History) ---
+    function SidebarDrawer({
+      sidebarTab,
+      setSidebarTab,
+      searchQuery,
+      setSearchQuery,
+      items,
+      favorites,
+      onClose,
+      onSelectItem,
+      onToggleStar,
+      onClearHistory,
+      onExportJson,
+      onExportMarkdown
+    }) {
+      return (
+        <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 backdrop-blur-xs animate-fadeIn">
+          <div className="glass-card w-full max-w-md h-full border-l border-slate-200 dark:border-slate-800 flex flex-col shadow-2xl">
+            
+            {/* Header */}
+            <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+                <button
+                  onClick={() => setSidebarTab('favorites')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                    sidebarTab === 'favorites'
+                      ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-xs'
+                      : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                  }`}
+                >
+                  ⭐ 我的收藏 ({favorites.length})
+                </button>
+                <button
+                  onClick={() => setSidebarTab('history')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                    sidebarTab === 'history'
+                      ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-xs'
+                      : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                  }`}
+                >
+                  🕒 歷史紀錄
+                </button>
+              </div>
+
+              <button
+                onClick={onClose}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              >
+                <Icon name="x" className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Search Input */}
+            <div className="p-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="relative">
+                <Icon name="search" className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="搜尋關鍵字或單字..."
+                  className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                />
+              </div>
+            </div>
+
+            {/* Items List */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+              {items.length === 0 ? (
+                <div className="text-center py-12 text-slate-400 text-xs">
+                  <p>尚無任何{sidebarTab === 'favorites' ? '收藏項目' : '歷史紀錄'}</p>
+                  <p className="mt-1 text-[11px]">可隨時點擊結果卡片右上角的 ⭐ 進行收藏！</p>
+                </div>
+              ) : (
+                items.map((item, idx) => {
+                  const isStarred = favorites.some(f => f.input === item.input && f.tab === item.tab);
+                  return (
+                    <div
+                      key={idx}
+                      className="group p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 hover:border-brand-400 dark:hover:border-brand-600 transition shadow-xs flex flex-col justify-between gap-2"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
+                          {item.tab === 'tab1' ? '🇨🇳 中翻英' : item.tab === 'tab2' ? '✍️ 英潤飾' : '📚 單字'}
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleStar(item);
+                          }}
+                          className="text-slate-400 hover:text-amber-500 p-1"
+                        >
+                          <Icon name={isStarred ? 'star' : 'star-outline'} className={`w-4 h-4 ${isStarred ? 'text-amber-500' : ''}`} />
+                        </button>
+                      </div>
+
+                      <div
+                        onClick={() => onSelectItem(item)}
+                        className="cursor-pointer"
+                      >
+                        <p className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100 line-clamp-2">
+                          {item.input}
+                        </p>
+                        <p className="text-[11px] text-slate-400 mt-1 line-clamp-1">
+                          {item.tab === 'tab1' && item.result?.direct_translation}
+                          {item.tab === 'tab2' && item.result?.grammar_polish?.corrected}
+                          {item.tab === 'tab3' && item.result?.deconstruction?.definition_zh}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Bottom Actions Bar */}
+            <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={onExportMarkdown}
+                  className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 flex items-center gap-1 font-medium transition"
+                  title="匯出為 Markdown 筆記"
+                >
+                  <Icon name="download" className="w-3.5 h-3.5" />
+                  <span>MD 筆記</span>
+                </button>
+
+                <button
+                  onClick={onExportJson}
+                  className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 flex items-center gap-1 font-medium transition"
+                  title="匯出 JSON 備份"
+                >
+                  <Icon name="download" className="w-3.5 h-3.5" />
+                  <span>JSON 備份</span>
+                </button>
+              </div>
+
+              {sidebarTab === 'history' && items.length > 0 && (
+                <button
+                  onClick={onClearHistory}
+                  className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg transition"
+                  title="清空歷史紀錄"
+                >
+                  <Icon name="trash" className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Render the App into the root container
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
