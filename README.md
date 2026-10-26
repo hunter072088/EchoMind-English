@@ -1,175 +1,127 @@
-# 🎙️ English AI Studio (智慧英語學習與沉浸式聽力工坊)
+# 🎧 EchoMind English - 英文式思考與 Shadowing 影子跟讀訓練器
 
-[![GitHub Pages](https://img.shields.io/badge/Deployment-GitHub%20Pages-brightgreen?logo=github)](https://pages.github.com/)
-[![React 18](https://img.shields.io/badge/React-18-blue?logo=react)](https://react.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v3-38bdf8?logo=tailwind-css)](https://tailwindcss.com/)
-[![Google Gemini API](https://img.shields.io/badge/Powered%20by-Gemini%20API-orange?logo=google)](https://aistudio.google.com/)
-[![Web Speech API](https://img.shields.io/badge/Native-Web%20Speech%20API-purple)](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-> 一款現代化響應式英語學習 Web App。結合 **Google Gemini 2.0 / 1.5 系列大語言模型** 與瀏覽器原生的 **Web Speech API (`SpeechSynthesis`)**，專為提升英語學習者的寫作、多維表達與「沉浸式聽力/聽寫能力」而設計。
-> 
-> **零後端依賴**、無須伺服器，直接透過 **GitHub Pages** 即可免費全球高速託管！
+> **專案簡介**：本專案為開源純前端 PWA 英語學習應用，支援完全離線運行與 GitHub Pages 靜態託管。內建 100 天完整 1,000 個道地會話語塊、母語連音音標分析、三階段 Shadowing 影子跟讀工坊與免恐慌求生錦囊，所有學習進度與自訂卡頓庫 100% 留存於本地瀏覽器端，享有最高等級隱私保護。
 
 ---
 
-## 🌟 核心設計特色
+## 📖 1. 專案核心理念與設計宗旨
 
-- 🟢 **免金鑰即用模式（預設推薦）**：完全不需要申請或輸入任何 API Key，開箱即用！內建智慧語義轉換與公共翻譯引擎，手機與電腦隨開秒學。
-- 🟣 **進階自訂 Gemini API（選用）**：支援 Gemini 2.0 Flash / 1.5 Flash，若 API 遭遇問題系統亦具備自動平滑降級至免金鑰引擎，永遠順暢不中斷。
-- 🎧 **原生 Web Speech 沉浸式聽力**：深度整合瀏覽器原生的語音合成引擎，無須額外付費購買 TTS 服務。支援 **0.8x 慢速跟讀**、**1.0x 標準自然**、**1.2x 進階挑戰**，並可自由切換 **美式 (`en-US`)** 與 **英式 (`en-GB`)** 口音。
-- 👁️ **創新的「盲聽聽寫練習模式 (Listening Dictation Mode)」**：開啟後全域英文自動套用毛玻璃模糊遮罩，使用者透過聽取語音並在輸入框完成聽寫，系統會進行逐字比對計算正確率（%）並標示錯漏字。
-- ⭐ **本地書籤收藏與歷程備份**：隨時收藏優秀例句與單字，支援 **一鍵匯出 Markdown 筆記（相容 Obsidian / Notion）** 與 **JSON 完整備份**。
-- 🌓 **深色/淺色自適應現代介面**：採用類似 Notion / Duolingo 的精緻卡片式視覺，支援快捷鍵 (`Ctrl + Enter`) 與快速示範體驗。
+本專案深度取材自 YouTube 經典英語教學影片 **[English Podcast 1314]** 之核心思維，專為渴望告別「死記硬背、逐字心算翻譯」的學習者設計：
+
+### 🛑 拒絕逐字心算翻譯 (Reject Word-by-Word Translation)
+- **痛點剖析**：傳統學習者習慣把聽到的每個英文單字先在大腦翻成中文（*例如聽到 "What have you been up to?"，大腦還在卡在 "你一直直到上面在做什麼..."*）。此時老外已經講到第三句，導致全盤漏聽與巨大社交恐慌（Panic）。
+- **解法**：建立 **Chunk（塊狀語意）** 認知。將高頻片語結構視為一個不可分割的「語意積木」，聽到時直接調用情境反應，反應時間縮短至 **0.3 ~ 0.5 秒**。
+
+### 🧩 語塊預測能力 (Chunk Prediction)
+- 透過掌握常見的會話結構（*如：How's it going?, I'm not sure I follow, Let me make sure I understand, To be completely honest with you...*），大腦在聽到句首的瞬間便能提前預測整句的對話走向與意圖。
+
+### 🎙️ 三階段 Shadowing 影子跟讀
+- 先讓耳朵純聽音捕捉「音樂性語感與連音變形」，再透過 0.2 秒同步跟隨出聲馴化口腔肌肉，最後實現無逐字稿盲說。
+
+### 🛡️ 免恐慌生存應對錦囊 (No-Panic Survival Toolkit)
+- 聽不懂時絕不假裝點頭（Fake Nodding），而是從容使用「打斷 (Jump in)、重述 (Echo)、確認語意 (Verify)、爭取思考時間 (Buy Time)」的專業生存句型，讓對話永遠不中斷、不當機。
 
 ---
 
-## 🚀 三大核心學習模組
+## 🎯 2. 目標管理系統 (Goal Setting Framework)
+
+App 頂部與儀表板深度整合了多維度階梯式學習指標：
+
+| 維度 | 核心量化指標 | 預期達到的思維狀態 |
+| :--- | :--- | :--- |
+| **📅 每日 (Daily)** | 掌握並打卡 **10 個 Chunk**；完成至少 **3 次 Shadowing 循環跟讀** | 口腔肌肉每天都有出聲記憶，建立連續打卡習慣 |
+| **🗓️ 每週 (Weekly)** | 累積學習 **50 個自然 Chunk**；完成一次**無逐字稿盲測 Role-play** | 能在隨機情境中直覺拋出生存求救句 |
+| **📊 每月 (Monthly)** | 掌握 **200 個高頻對話塊**；將聽音反應時間縮短至 **0.5 秒內** | 聽到句首立刻反射情境義，告別中文介入 |
+| **🏆 每季 (Quarterly)** | 突破 B1-B2 聽力盲點；清空個人化**「卡頓句型庫」** | 面對老外快速連音不再慌張失措 |
+| **🚀 半年 (Half-Year)** | 能流暢進行 **10 分鐘以上全英文日常／職場對話** | 具備主動開話題、接話、換話題與優雅收尾能力 |
+| **👑 年度 (Annual)** | **徹底根除中英逐字翻譯習慣** | 內化英文原生大腦，實現即時反應與母語級從容 |
+
+---
+
+## 🛠️ 3. 四大核心功能模組 (Core Features)
+
+### 模組一：Chunk 每日精選與高效輸入 (10 Chunks/Day)
+- **卡片式專注學習**：
+  - 每天自動解鎖 10 個核心 Chunk（Day 1 破冰問候 ➔ Day 2 免恐慌求生 ➔ Day 3 爭取思考時間 ➔ Day 4 委婉推進 ➔ Day 5 禮貌打斷 ➔ Day 6 高階流暢）。
+- **多維度深度解構**：
+  - **❌ 死板逐字直譯 vs. ✅ 自然情境語義**：深度對比為何逐字翻會鬧笑話，直指母語文化情境。
+  - **⚡ Fast Speech Shape（快速連音與弱化形變）**：
+    標註老外實際說話時的音變法則（例如 *What have you been up to? ➔ What'cha been up to? [/ˈwʌtʃə bɪn ʌp tuː/]*，have 弱化脫落、What+you 顎化連讀）。
+  - **💡 實戰免恐慌指南**：精準解說在社交或職場中何時該丟出這句話作為安全防護。
+  - **二重奏情境例句**：提供 A/B 自然對白與一鍵發音試聽。
+
+### 模組二：Shadowing 影子跟讀工坊 (Shadowing Studio)
+- **嚴謹三階段科學跟讀法**：
+  1. **Stage 1: Listen & Recognize（純聽音辨識）**：預設套用高斯模糊遮蔽文字，逼大腦用耳朵抓取聲調起伏與連音，建立聽覺預測模型。
+  2. **Stage 2: Echo & Sync（同步口腔肌肉跟讀）**：提供 3-2-1 倒數計時音效，母語原音響起後 0.2 秒口腔肌肉同步跟出聲，並同步啟動即時錄音。
+  3. **Stage 3: Independent Output（無音檔盲朗讀）**：移走母語原音支架，由大腦直接驅動獨立發音並錄音。
+- **高保真語音錄音與視覺化對比**：
+  - 整合 HTML5 Web Audio API `AudioContext` & `AnalyserNode`，即時繪製麥克風波形。
+  - **Track 1 原音 (Native) vs Track 2 我的錄音 (My Voice)** 雙軌隨時點擊切換對比。
+  - 結合 Web Speech API 語音辨識，即時計算**發音與語塊匹配準確率（Accuracy %）**。
+
+### 模組三：智慧間隔複習 (Smart Review & SRS)
+- **間隔重複演算法 (Spaced Repetition)**：
+  - 抽認卡自評：🔴 完全卡住（1天，自動納入卡頓庫）、🟡 還可以（3天）、🟢 熟練掌握（7天）、⚡ 完美秒殺（15天）。
+  - **⚠️ 個人化「卡頓句型庫」專區**：凡是卡住的句型集中列管，支援一鍵直接送入 Shadowing Studio 進行定點爆破訓練。
+- **情境模擬測驗 (Panic Simulation Quiz)**：
+  - 模擬老外 1.1x 快速劈里啪啦講話的突發狀況題。
+  - 啟動 **5~6 秒緊張感倒數計時條**，強迫在時限內選出正確的應對求生語句。
+  - 詳細剖析常見陷阱（如「假裝聽懂點頭 Fake Nodding」帶來的職場災難）。
+
+### 模組四：情境 Role-Play 實戰考驗 (No-Panic Survival)
+- **三大高壓實戰情境**：
+  - 👨‍💻 *外商敏捷早會突襲 (Daily Standup Meeting)*
+  - 👩‍🎨 *茶水間與外籍同事巧遇閒聊 (Coffee Break Small Talk)*
+  - 👔 *突發視訊會議需求釐清 (Fast-Paced Client Call)*
+- **免恐慌生存求救錦囊 (Pinned Survival Kit)**：
+  - 固定置底快捷按鈕：【爭取思考時間】、【沒聽懂請求重述】、【確認理解】、【委婉預警】，點擊即可直接發送。
+  - 支援打字輸入與 **Web Speech 麥克風即時語音辨識輸入**。
+  - AI 即時提供「戰術與心理素質分析回饋」，鼓勵維持英文思維不中斷。
+
+---
+
+## 📂 4. 完整專案結構
 
 ```
-┌────────────────────────────────────────────────────────┐
-│                   English AI Studio                    │
-├────────────────────┬────────────────────┬──────────────┤
-│ 🇨🇳 ➡️ 🇺🇸 中翻英擴充 │ ✍️ ➡️ 💎 英中糾錯潤飾 │ 📚 ➡️ 🧠 單字情境 │
-└────────────────────┴────────────────────┴──────────────┘
-```
-
-### 1. 🇨🇳 ➡️ 🇺🇸 中翻英（多維度表達擴充）
-告別死板直譯！當你輸入一段中文時，AI 會以結構化 JSON 回傳：
-- **📌 核心標準直譯**：最準確無誤的標準英文。
-- **💼 商務/正式 (Formal)**：適合職場商業郵件、會議與專案報告的高格調用字。
-- **💬 道地口語 (Casual)**：母語人士在日常咖啡廳、社交對話中最習慣的自然說法。
-- **✨ 進階/精煉 (Idiomatic)**：運用高分片語、修辭與精鍊句型。
-- **💡 關鍵解析**：深入剖析幾種說法的語氣差異、選字邏輯與文化習慣。
-
-### 2. ✍️ ➡️ 💎 英翻中與母語潤飾（糾錯與升級）
-適合檢驗自己的英語寫作或商務信件：
-- **精準繁體中譯**：忠實呈現原句語意。
-- **語法與用字修正 (Grammar & Polish)**：即時標記原句的語法錯誤、贅字、介系詞誤用及台式英文 (Chinglish)，並提供修訂後版本與詳細原因分析。
-- **3 種進階換句話說**：
-  - 🌸 **委婉禮貌 (Diplomatic)**：謙和顧及對方的體貼語氣。
-  - ⚡ **直接果斷 (Decisive)**：明快有力、展現自信領導力。
-  - 🌟 **地道慣用 (Native)**：自然流暢的母語級表達。
-
-### 3. 📚 ➡️ 🧠 陌生單字深度練習（多情境應用）
-不再只是死背單字字典：
-- **單字解構卡**：包含 IPA/KK 音標、詳細詞性、核心繁體中文語意、字根字首 (Etymology) 或趣味記憶訣竅 (Memory Hook)。
-- **4 大情境深度應用例句**：
-  - ☕ **日常社交 (Daily Social)**
-  - 💼 **職場溝通 (Workplace / Business)**
-  - 📰 **新聞時事 (News / Current Affairs)**
-  - 🔬 **學術/技術 (Academic / Technical)**
-  - 每個情境均附有完整的英文例句（單字高亮標記）、精準中譯與情境應用小撇步。
-
----
-
-## 🎧 互動式聽力與盲聽練習 (Listening & Dictation)
-
-針對所有生成的英文句子、不同語氣改寫版本與情境例句，均可進行互動式聽力訓練：
-1. **逐句語音控制器**：
-   - 🔊 **播放 / 暫停按鈕**：點擊即可立即發音。
-   - 🐢 **語速切換**：`0.8x`（慢速跟讀練習）/ `1.0x`（正常）/ `1.2x`（進階聽力）。
-   - 🌎 **口音切換**：`美式 (en-US)` 與 `英式 (en-GB)`。
-2. **盲聽練習模式 (Listening Dictation Mode)**：
-   - 點擊頂部導航列的「👁️ 盲聽模式」按鈕。
-   - 開啟後，所有英文句子將以高斯模糊（`blur-sm`）遮蔽，僅保留「🔊 聽音訊」按鈕與「聽寫輸入框」。
-   - 聽完音訊後，在輸入框中打出你聽到的句子，點擊「比對」：
-     - 自動計算正確率（例如：`95% 🎉`）。
-     - 逐字比對反饋：綠色（完全正確）、紅色刪除線（漏聽或拼錯）、黃色（多打的字）。
-   - 若遇到卡關，可隨時點擊「看答案」解除模糊。
-
----
-
-## 🔑 如何取得免費 Gemini API Key
-
-本專案使用 Google 官方提供的 Gemini API，個人學習享有非常寬裕的**免費額度 (Free Tier)**：
-
-1. 前往 [Google AI Studio (aistudio.google.com/app/apikey)](https://aistudio.google.com/app/apikey)。
-2. 使用 Google 帳號登入。
-3. 點擊 **"Create API key"**（建立 API 金鑰）。
-4. 複製金鑰後，回到本應用程式右上角的「⚙️ API Key 設定」，貼上並儲存即可！
-   > 💡 即使尚未取得金鑰，也可以點擊輸入框下方的「**載入示範資料快速體驗**」搶先體驗所有功能！
-
----
-
-## 💻 本地運行步驟 (Local Development)
-
-由於本專案採用現代純靜態架構（HTML5 + React 18 + Tailwind CSS + Lucide Icons），在本地運行極其簡單：
-
-### 方式 1：使用 Python 內建 HTTP 伺服器（推薦）
-在專案根目錄開啟終端機（PowerShell 或 CMD），執行：
-```bash
-# Windows
-py -m http.server 3000
-
-# macOS / Linux
-python3 -m http.server 3000
-```
-開啟瀏覽器訪問：`http://localhost:3000`
-
-### 方式 2：使用 VS Code Live Server
-若使用 VS Code，安裝延伸模組 **Live Server**，在 `index.html` 上按右鍵選擇 **"Open with Live Server"** 即可。
-
-### 方式 3：直接雙擊開啟
-直接於檔案總管雙擊 `index.html` 亦可瀏覽與測試。
-
----
-
-## 🚀 部署至 GitHub Pages (免費靜態託管)
-
-將此專案部署至 GitHub Pages 僅需兩分鐘：
-
-### 步驟 1：建立 GitHub 儲存庫並推送程式碼
-```bash
-git init
-git add .
-git commit -m "feat: initial release of English AI Studio"
-git branch -M main
-git remote add origin https://github.com/<你的使用者名稱>/<你的儲存庫名稱>.git
-git push -u origin main
-```
-
-### 步驟 2：啟用 GitHub Pages（選擇以下任一種方式）
-
-#### 方式 A：直接透過儲存庫分支發布（最簡單、免等待）
-1. 進入 GitHub 儲存庫頁面，點擊 **Settings**（設定）。
-2. 在左側選單點選 **Pages**。
-3. 在 **Build and deployment** > **Source** 選擇 **"Deploy from a branch"**。
-4. **Branch** 選擇 `main`，資料夾選擇 `/ (root)`，點擊 **Save**。
-5. 等待 1~2 分鐘重新整理頁面，頂部即可看到您的專屬網址：
-   `https://<你的使用者名稱>.github.io/<你的儲存庫名稱>/`
-
-#### 方式 B：透過 GitHub Actions 自動發布
-專案已內建 `.github/workflows/deploy.yml`。
-1. 在 **Settings** > **Pages** 中，將 **Source** 切換為 **"GitHub Actions"**。
-2. 每次推送程式碼至 `main` 分支時，GitHub Actions 會自動完成驗證與部署！
-
----
-
-## 📂 專案檔案結構
-
-```
-learning-english/
-├── .github/
-│   └── workflows/
-│       └── deploy.yml      # GitHub Actions 自動部署工作流
-├── .gitignore              # Git 版本控制忽略設定
-├── index.html              # 核心 Single Page App (React 18 + Tailwind CSS + Web Speech API)
-└── README.md               # 專案中文與使用手冊
+learning english/
+├── index.html                   # 應用程式主入口 (React 18 + Tailwind CSS + Web Speech API)
+├── chunks-data.js               # 60+ 自然高頻 Chunks、音變筆記、情境題與劇本資料庫
+├── start-server.ps1             # 零相依本機 HTTP 伺服器腳本 (PowerShell .NET HttpListener)
+├── start-server.bat             # Windows 一鍵雙擊啟動批次檔 (自動打開瀏覽器)
+├── manifest.json                # PWA 本地應用資訊清單
+├── README.md                    # 本文件 (完整架構與操作說明)
+├── backup_english_ai_studio_index.html # 舊版系統安全備份
+└── assets/                      # 圖示與樣式資源
 ```
 
 ---
 
-## 🌐 瀏覽器相容性說明
+## 🚀 5. 本地端執行方式 (Local Run Guide)
 
-- **Web Speech API (`SpeechSynthesis`)**：
-  - **Google Chrome / Microsoft Edge**：原生支援極佳，提供多種高品質自然語音（Google US/UK, Microsoft Jenny/Oliver 等）。
-  - **Apple Safari (iOS / macOS)**：原生支援 Samantha 等語音。
-  - **Mozilla Firefox**：支援原生語音合成。
-- 本 Web App 支援各尺寸手機、平板與桌上型電腦，自適應深色模式與直式/橫式閱讀。
+本專案採用**零外部相依設計**（不需要 Node.js、不需要 npm、不需要 Python），在任何 Windows 電腦上皆能開箱即用！
+
+### 方式 1：一鍵雙擊啟動（最推薦，完整解鎖麥克風權限）
+1. 在檔案總管中，直接對 `start-server.bat` 連按兩下滑鼠左鍵。
+2. 系統會透過 Windows 內建的 PowerShell 自動在後台啟動微型 HTTP 伺服器：
+   ```
+   http://localhost:8000/
+   ```
+3. 預設瀏覽器（Edge / Chrome）將自動開啟 EchoMind English 介面。
+   > 💡 透過 `localhost` 伺服器開啟時，瀏覽器會以安全上下文（Secure Context）完整賦予麥克風錄音與語音合成之完整權限。
+
+### 方式 2：使用 PowerShell 命令列啟動
+開啟 PowerShell 終端機，執行：
+```powershell
+.\start-server.ps1
+```
+
+### 方式 3：直接開啟 HTML 檔
+直接以 Chrome 或 Edge 瀏覽器開啟 `index.html` 即可立即瀏覽 Chunk 與聆聽發音。
 
 ---
 
-## 📄 授權條款
-
-本專案採用 [MIT License](LICENSE) 授權釋出，歡迎自由分叉 (Fork)、客製化或應用於個人教學與學習用途。
+## 🔒 6. 隱私與本機資料說明
+- **資料庫**：所有打卡紀錄、掌握狀態、卡頓清單均透過 `localStorage` 存放於使用者自身瀏覽器中。
+- **無雲端傳輸**：完全不將音訊或學習紀錄上傳任何第三方伺服器。
+- **GitHub 守則**：本專案為本地專用訓練器，本機開發測試完畢，**請勿推送到公開 GitHub 儲存庫**。

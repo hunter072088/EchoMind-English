@@ -1,7 +1,13 @@
-const CACHE_NAME = 'english-ai-studio-v8';
+const CACHE_NAME = 'echomind-english-v3';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
+  './chunks-phase1.js',
+  './chunks-phase2.js',
+  './chunks-phase3.js',
+  './chunks-phase4.js',
+  './chunks-phase5.js',
+  './chunks-data.js',
   './manifest.json',
   './assets/icon-192.png',
   './assets/icon-512.png',
@@ -37,18 +43,12 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const request = event.request;
 
-  // Only handle HTTP/HTTPS GET requests
   if (request.method !== 'GET' || !request.url.startsWith('http')) {
     return;
   }
 
-  // Bypass live API calls
-  if (request.url.includes('googleapis.com') || request.url.includes('mymemory.translated.net')) {
-    return;
-  }
-
-  // Navigation requests: Network first with index.html fallback
-  if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
+  // Network first for HTML and JS datasets, fallback to cache
+  if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html') || request.url.includes('chunks-')) {
     event.respondWith(
       fetch(request)
         .then((response) => {
@@ -60,32 +60,25 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(async () => {
           const cache = await caches.open(CACHE_NAME);
-          const cached = (await cache.match(request)) ||
-                         (await cache.match('./index.html')) ||
-                         (await cache.match('./')) ||
-                         (await caches.match('./index.html'));
+          const cached = await cache.match(request);
           if (cached) return cached;
-          return fetch('./index.html').catch(() => new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }));
+          return caches.match('./index.html');
         })
     );
     return;
   }
 
-  // Static assets: Cache-first, then network and cache
+  // Static assets: cache-first
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;
-      return fetch(request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.ok) {
-            const clone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          return new Response('', { status: 408, statusText: 'Offline or resource not reachable' });
-        });
+      return fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.ok) {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+        }
+        return networkResponse;
+      }).catch(() => new Response('', { status: 408 }));
     })
   );
 });

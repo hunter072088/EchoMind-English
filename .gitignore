@@ -26,3 +26,6 @@ dist-ssr/
 *.sw?
 .DS_Store
 Thumbs.db
+
+# Local backups
+backup_*.html
