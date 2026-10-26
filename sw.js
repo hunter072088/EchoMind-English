@@ -1,4 +1,4 @@
-const CACHE_NAME = 'echomind-english-v3';
+const CACHE_NAME = 'echomind-english-v4';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -12,7 +12,9 @@ const PRECACHE_ASSETS = [
   './assets/icon-192.png',
   './assets/icon-512.png',
   './assets/icon-maskable-192.png',
-  './assets/icon-maskable-512.png'
+  './assets/icon-maskable-512.png',
+  './assets/apple-touch-icon.png',
+  './assets/favicon-32.png'
 ];
 
 self.addEventListener('install', (event) => {

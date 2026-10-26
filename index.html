@@ -5,17 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EchoMind English | 英文式思考與 Shadowing 影子跟讀訓練器</title>
   <meta name="description" content="專為擺脫逐字翻譯習慣打造。透過塊狀語意 (Chunks)、三階段 Shadowing 影子跟讀、免恐慌生存對話錦囊與間隔複習，建立直覺英文大腦。">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎧</text></svg>">
+  <!-- Favicon & Mobile Touch Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="EchoMind">
 
-  <!-- PWA Manifest & Icons -->
+  <!-- PWA Manifest & Colors -->
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#059669">
+  <meta name="mobile-web-app-capable" content="yes">
 
   <!-- Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW notice:', err));
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+          .then(reg => {
+            console.log('SW scope registered:', reg.scope);
+            reg.update();
+          })
+          .catch(err => console.log('SW notice:', err));
       });
     }
   </script>
@@ -138,7 +150,59 @@
   </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen font-sans selection:bg-brand-500 selection:text-white transition-colors duration-300">
-  <div id="root"></div>
+  <div id="root">
+    <!-- Instant Mobile Pre-Mount Loader (Replaced seamlessly once React mounts) -->
+    <div id="echomind-initial-loader" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #090d16; color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 24px; text-align: center; box-sizing: border-box;">
+      <div style="position: relative; margin-bottom: 20px;">
+        <img src="./assets/icon-192.png" alt="EchoMind Mascot" style="width: 108px; height: 108px; border-radius: 26px; box-shadow: 0 12px 35px rgba(16,185,129,0.35); animation: pulse-logo 2.2s infinite ease-in-out; object-fit: cover;" />
+      </div>
+      <h1 style="font-size: 24px; font-weight: 800; margin: 0 0 8px 0; background: linear-gradient(135deg, #34d399, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        EchoMind English
+      </h1>
+      <p style="font-size: 13px; color: #94a3b8; margin: 0 0 22px 0; max-width: 300px; line-height: 1.5;">
+        英文式思考 • 語塊預測 • Shadowing 跟讀
+      </p>
+      
+      <!-- Animated loading bar -->
+      <div style="width: 180px; height: 6px; background: rgba(255,255,255,0.08); border-radius: 9999px; overflow: hidden; margin-bottom: 14px; position: relative;">
+        <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 60%; background: linear-gradient(90deg, #10b981, #0ea5e9); border-radius: 9999px; animation: load-bar 1.5s infinite ease-in-out;"></div>
+      </div>
+      <p id="loader-subtext" style="font-size: 11px; color: #64748b; margin: 0;">啟動直覺英文大腦中，請稍候...</p>
+
+      <!-- Fail-safe self-repair panel (appears if loading takes > 5s on slow mobile networks) -->
+      <div id="loader-fallback" style="display: none; margin-top: 26px; padding: 14px 18px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 18px; max-width: 320px;">
+        <p style="font-size: 12px; color: #fbbf24; margin: 0 0 12px 0; font-weight: 600;">⚠️ 手機載入較慢或快取未更新？</p>
+        <div style="display: flex; gap: 8px; justify-content: center;">
+          <button onclick="window.location.reload(true)" style="background: #059669; color: white; border: none; padding: 9px 14px; border-radius: 10px; font-size: 12px; font-weight: bold; cursor: pointer;">
+            重新整理
+          </button>
+          <button onclick="try{localStorage.clear();if('caches' in window){caches.keys().then(k=>k.forEach(c=>caches.delete(c)))};if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(r=>r.forEach(s=>s.unregister()))};}catch(e){};window.location.reload(true);" style="background: #1e293b; color: #f1f5f9; border: 1px solid #475569; padding: 9px 12px; border-radius: 10px; font-size: 12px; cursor: pointer;">
+            清除快取重開
+          </button>
+        </div>
+      </div>
+
+      <style>
+        @keyframes pulse-logo {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+        }
+        @keyframes load-bar {
+          0% { left: -60%; }
+          50% { left: 40%; }
+          100% { left: 100%; }
+        }
+      </style>
+      <script>
+        setTimeout(function() {
+          var fb = document.getElementById('loader-fallback');
+          if (fb) fb.style.display = 'block';
+          var st = document.getElementById('loader-subtext');
+          if (st) st.innerText = '正在等待資源解析...';
+        }, 5000);
+      </script>
+    </div>
+  </div>
 
   <script type="text/babel">
     const { useState, useEffect, useRef, useMemo, useCallback } = React;
@@ -347,39 +411,83 @@
         });
       };
 
-      // User Learning State (Persistent in LocalStorage)
-      const [userState, setUserState] = useState(() => {
-        const saved = localStorage.getItem('echomind_user_state');
-        const todayStr = new Date().toISOString().slice(0, 10);
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.lastActiveDate !== todayStr) {
-            // New day: advance streak if yesterday, reset daily counts
-            const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-            const isConsecutive = parsed.lastActiveDate === yesterday;
-            return {
-              ...parsed,
-              streak: isConsecutive ? parsed.streak + 1 : 1,
-              lastActiveDate: todayStr,
-              todayMasteredChunkIds: [],
-              todayShadowingCount: 0,
-            };
+      // PWA Installation state
+      const [installPrompt, setInstallPrompt] = useState(null);
+      const [isStandalone, setIsStandalone] = useState(false);
+      const [showInstallGuide, setShowInstallGuide] = useState(false);
+
+      useEffect(() => {
+        const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        setIsStandalone(isStandaloneMode);
+
+        const handleBeforeInstall = (e) => {
+          e.preventDefault();
+          setInstallPrompt(e);
+        };
+
+        window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+        return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      }, []);
+
+      const handleInstallClick = async () => {
+        if (installPrompt) {
+          try {
+            installPrompt.prompt();
+            const { outcome } = await installPrompt.userChoice;
+            if (outcome === 'accepted') {
+              setInstallPrompt(null);
+            }
+          } catch (err) {
+            console.error('Install prompt error:', err);
+            setShowInstallGuide(true);
           }
-          return parsed;
+        } else {
+          setShowInstallGuide(true);
         }
-        return {
+      };
+
+      // User Learning State (Persistent in LocalStorage with fail-safe recovery)
+      const [userState, setUserState] = useState(() => {
+        const defaultState = {
           streak: 1,
-          lastActiveDate: todayStr,
+          lastActiveDate: new Date().toISOString().slice(0, 10),
           masteredChunkIds: [],
           todayMasteredChunkIds: [],
           todayShadowingCount: 0,
           totalShadowingSessions: 0,
           starredChunkIds: [],
-          stuckChunkIds: [], // 卡頓句型庫
-          srsCards: {}, // { chunkId: { intervalDays: 1, nextReviewDate: 'YYYY-MM-DD', easeFactor: 2.5 } }
-          reactionTimes: [], // ms records
+          stuckChunkIds: [],
+          srsCards: {},
+          reactionTimes: [],
           roleplayHistory: []
         };
+        try {
+          const saved = localStorage.getItem('echomind_user_state');
+          if (!saved) return defaultState;
+          const parsed = JSON.parse(saved);
+          const todayStr = new Date().toISOString().slice(0, 10);
+          const isNewDay = parsed.lastActiveDate !== todayStr;
+          const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+          const isConsecutive = parsed.lastActiveDate === yesterday;
+
+          return {
+            ...defaultState,
+            ...parsed,
+            streak: isNewDay ? (isConsecutive ? (parsed.streak || 1) + 1 : 1) : (parsed.streak || 1),
+            lastActiveDate: todayStr,
+            todayMasteredChunkIds: isNewDay ? [] : (parsed.todayMasteredChunkIds || []),
+            todayShadowingCount: isNewDay ? 0 : (parsed.todayShadowingCount || 0),
+            masteredChunkIds: Array.isArray(parsed.masteredChunkIds) ? parsed.masteredChunkIds : [],
+            starredChunkIds: Array.isArray(parsed.starredChunkIds) ? parsed.starredChunkIds : [],
+            stuckChunkIds: Array.isArray(parsed.stuckChunkIds) ? parsed.stuckChunkIds : [],
+            srsCards: parsed.srsCards || {},
+            reactionTimes: Array.isArray(parsed.reactionTimes) ? parsed.reactionTimes : [],
+            roleplayHistory: Array.isArray(parsed.roleplayHistory) ? parsed.roleplayHistory : []
+          };
+        } catch (e) {
+          console.warn('Failed to parse userState from localStorage, defaulting:', e);
+          return defaultState;
+        }
       });
 
       // Save user state
@@ -447,9 +555,11 @@
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
               {/* Brand Logo */}
               <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveNav('chunks')}>
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
-                  <Icon name="headphones" className="w-5 h-5" />
-                </div>
+                <img 
+                  src="./assets/icon-192.png" 
+                  alt="EchoMind Mascot" 
+                  className="w-10 h-10 rounded-2xl shadow-md shadow-brand-500/20 object-cover border border-emerald-500/30 hover:scale-105 transition-transform" 
+                />
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-display font-extrabold text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white">
@@ -484,6 +594,17 @@
 
               {/* Right Controls */}
               <div className="flex items-center gap-1 sm:gap-2">
+                {!isStandalone && (
+                  <button
+                    onClick={handleInstallClick}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-md shadow-emerald-500/20 transition active:scale-95"
+                    title="安裝 EchoMind App 到手機主畫面"
+                  >
+                    <span>📲</span>
+                    <span className="hidden sm:inline">安裝 App</span>
+                  </button>
+                )}
+
                 <button
                   onClick={() => setIsDark(!isDark)}
                   className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
@@ -546,6 +667,8 @@
                 onStartShadowing={handleStartShadowing}
                 onToggleStar={handleToggleStar}
                 onToggleMastered={handleToggleMastered}
+                onInstallClick={handleInstallClick}
+                isStandalone={isStandalone}
               />
             )}
 
@@ -597,6 +720,17 @@
               onClose={() => setShowSettingsModal(false)}
               userState={userState}
               setUserState={setUserState}
+              onInstallClick={handleInstallClick}
+              isStandalone={isStandalone}
+            />
+          )}
+
+          {/* Install Guide Modal */}
+          {showInstallGuide && (
+            <InstallGuideModal
+              onClose={() => setShowInstallGuide(false)}
+              installPrompt={installPrompt}
+              onTriggerInstall={handleInstallClick}
             />
           )}
 
@@ -613,7 +747,7 @@
     // =========================================================================
     // 模組一：Chunk 每日精選與高效輸入 (10 Chunks/Day)
     // =========================================================================
-    function ModuleChunks({ allChunks, userState, settings, onStartShadowing, onToggleStar, onToggleMastered }) {
+    function ModuleChunks({ allChunks, userState, settings, onStartShadowing, onToggleStar, onToggleMastered, onInstallClick, isStandalone }) {
       const [selectedDay, setSelectedDay] = useState(1);
       const [selectedPhase, setSelectedPhase] = useState(1);
       const [searchQuery, setSearchQuery] = useState('');
@@ -667,6 +801,31 @@
 
       return (
         <div className="space-y-6">
+          {/* Cute PWA Install Recommendation Banner */}
+          {!isStandalone && (
+            <div className="bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border border-emerald-500/30 rounded-3xl p-4 sm:p-5 flex items-center justify-between gap-4 backdrop-blur-sm shadow-sm">
+              <div className="flex items-center gap-3.5">
+                <img src="./assets/icon-192.png" alt="EchoMind Mascot" className="w-12 h-12 rounded-2xl shadow-md border border-emerald-400/40 object-cover flex-shrink-0" />
+                <div>
+                  <h4 className="font-display font-extrabold text-sm sm:text-base text-slate-900 dark:text-white flex items-center gap-2">
+                    <span>把柴犬 EchoMind 安裝到手機桌面</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold">推薦</span>
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    免開瀏覽器網址列，點開即練、語音離線更流暢！
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={onInstallClick}
+                className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-500/20 whitespace-nowrap active:scale-95 transition flex items-center gap-1.5 flex-shrink-0"
+              >
+                <span>📲</span>
+                <span>立即安裝</span>
+              </button>
+            </div>
+          )}
+
           {/* Day & Progress Banner */}
           <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-brand-500/10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -2414,7 +2573,7 @@
     // =========================================================================
     // 設定 Modal (SettingsModal)
     // =========================================================================
-    function SettingsModal({ settings, onUpdate, onClose, userState, setUserState }) {
+    function SettingsModal({ settings, onUpdate, onClose, userState, setUserState, onInstallClick, isStandalone }) {
       return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fadeIn">
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5">
@@ -2482,6 +2641,53 @@
                   />
                 </label>
               </div>
+
+              {/* PWA / App Installation Guide inside Settings */}
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                <label className="block font-bold text-slate-700 dark:text-slate-300">📱 手機 App 安裝與離線</label>
+                <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
+                  <div>
+                    <div className="font-bold text-slate-900 dark:text-white">
+                      {isStandalone ? "✅ 已安裝為獨立 App" : "安裝 EchoMind 到手機桌面"}
+                    </div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                      {isStandalone ? "目前正在獨立視窗模式運行" : "享受全螢幕無網址列、秒開極速跟讀"}
+                    </div>
+                  </div>
+                  {!isStandalone && (
+                    <button
+                      onClick={() => {
+                        onClose();
+                        onInstallClick();
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs whitespace-nowrap shadow-sm"
+                    >
+                      安裝教學
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Cache Self-Repair */}
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm("確定要重整並清除本地快取嗎？（您的學習紀錄會保留在雲端/本地儲存中）")) {
+                      if ('caches' in window) {
+                        caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+                      }
+                      if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+                      }
+                      window.location.reload(true);
+                    }
+                  }}
+                  className="w-full py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold text-xs transition"
+                >
+                  ⚡ 清除快取並強制重新整理
+                </button>
+              </div>
             </div>
 
             <div className="pt-3">
@@ -2490,6 +2696,86 @@
                 className="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md shadow-brand-500/20 transition"
               >
                 儲存並關閉
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // =========================================================================
+    // 安裝教學 Modal (InstallGuideModal)
+    // =========================================================================
+    function InstallGuideModal({ onClose, installPrompt, onTriggerInstall }) {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-3">
+                <img src="./assets/icon-192.png" alt="EchoMind Mascot" className="w-10 h-10 rounded-2xl shadow-md border border-emerald-500/20" />
+                <div>
+                  <h3 className="font-display font-extrabold text-base sm:text-lg text-slate-900 dark:text-white">
+                    安裝 EchoMind 手機 App
+                  </h3>
+                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">純本地免商店 • 離線隨身跟讀</p>
+                </div>
+              </div>
+              <button onClick={onClose} className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 text-sm">✕</button>
+            </div>
+
+            {/* Quick Install Action (if Chrome supports beforeinstallprompt) */}
+            {installPrompt && (
+              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/80 text-center space-y-3">
+                <p className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
+                  🎉 你的手機瀏覽器支援一鍵直接安裝！
+                </p>
+                <button
+                  onClick={() => {
+                    onTriggerInstall();
+                    onClose();
+                  }}
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/30 transition transform active:scale-95 flex items-center justify-center gap-2"
+                >
+                  <span>📲</span>
+                  <span>立即加到手機桌面</span>
+                </button>
+              </div>
+            )}
+
+            {/* Step by Step Guide for Android Chrome / iOS */}
+            <div className="space-y-3 text-xs text-slate-600 dark:text-slate-300">
+              <p className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span>📌</span>
+                <span>手機 Chrome / Safari 安裝步驟：</span>
+              </p>
+
+              {isIOS ? (
+                <ol className="space-y-2.5 pl-4 list-decimal marker:text-emerald-500 marker:font-bold">
+                  <li>點擊 Safari 底部工具列正中央的「<strong>分享</strong>」圖示（帶箭頭的方框）。</li>
+                  <li>在選單中往下滑動，找到並點擊「<strong>加入主畫面</strong>」。</li>
+                  <li>確認名稱後點擊右上角「<strong>新增</strong>」，可愛的柴犬 EchoMind 圖示就會出現在手機桌面！</li>
+                </ol>
+              ) : (
+                <ol className="space-y-2.5 pl-4 list-decimal marker:text-emerald-500 marker:font-bold">
+                  <li>在手機 Chrome 瀏覽器右上角點擊「<strong>三個點選單 (⋮)</strong>」。</li>
+                  <li>在展開的選單中點選「<strong>加到主畫面</strong>」或「<strong>安裝應用程式</strong>」。</li>
+                  <li>在確認對話框中點擊「<strong>安裝</strong>」，系統會自動將可愛柴犬圖示的 EchoMind 加入桌面！</li>
+                </ol>
+              )}
+            </div>
+
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
+              💡 安裝後打開即為全螢幕沉浸式 App，沒有瀏覽器網址列干擾，語音跟讀與離線複習更加流暢！
+            </div>
+
+            <div className="pt-2">
+              <button
+                onClick={onClose}
+                className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs transition"
+              >
+                我知道了，關閉
               </button>
             </div>
           </div>
@@ -2512,19 +2798,47 @@
         console.error('EchoMind Error caught:', error, errorInfo);
       }
 
+      handleResetCache = () => {
+        try {
+          localStorage.removeItem('echomind_user_state');
+          localStorage.removeItem('echomind_settings');
+          localStorage.removeItem('echomind_theme');
+          if ('caches' in window) {
+            caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+          }
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(regs => {
+              regs.forEach(r => r.unregister());
+            });
+          }
+        } catch (e) {
+          console.error(e);
+        }
+        window.location.reload(true);
+      };
+
       render() {
         if (this.state.hasError) {
           return (
             <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4">
-              <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 text-center space-y-4">
-                <span className="text-4xl">🛡️</span>
-                <h2 className="text-xl font-bold">應用程式狀態遇到小問題</h2>
-                <p className="text-xs text-slate-400">點擊下方按鈕即可重新整理重啟：</p>
+              <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl">
+                <img src="./assets/icon-192.png" alt="EchoMind" className="w-20 h-20 mx-auto rounded-2xl shadow-lg border-2 border-emerald-500/30" />
+                <h2 className="text-xl font-bold">載入時遇到狀況</h2>
+                <p className="text-xs text-slate-400">可能是舊版本快取或暫存資料衝突，點擊下方進行一鍵自我修復：</p>
+                <div className="text-left bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-[11px] text-red-400 font-mono overflow-auto max-h-24">
+                  {this.state.error?.message || '未知錯誤'}
+                </div>
                 <button
                   onClick={() => window.location.reload()}
-                  className="w-full py-2.5 rounded-xl bg-brand-600 text-white font-bold text-xs"
+                  className="w-full py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs transition"
                 >
-                  重新載入
+                  一般重新整理
+                </button>
+                <button
+                  onClick={this.handleResetCache}
+                  className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs border border-amber-500/30 transition"
+                >
+                  ⚡ 一鍵清除快取並修復重啟
                 </button>
               </div>
             </div>
