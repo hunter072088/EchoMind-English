@@ -796,7 +796,8 @@
       const [isSelectMode, setIsSelectMode] = useState(false);
 
       // Playback Preferences
-      const [repeatCount, setRepeatCount] = useState(2); // 1, 2, 3 次
+      const [repeatCount, setRepeatCount] = useState(2); // 1, 2, 3, 5, Infinity (無限次)
+      const [isLoopPlaylist, setIsLoopPlaylist] = useState(false); // 清單循環播放（全部播完後重新從第 1 句循環）
       const [pauseInterval, setPauseInterval] = useState(1.5); // 1.0s, 1.5s, 2.0s, 3.0s
       const [continuousRate, setContinuousRate] = useState(settings.defaultRate || 1.0);
       const [playContentMode, setPlayContentMode] = useState('chunk_only'); // 'chunk_only' | 'chunk_and_dialogue'
@@ -817,6 +818,9 @@
 
       const repeatCountRef = useRef(repeatCount);
       repeatCountRef.current = repeatCount;
+
+      const isLoopPlaylistRef = useRef(isLoopPlaylist);
+      isLoopPlaylistRef.current = isLoopPlaylist;
 
       const pauseIntervalRef = useRef(pauseInterval);
       pauseIntervalRef.current = pauseInterval;
@@ -952,14 +956,17 @@
             return;
           }
 
-          if (repeat < repeatCountRef.current) {
-            // Repeat this item again for shadowing
+          if (repeatCountRef.current === Infinity || repeat < repeatCountRef.current) {
+            // Repeat this item again for shadowing (infinite loop or next repeat)
             playContinuousItem(playlist, index, repeat + 1);
           } else {
             // Advance to next chunk in playlist
             const nextIndex = index + 1;
             if (nextIndex < playlist.length) {
               playContinuousItem(playlist, nextIndex, 1);
+            } else if (isLoopPlaylistRef.current && playlist.length > 0) {
+              // Reached end of playlist, loop back to the start!
+              playContinuousItem(playlist, 0, 1);
             } else {
               // Completed all!
               stopContinuous();
@@ -1005,6 +1012,9 @@
         const { playlist, currentIndex } = continuousPlayerRef.current;
         if (currentIndex + 1 < playlist.length) {
           playContinuousItem(playlist, currentIndex + 1, 1);
+        } else if (isLoopPlaylistRef.current && playlist.length > 0) {
+          // Loop back to start
+          playContinuousItem(playlist, 0, 1);
         } else {
           stopContinuous();
         }
@@ -1014,7 +1024,7 @@
         if (continuousTimeoutRef.current) clearTimeout(continuousTimeoutRef.current);
         AudioService.stop();
         const { playlist, currentIndex } = continuousPlayerRef.current;
-        const prevIndex = Math.max(0, currentIndex - 1);
+        const prevIndex = currentIndex > 0 ? currentIndex - 1 : (isLoopPlaylistRef.current && playlist.length > 0 ? playlist.length - 1 : 0);
         playContinuousItem(playlist, prevIndex, 1);
       };
 
@@ -1312,27 +1322,44 @@
 
               {/* Right: Continuous Playback Tuning Parameters (Repeat, Interval, Rate, Mode) */}
               <div className="flex items-center gap-2 flex-wrap self-stretch lg:self-auto pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-slate-800 text-xs">
-                {/* Repeat Setting */}
+                {/* Repeat Setting (支援 1次、2次、3次、5次、無限次) */}
                 <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl">
                   <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 pl-1.5">重複:</span>
                   {[
                     { count: 1, label: '1次' },
                     { count: 2, label: '2次(跟讀)' },
-                    { count: 3, label: '3次' }
+                    { count: 3, label: '3次' },
+                    { count: 5, label: '5次' },
+                    { count: Infinity, label: '∞ 無限' }
                   ].map(opt => (
                     <button
-                      key={opt.count}
+                      key={String(opt.count)}
                       onClick={() => setRepeatCount(opt.count)}
                       className={`px-2 py-1 rounded-xl font-bold transition text-[11px] ${
                         repeatCount === opt.count
                           ? 'bg-white dark:bg-slate-700 text-brand-600 dark:text-brand-300 shadow-sm'
                           : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
                       }`}
+                      title={opt.count === Infinity ? "單句無限次重複跟讀，可隨時點擊「下一首」切換" : `每句重複朗讀 ${opt.count} 次`}
                     >
                       {opt.label}
                     </button>
                   ))}
                 </div>
+
+                {/* Playlist Loop Toggle */}
+                <button
+                  onClick={() => setIsLoopPlaylist(prev => !prev)}
+                  className={`px-2.5 py-1.5 rounded-2xl font-bold transition text-[11px] border flex items-center gap-1.5 ${
+                    isLoopPlaylist
+                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-extrabold shadow-sm'
+                      : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  }`}
+                  title={isLoopPlaylist ? "已開啟清單循環（整頁/勾選語塊全部播完後將自動重頭循環）" : "點擊開啟清單循環播放"}
+                >
+                  <Icon name="repeat" className="w-3.5 h-3.5" />
+                  <span>{isLoopPlaylist ? '🔁 清單循環: 開' : '🔁 清單循環: 關'}</span>
+                </button>
 
                 {/* Pause Interval Setting */}
                 <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-2xl">
@@ -1443,8 +1470,15 @@
                         {continuousPlayer.currentIndex + 1} / {continuousPlayer.playlist.length}
                       </span>
                       <span className="text-[11px] text-amber-300 font-bold">
-                        {continuousPlayer.status === 'pausing' ? '⏳ 留白跟讀中...' : `🗣️ 跟讀 ${continuousPlayer.currentRepeat}/${repeatCount} 次`}
+                        {continuousPlayer.status === 'pausing' 
+                          ? (repeatCount === Infinity ? `⏳ 留白跟讀中 (第 ${continuousPlayer.currentRepeat} 次)...` : '⏳ 留白跟讀中...') 
+                          : (repeatCount === Infinity ? `🗣️ 跟讀 第 ${continuousPlayer.currentRepeat} 次 (∞ 無限)` : `🗣️ 跟讀 ${continuousPlayer.currentRepeat}/${repeatCount} 次`)}
                       </span>
+                      {isLoopPlaylist && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
+                          🔁 循環
+                        </span>
+                      )}
                     </div>
                     <h4 className="font-display font-extrabold text-sm sm:text-base text-white truncate max-w-xs sm:max-w-sm">
                       {continuousPlayer.playlist[continuousPlayer.currentIndex]?.text || '連續播放中...'}
@@ -1485,6 +1519,17 @@
                     title="下一個語塊"
                   >
                     <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="2"/></svg>
+                  </button>
+
+                  {/* Playlist Loop Toggle */}
+                  <button
+                    onClick={() => setIsLoopPlaylist(prev => !prev)}
+                    className={`p-2 rounded-xl transition ${
+                      isLoopPlaylist ? 'text-emerald-400 bg-emerald-950/60 ring-1 ring-emerald-500/50' : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                    }`}
+                    title={isLoopPlaylist ? "清單循環中（播完最後一句將自動從頭重新循環）" : "開啟清單循環播放"}
+                  >
+                    <Icon name="repeat" className="w-5 h-5" />
                   </button>
 
                   {/* Stop */}
@@ -1548,7 +1593,7 @@
                   <span>🔊 連續播放中</span>
                 </div>
                 <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-600 text-white font-mono">
-                  跟讀 {currentRepeat} / {repeatCount} 次
+                  {repeatCount === Infinity ? `跟讀 第 ${currentRepeat} 次 (∞ 無限)` : `跟讀 ${currentRepeat} / ${repeatCount} 次`}
                 </span>
               </div>
             )}

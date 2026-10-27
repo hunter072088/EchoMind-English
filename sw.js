@@ -1,4 +1,4 @@
-const CACHE_NAME = 'echomind-english-v5';
+const CACHE_NAME = 'echomind-english-v6';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
