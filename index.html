@@ -339,14 +339,215 @@
       return icons[name] || <span className={className}>•</span>;
     }
 
-    // --- Audio Service (Web Speech API) ---
+    // --- Audio Service (Enhanced Dual-Engine: Stream Audio + Background Carrier + Web Speech Fallback) ---
     class AudioService {
       static activeUtterance = null;
       static fallbackTimer = null;
+      static speechAudio = null;
+      static carrierAudio = null;
+      static isBackgroundMode = true;
+      static wakeLockSentinel = null;
+      static silentAudioUrl = null;
+
+      static initAudio() {
+        if (!this.silentAudioUrl) {
+          this.silentAudioUrl = this.createSilentAudioUrl();
+        }
+        if (!this.carrierAudio && typeof Audio !== 'undefined') {
+          try {
+            this.carrierAudio = new Audio(this.silentAudioUrl);
+            this.carrierAudio.setAttribute('playsinline', 'true');
+            this.carrierAudio.setAttribute('webkit-playsinline', 'true');
+            this.carrierAudio.loop = true;
+            this.carrierAudio.volume = 0.001; // barely audible carrier track to keep OS audio session active
+          } catch (e) {
+            console.warn('Carrier audio init notice:', e);
+          }
+        }
+        if (!this.speechAudio && typeof Audio !== 'undefined') {
+          try {
+            this.speechAudio = new Audio();
+            this.speechAudio.setAttribute('playsinline', 'true');
+            this.speechAudio.setAttribute('webkit-playsinline', 'true');
+          } catch (e) {
+            console.warn('Speech audio init notice:', e);
+          }
+        }
+      }
+
+      // 1-second 8kHz 8-bit mono silent WAV Blob (pure offline client-side synthesis)
+      static createSilentAudioUrl() {
+        try {
+          const sampleRate = 8000;
+          const numSamples = sampleRate;
+          const buffer = new Uint8Array(44 + numSamples);
+          const view = new DataView(buffer.buffer);
+          view.setUint32(0, 0x52494646, false); // "RIFF"
+          view.setUint32(4, 36 + numSamples, true);
+          view.setUint32(8, 0x57415645, false); // "WAVE"
+          view.setUint32(12, 0x666d7420, false); // "fmt "
+          view.setUint32(16, 16, true);
+          view.setUint16(20, 1, true); // PCM
+          view.setUint16(22, 1, true); // Mono
+          view.setUint32(24, sampleRate, true);
+          view.setUint32(28, sampleRate, true);
+          view.setUint16(32, 1, true);
+          view.setUint16(34, 8, true);
+          view.setUint32(36, 0x64617461, false); // "data"
+          view.setUint32(40, numSamples, true);
+          for (let i = 0; i < numSamples; i++) {
+            buffer[44 + i] = 128; // PCM 8-bit midpoint = silence
+          }
+          const blob = new Blob([buffer], { type: 'audio/wav' });
+          return URL.createObjectURL(blob);
+        } catch (e) {
+          return 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+        }
+      }
+
+      // TTS Stream URL Generator (Google Translate High-Quality Audio Stream)
+      static getTtsUrl(text, lang = 'en-US') {
+        const langCode = (lang.includes('GB') || lang.includes('UK')) ? 'en-GB' : 'en-US';
+        const cleanText = text.replace(/[\/\(\)\*]/g, ' ').trim().slice(0, 200);
+        return `https://translate.google.com/translate_tts?ie=UTF-8&tl=${langCode}&client=tw-ob&q=${encodeURIComponent(cleanText)}`;
+      }
+
+      // Start Mobile Background Persistence Mode
+      static async startBackgroundCarrier() {
+        this.initAudio();
+        if (this.carrierAudio) {
+          try {
+            await this.carrierAudio.play();
+          } catch (e) {
+            console.warn('Carrier play notice:', e);
+          }
+        }
+        this.requestWakeLock();
+      }
+
+      // Stop Background Persistence Mode
+      static stopBackgroundCarrier() {
+        if (this.carrierAudio) {
+          try {
+            this.carrierAudio.pause();
+          } catch (e) {}
+        }
+        this.releaseWakeLock();
+      }
+
+      static async requestWakeLock() {
+        if ('wakeLock' in navigator && !this.wakeLockSentinel) {
+          try {
+            this.wakeLockSentinel = await navigator.wakeLock.request('screen');
+            this.wakeLockSentinel.addEventListener('release', () => {
+              this.wakeLockSentinel = null;
+            });
+          } catch (e) {}
+        }
+      }
+
+      static releaseWakeLock() {
+        if (this.wakeLockSentinel) {
+          try {
+            this.wakeLockSentinel.release();
+          } catch (e) {}
+          this.wakeLockSentinel = null;
+        }
+      }
+
+      // Update Mobile Lock Screen & Control Center Info
+      static updateMediaSession(info = {}, onActions = {}) {
+        if (!('mediaSession' in navigator)) return;
+        try {
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: info.title || 'EchoMind English',
+            artist: info.artist || '英文式思考與 Shadowing 跟讀訓練器',
+            album: info.album || '100 天道地語塊磨耳朵',
+            artwork: [
+              { src: './assets/icon-192.png', sizes: '192x192', type: 'image/png' },
+              { src: './assets/icon-512.png', sizes: '512x512', type: 'image/png' }
+            ]
+          });
+          navigator.mediaSession.playbackState = 'playing';
+
+          if (onActions.play) navigator.mediaSession.setActionHandler('play', onActions.play);
+          if (onActions.pause) navigator.mediaSession.setActionHandler('pause', onActions.pause);
+          if (onActions.nexttrack) navigator.mediaSession.setActionHandler('nexttrack', onActions.nexttrack);
+          if (onActions.previoustrack) navigator.mediaSession.setActionHandler('previoustrack', onActions.previoustrack);
+        } catch (e) {
+          console.warn('MediaSession notice:', e);
+        }
+      }
+
+      static updateMediaPlaybackState(state = 'none') {
+        if ('mediaSession' in navigator) {
+          try {
+            navigator.mediaSession.playbackState = state;
+          } catch (e) {}
+        }
+      }
 
       static speak(text, options = {}) {
+        this.initAudio();
+        this.stop(); // Stop any ongoing speech
+
+        const preferStream = options.preferStream !== false;
+
+        // Keep carrier audio active during intervals
+        if (this.carrierAudio && this.isBackgroundMode) {
+          this.carrierAudio.play().catch(() => {});
+        }
+
+        if (preferStream && this.speechAudio) {
+          let hasFinished = false;
+          const finish = (isError = false) => {
+            if (hasFinished) return;
+            hasFinished = true;
+            if (this.fallbackTimer) {
+              clearTimeout(this.fallbackTimer);
+              this.fallbackTimer = null;
+            }
+            // Ensure carrier continues to loop in the background during pause intervals!
+            if (this.carrierAudio && this.isBackgroundMode) {
+              this.carrierAudio.play().catch(() => {});
+            }
+            if (isError && options.onError) options.onError();
+            else if (!isError && options.onEnd) options.onEnd();
+          };
+
+          this.speechAudio.onended = () => finish(false);
+          this.speechAudio.onerror = (err) => {
+            console.warn('TTS Stream playback failed, falling back to Web Speech API:', err);
+            this.speakWebSpeech(text, options);
+          };
+
+          const ttsUrl = this.getTtsUrl(text, options.lang || 'en-US');
+          this.speechAudio.src = ttsUrl;
+          this.speechAudio.playbackRate = options.rate || 1.0;
+
+          // Safety fallback timer
+          const approxDurationMs = Math.max(3000, (text.length / 6) * 1000 + 4000);
+          this.fallbackTimer = setTimeout(() => {
+            if (!hasFinished) {
+              finish(false);
+            }
+          }, approxDurationMs);
+
+          this.speechAudio.play().then(() => {
+            if (options.onStart) options.onStart();
+          }).catch(err => {
+            console.warn('Audio play prevented or offline, fallback to SpeechSynthesis:', err);
+            this.speakWebSpeech(text, options);
+          });
+
+          return;
+        }
+
+        this.speakWebSpeech(text, options);
+      }
+
+      static speakWebSpeech(text, options = {}) {
         if (!('speechSynthesis' in window)) return;
-        this.stop(); // cancel any ongoing speech
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.rate = options.rate || 1.0;
@@ -379,15 +580,11 @@
           finish(true);
         };
 
-        // Retain utterance reference to prevent premature garbage collection in Chrome
         this.activeUtterance = utterance;
 
-        // Fallback timer: ensure long sentences don't hang indefinitely if onend drops
         const approxDurationMs = Math.max(3000, (text.length / 8) * 1000 + 3500);
         this.fallbackTimer = setTimeout(() => {
-          if (!hasFinished) {
-            finish(false);
-          }
+          if (!hasFinished) finish(false);
         }, approxDurationMs);
 
         window.speechSynthesis.speak(utterance);
@@ -397,6 +594,12 @@
         if (this.fallbackTimer) {
           clearTimeout(this.fallbackTimer);
           this.fallbackTimer = null;
+        }
+        if (this.speechAudio) {
+          try {
+            this.speechAudio.pause();
+            this.speechAudio.currentTime = 0;
+          } catch (e) {}
         }
         this.activeUtterance = null;
         if ('speechSynthesis' in window) {
@@ -798,7 +1001,7 @@
 
       // Playback Preferences
       const [repeatCount, setRepeatCount] = useState(2); // 1, 2, 3, 5, Infinity (無限次)
-      const [isLoopPlaylist, setIsLoopPlaylist] = useState(false); // 清單循環播放（全部播完後重新從第 1 句循環）
+      const [isLoopPlaylist, setIsLoopPlaylist] = useState(true); // 預設開啟清單循環（播完自動重新循環，實現黑屏無限背景聽）
       const [pauseInterval, setPauseInterval] = useState(1.5); // 1.0s, 1.5s, 2.0s, 3.0s
       const [continuousRate, setContinuousRate] = useState(settings.defaultRate || 1.0);
       const [playContentMode, setPlayContentMode] = useState('chunk_only'); // 'chunk_only' | 'chunk_and_dialogue'
@@ -892,9 +1095,15 @@
           stopContinuous();
         }
         setPlayingChunkId(chunk.id);
+        AudioService.updateMediaSession({
+          title: chunk.text,
+          artist: chunk.situationalMeaning || 'EchoMind English',
+          album: `Day ${chunk.day} • ${chunk.cefr || 'A2'} 實戰語塊`
+        });
         AudioService.speak(chunk.text, {
           rate: rate,
           lang: settings.accent,
+          chunk: chunk,
           onEnd: () => setPlayingChunkId(null),
           onError: () => setPlayingChunkId(null)
         });
@@ -934,9 +1143,22 @@
           textToSpeak = `${chunk.text}. Example: ${exampleText}`;
         }
 
+        // Update Phone Lock Screen, Dynamic Island & Headphone Controls
+        AudioService.updateMediaSession({
+          title: chunk.text,
+          artist: `${chunk.situationalMeaning || ''} (跟讀第 ${repeat} 次)`,
+          album: `Day ${chunk.day || selectedDay} • ${chunk.cefr || 'A2'} 語塊 (${index + 1}/${playlist.length})`
+        }, {
+          play: () => resumeContinuous(),
+          pause: () => pauseContinuous(),
+          nexttrack: () => nextContinuousItem(),
+          previoustrack: () => prevContinuousItem()
+        });
+
         AudioService.speak(textToSpeak, {
           rate: continuousRateRef.current,
           lang: settings.accent,
+          chunk: chunk,
           onEnd: () => handleContinuousItemEnd(playlist, index, repeat),
           onError: () => handleContinuousItemEnd(playlist, index, repeat)
         });
@@ -948,6 +1170,9 @@
         }
 
         setContinuousPlayer(prev => ({ ...prev, status: 'pausing' }));
+
+        // Critical for iOS / Android background loop: keep audio carrier active during pause gap
+        AudioService.startBackgroundCarrier();
 
         if (continuousTimeoutRef.current) {
           clearTimeout(continuousTimeoutRef.current);
@@ -967,7 +1192,7 @@
             if (nextIndex < playlist.length) {
               playContinuousItem(playlist, nextIndex, 1);
             } else if (isLoopPlaylistRef.current && playlist.length > 0) {
-              // Reached end of playlist, loop back to the start!
+              // Reached end of playlist, loop back to the start! (無限清單循環)
               playContinuousItem(playlist, 0, 1);
             } else {
               // Completed all!
@@ -981,6 +1206,9 @@
         if (!playlistToPlay || playlistToPlay.length === 0) return;
         if (continuousTimeoutRef.current) clearTimeout(continuousTimeoutRef.current);
         AudioService.stop();
+
+        // Start background persistence audio carrier immediately upon user click
+        AudioService.startBackgroundCarrier();
 
         setContinuousPlayer({
           isActive: true,
@@ -997,6 +1225,7 @@
       const pauseContinuous = () => {
         if (continuousTimeoutRef.current) clearTimeout(continuousTimeoutRef.current);
         AudioService.stop();
+        AudioService.updateMediaPlaybackState('paused');
         setPlayingChunkId(null);
         setContinuousPlayer(prev => ({ ...prev, isPaused: true, status: 'paused' }));
       };
@@ -1004,6 +1233,7 @@
       const resumeContinuous = () => {
         const { playlist, currentIndex, currentRepeat } = continuousPlayerRef.current;
         if (playlist.length > 0) {
+          AudioService.startBackgroundCarrier();
           playContinuousItem(playlist, currentIndex, currentRepeat);
         }
       };
@@ -1033,6 +1263,8 @@
       const stopContinuous = () => {
         if (continuousTimeoutRef.current) clearTimeout(continuousTimeoutRef.current);
         AudioService.stop();
+        AudioService.stopBackgroundCarrier();
+        AudioService.updateMediaPlaybackState('none');
         setPlayingChunkId(null);
         setContinuousPlayer({
           isActive: false,
@@ -1265,6 +1497,14 @@
 
           {/* Continuous Playback & Multi-Selection Control Panel */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm space-y-4">
+            {/* Mobile Background Playback Feature Badge */}
+            <div className="flex items-center justify-between flex-wrap gap-2 pb-1 border-b border-slate-100 dark:border-slate-800/60">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/25 text-[11px] font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>📱 支援手機黑屏背景播放：按電源鍵鎖屏放口袋依然能持續循環，支援解鎖畫面換首！</span>
+              </div>
+            </div>
+
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
               {/* Left: Continuous Playback Main Buttons */}
               <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
@@ -1507,9 +1747,13 @@
                       </span>
                       {isLoopPlaylist && (
                         <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">
-                          🔁 循環
+                          🔁 無限循環
                         </span>
                       )}
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 font-bold hidden sm:inline-flex items-center gap-1">
+                        <span>📱</span>
+                        <span>黑屏背景聽</span>
+                      </span>
                     </div>
                     <h4 className="font-display font-extrabold text-sm sm:text-base text-white truncate max-w-xs sm:max-w-sm">
                       {continuousPlayer.playlist[continuousPlayer.currentIndex]?.text || '連續播放中...'}

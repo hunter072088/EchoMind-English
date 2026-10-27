@@ -51,6 +51,11 @@ App 頂部與儀表板深度整合了多維度階梯式學習指標：
   - **⚡ Fast Speech Shape（快速連音與弱化形變）**：標註老外實際說話時的音變法則（例如 *What have you been up to? ➔ What'cha been up to?*）。
   - **💡 實戰免恐慌指南**：精準解說在社交或生活情境中何時該丟出這句話作為安全防護。
   - **二重奏情境例句**：提供 A/B 自然對白與一鍵發音試聽。
+- **📱 手機黑屏無限循環背景聽 (Mobile Background Audio & Lock Screen)**：
+  - **雙引擎音訊載體架構**：整合高音質音訊串流與純離線靜音音軌保活機制（Silent Audio Carrier Loop），突破 iOS Safari 與 Android Chrome 鎖定螢幕後凍結 JS 執行的系統限制。
+  - **黑屏無限循環**：按電源鍵完全黑屏鎖定放口袋、通勤慢跑，或切換至其他 App，語塊仍如 Podcast / Spotify 般在背景自動循環朗讀。
+  - **Media Session 鎖定畫面控制卡片**：手機鎖定螢幕、動態島（Dynamic Island）、通知欄與藍牙耳機即時顯示正在播放的「短語塊、中文情境義、進度天數」，支援直接從耳機鍵或鎖屏換首。
+  - **Screen Wake Lock API 螢幕防休眠**：連續播放期間智慧保持螢幕常亮，桌面或車用放置時不被自動黑屏打斷。
 
 ### 模組二：Shadowing 影子跟讀工坊 (Shadowing Studio)
 - **嚴謹三階段科學跟讀法**：
