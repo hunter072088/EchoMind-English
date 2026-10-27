@@ -4,115 +4,115 @@
 (function() {
   // 1. Comprehensive 100-Day Master Syllabus
   const syllabus100 = [
-    // Phase 1: Days 1 - 20 (破除逐字直譯與生存破冰)
-    { day: 1, phase: 1, topic: "經典破冰與反向發球", cat: "opening", catName: "破冰問候" },
-    { day: 2, phase: 1, topic: "聽不懂時的免恐慌叫停", cat: "survival", catName: "免恐慌求生" },
-    { day: 3, phase: 1, topic: "爭取思考時間的黃金緩衝", cat: "thinking", catName: "爭取時間" },
-    { day: 4, phase: 1, topic: "委婉立場與話題自然推進", cat: "nuance", catName: "委婉推進" },
-    { day: 5, phase: 1, topic: "會議禮貌插話與澄清盲點", cat: "interrupt", catName: "禮貌打斷" },
-    { day: 6, phase: 1, topic: "高階同意與豁達心態", cat: "advanced", catName: "高階流暢" },
-    { day: 7, phase: 1, topic: "週進度結算與下週約定", cat: "workplace", catName: "職場進度" },
-    { day: 8, phase: 1, topic: "線上會議連線與音訊排查", cat: "survival", catName: "免恐慌求生" },
-    { day: 9, phase: 1, topic: "餐敘點餐與社交破冰", cat: "social", catName: "社交生活" },
-    { day: 10, phase: 1, topic: "階段首期驗收與卡頓庫盤點", cat: "milestone", catName: "階段里程碑" },
-    { day: 11, phase: 1, topic: "重述對方意圖的錨點語塊", cat: "active_listening", catName: "積極傾聽" },
-    { day: 12, phase: 1, topic: "面對尖銳問題的情緒降溫", cat: "thinking", catName: "爭取時間" },
-    { day: 13, phase: 1, topic: "拒絕不合理要求的委婉起手式", cat: "nuance", catName: "委婉推進" },
-    { day: 14, phase: 1, topic: "承認忘詞與失誤而不尷尬", cat: "survival", catName: "免恐慌求生" },
-    { day: 15, phase: 1, topic: "邀請對方給予反饋與共識確認", cat: "opening", catName: "破冰問候" },
-    { day: 16, phase: 1, topic: "辦公室走廊隨機巧遇寒暄", cat: "social", catName: "社交生活" },
-    { day: 17, phase: 1, topic: "視訊分享螢幕時的操作墊檔詞", cat: "workplace", catName: "職場進度" },
-    { day: 18, phase: 1, topic: "表達模糊記憶與不完全承諾", cat: "thinking", catName: "爭取時間" },
-    { day: 19, phase: 1, topic: "優雅結束話題並脫身的台階句", cat: "opening", catName: "破冰問候" },
-    { day: 20, phase: 1, topic: "【第一階段大考驗】200 塊生存盲測", cat: "milestone", catName: "階段里程碑" },
+    // Phase 1: Days 1 - 20 (CEFR A2 生活起居與生存破冰)
+    { day: 1, phase: 1, cefr: "A2", topic: "早晨日常與清醒 (Wake-up Routine)", cat: "routine", catName: "生活日常" },
+    { day: 2, phase: 1, cefr: "A2", topic: "友善問候與近況 (Friendly Greetings)", cat: "opening", catName: "破冰問候" },
+    { day: 3, phase: 1, cefr: "A2", topic: "咖啡廳與早餐點餐 (Cafe & Ordering)", cat: "social", catName: "餐飲點餐" },
+    { day: 4, phase: 1, cefr: "A2", topic: "聽不懂時免恐慌叫停 (Panic-Free Clarification)", cat: "survival", catName: "免恐慌求生" },
+    { day: 5, phase: 1, cefr: "A2", topic: "爭取思考時間緩衝 (Buying Thinking Time)", cat: "thinking", catName: "爭取時間" },
+    { day: 6, phase: 1, cefr: "A2", topic: "表達感謝與熱情回應 (Gratitude & Warmth)", cat: "social", catName: "社交生活" },
+    { day: 7, phase: 1, cefr: "A2", topic: "尋求協助與客氣請求 (Asking for Favors)", cat: "nuance", catName: "客氣請求" },
+    { day: 8, phase: 1, cefr: "A2", topic: "表達身心狀態與感受 (Physical & Emotional Feelings)", cat: "routine", catName: "身心狀態" },
+    { day: 9, phase: 1, cefr: "A2", topic: "晚間放鬆與睡眠準備 (Evening Wind-down)", cat: "routine", catName: "放鬆睡眠" },
+    { day: 10, phase: 1, cefr: "A2", topic: "【第一驗收】基礎生活高頻語塊 (A2 Milestone)", cat: "milestone", catName: "階段里程碑" },
+    { day: 11, phase: 1, cefr: "A2", topic: "閒聊日常喜好 (Daily Likes & Hobbies)", cat: "social", catName: "日常喜好" },
+    { day: 12, phase: 1, cefr: "A2", topic: "描述天氣與穿著 (Weather & Clothing)", cat: "routine", catName: "生活日常" },
+    { day: 13, phase: 1, cefr: "A2", topic: "購物與詢價實用 (Shopping & Prices)", cat: "social", catName: "購物詢價" },
+    { day: 14, phase: 1, cefr: "A2", topic: "交通與通勤移動 (Commuting & Getting Around)", cat: "routine", catName: "通勤交通" },
+    { day: 15, phase: 1, cefr: "A2", topic: "預約與時間確認 (Appointments & Scheduling)", cat: "nuance", catName: "時間約定" },
+    { day: 16, phase: 1, cefr: "A2", topic: "表達個人意見 (Expressing Opinions)", cat: "thinking", catName: "個人想法" },
+    { day: 17, phase: 1, cefr: "A2", topic: "餐廳用餐與結帳 (Dining Out & Paying)", cat: "social", catName: "餐飲點餐" },
+    { day: 18, phase: 1, cefr: "A2", topic: "表達歉意與原諒 (Apologies & Excuses)", cat: "nuance", catName: "歉意修復" },
+    { day: 19, phase: 1, cefr: "A2", topic: "週末與休閒計畫 (Weekend & Leisure Plans)", cat: "opening", catName: "休閒計畫" },
+    { day: 20, phase: 1, cefr: "A2", topic: "【階段大驗收】200 塊生活流暢盲測 (A2 Survival Master)", cat: "milestone", catName: "階段里程碑" },
 
-    // Phase 2: Days 21 - 40 (連音弱化與聽覺預測力)
-    { day: 21, phase: 2, topic: "What are you gonna do 縮讀弱化", cat: "fast_speech", catName: "連音形變" },
-    { day: 22, phase: 2, topic: "情態動詞 have 弱化 (woulda, coulda)", cat: "fast_speech", catName: "連音形變" },
-    { day: 23, phase: 2, topic: "美音 Flap-T 閃音的快速辨識", cat: "fast_speech", catName: "連音形變" },
-    { day: 24, phase: 2, topic: "字尾輔音脫落與滑音連讀", cat: "fast_speech", catName: "連音形變" },
-    { day: 25, phase: 2, topic: "母語者最高頻口頭語塊形變", cat: "fast_speech", catName: "連音形變" },
-    { day: 26, phase: 2, topic: "順帶一提的自然轉移 (By the way)", cat: "transitions", catName: "話題轉換" },
-    { day: 27, phase: 2, topic: "沿著上個話題深入 (On that note)", cat: "transitions", catName: "話題轉換" },
-    { day: 28, phase: 2, topic: "將扯遠的話題拉回主線", cat: "transitions", catName: "話題轉換" },
-    { day: 29, phase: 2, topic: "插播提醒與趁記憶猶新", cat: "transitions", catName: "話題轉換" },
-    { day: 30, phase: 2, topic: "對話結尾前的最後總括", cat: "transitions", catName: "話題轉換" },
-    { day: 31, phase: 2, topic: "憑印象估算的自保守則", cat: "hedging", catName: "防衛語意" },
-    { day: 32, phase: 2, topic: "據目前已知資訊的留白藝術", cat: "hedging", catName: "防衛語意" },
-    { day: 33, phase: 2, topic: "謙虛提出個人看法 (In my view)", cat: "hedging", catName: "防衛語意" },
-    { day: 34, phase: 2, topic: "未經證實傳言的保留態度", cat: "hedging", catName: "防衛語意" },
-    { day: 35, phase: 2, topic: "為建議打預防針 (For what it's worth)", cat: "hedging", catName: "防衛語意" },
-    { day: 36, phase: 2, topic: "表達深有同感 (Tell me about it)", cat: "empathy", catName: "同理共鳴" },
-    { day: 37, phase: 2, topic: "安撫同仁挫折情緒 (Hang in there)", cat: "empathy", catName: "同理共鳴" },
-    { day: 38, phase: 2, topic: "讚揚對方洞見 (You have a point)", cat: "empathy", catName: "同理共鳴" },
-    { day: 39, phase: 2, topic: "分享共同經歷的辛酸與無奈", cat: "empathy", catName: "同理共鳴" },
-    { day: 40, phase: 2, topic: "【第二階段大考驗】400 塊連音盲聽", cat: "milestone", catName: "階段里程碑" },
+    // Phase 2: Days 21 - 40 (CEFR A2-B1 連音弱化與情緒共鳴)
+    { day: 21, phase: 2, cefr: "A2", topic: "連音弱化 Gonna / Wanna / Gotta (Fast Speech Essentials)", cat: "fast_speech", catName: "連音形變" },
+    { day: 22, phase: 2, cefr: "A2", topic: "情態動詞弱化 Coulda / Woulda / Shoulda (Modal Weakening)", cat: "fast_speech", catName: "連音形變" },
+    { day: 23, phase: 2, cefr: "A2", topic: "美音閃音 Flap-T (Water, Better, Matter)", cat: "fast_speech", catName: "連音形變" },
+    { day: 24, phase: 2, cefr: "A2", topic: "介系詞與冠詞連讀 (In a bit, Out of)", cat: "fast_speech", catName: "連音形變" },
+    { day: 25, phase: 2, cefr: "A2", topic: "高頻口頭縮讀 (Whatcha, Dunno, Kinda)", cat: "fast_speech", catName: "連音形變" },
+    { day: 26, phase: 2, cefr: "A2", topic: "表達興奮與期待 (Excitement & Looking Forward)", cat: "empathy", catName: "情緒表達" },
+    { day: 27, phase: 2, cefr: "A2", topic: "給予讚美與肯定 (Compliments & Praise)", cat: "empathy", catName: "讚賞肯定" },
+    { day: 28, phase: 2, cefr: "A2", topic: "同理心與安慰 (Empathy & Comforting)", cat: "empathy", catName: "同理共鳴" },
+    { day: 29, phase: 2, cefr: "A2", topic: "看開與放下 (Letting Go & Acceptance)", cat: "empathy", catName: "看開放下" },
+    { day: 30, phase: 2, cefr: "A2", topic: "驚訝與難以置信 (Surprise & Disbelief)", cat: "empathy", catName: "驚訝情緒" },
+    { day: 31, phase: 2, cefr: "A2", topic: "贊同與完全同意 (Strong Agreement)", cat: "transitions", catName: "共識贊同" },
+    { day: 32, phase: 2, cefr: "A2", topic: "委婉保留與不太確定 (Hedging & Hesitation)", cat: "thinking", catName: "委婉保留" },
+    { day: 33, phase: 2, cefr: "A2", topic: "轉換話題 (Changing Topics Smoothly)", cat: "transitions", catName: "話題轉換" },
+    { day: 34, phase: 2, cefr: "A2", topic: "聚焦重點與回到主線 (Getting Back on Track)", cat: "transitions", catName: "聚焦主線" },
+    { day: 35, phase: 2, cefr: "A2", topic: "順暢收尾脫身 (Wrapping Up & Saying Goodbye)", cat: "opening", catName: "禮貌收尾" },
+    { day: 36, phase: 2, cefr: "A2", topic: "描述日常小確幸 (Daily Pleasures)", cat: "social", catName: "生活樂趣" },
+    { day: 37, phase: 2, cefr: "A2", topic: "應對突發小意外 (Minor Mishaps)", cat: "survival", catName: "免恐慌求生" },
+    { day: 38, phase: 2, cefr: "A2", topic: "詢問建議與想法 (Asking for Advice)", cat: "nuance", catName: "徵詢建議" },
+    { day: 39, phase: 2, cefr: "A2", topic: "鼓勵與加油打氣 (Cheering Someone On)", cat: "empathy", catName: "鼓勵打氣" },
+    { day: 40, phase: 2, cefr: "A2", topic: "【第二階段驗收】400 塊連音與口語反射 (A2-B1 Milestone)", cat: "milestone", catName: "階段里程碑" },
 
-    // Phase 3: Days 41 - 60 (觀點碰撞與委婉折衷)
-    { day: 41, phase: 3, topic: "高情商先肯定再轉折 (Yes, but)", cat: "diplomacy", catName: "委婉折衷" },
-    { day: 42, phase: 3, topic: "提出建設性批評的打預防針句", cat: "diplomacy", catName: "委婉折衷" },
-    { day: 43, phase: 3, topic: "以客觀數據替代主觀情緒批評", cat: "diplomacy", catName: "委婉折衷" },
-    { day: 44, phase: 3, topic: "化解跨部門爭議的中立立場句", cat: "diplomacy", catName: "委婉折衷" },
-    { day: 45, phase: 3, topic: "表達底線但維持夥伴友好", cat: "diplomacy", catName: "委婉折衷" },
-    { day: 46, phase: 3, topic: "會議收斂：說到底核心是什麼", cat: "bottom_line", catName: "核心收斂" },
-    { day: 47, phase: 3, topic: "評估最壞打算與風險承受度", cat: "bottom_line", catName: "核心收斂" },
-    { day: 48, phase: 3, topic: "聚焦唯一關鍵指標 (North Star)", cat: "bottom_line", catName: "核心收斂" },
-    { day: 49, phase: 3, topic: "在有限資源下的優先級取捨", cat: "bottom_line", catName: "核心收斂" },
-    { day: 50, phase: 3, topic: "達成協議與彼此退讓折衷", cat: "bottom_line", catName: "核心收斂" },
-    { day: 51, phase: 3, topic: "多人會議搶麥克風的禮貌句", cat: "interruption", catName: "發言掌控" },
-    { day: 52, phase: 3, topic: "煞車及時確認關鍵數據再前進", cat: "interruption", catName: "發言掌控" },
-    { day: 53, phase: 3, topic: "補充遺漏重點的快速過渡詞", cat: "interruption", catName: "發言掌控" },
-    { day: 54, phase: 3, topic: "委婉指正他人記憶中的偏差", cat: "interruption", catName: "發言掌控" },
-    { day: 55, phase: 3, topic: "被插話後重新拿回主導權", cat: "interruption", catName: "發言掌控" },
-    { day: 56, phase: 3, topic: "要求對方逐步解說 (Walk through)", cat: "facilitation", catName: "條理說明" },
-    { day: 57, phase: 3, topic: "拆解複雜架構為簡易模組", cat: "facilitation", catName: "條理說明" },
-    { day: 58, phase: 3, topic: "確認各利害關係人的負責範圍", cat: "facilitation", catName: "條理說明" },
-    { day: 59, phase: 3, topic: "以具體案例說明抽象理論", cat: "facilitation", catName: "條理說明" },
-    { day: 60, phase: 3, topic: "【第三階段大考驗】600 塊觀點交涉", cat: "milestone", catName: "階段里程碑" },
+    // Phase 3: Days 41 - 60 (CEFR B1 生活交涉與習慣建立)
+    { day: 41, phase: 3, cefr: "B1", topic: "委婉決策與商量 (It's up to you / Sleep on it)", cat: "diplomacy", catName: "委婉商量" },
+    { day: 42, phase: 3, cefr: "B1", topic: "各退一步與輕度妥協 (Meeting Halfway)", cat: "diplomacy", catName: "協商讓步" },
+    { day: 43, phase: 3, cefr: "B1", topic: "委婉表達異議 (Polite Disagreement)", cat: "diplomacy", catName: "委婉異議" },
+    { day: 44, phase: 3, cefr: "B1", topic: "確認共識與下一步 (Checking Alignment)", cat: "bottom_line", catName: "確認共識" },
+    { day: 45, phase: 3, cefr: "B1", topic: "簡短總結與重點收斂 (Bottom Line)", cat: "bottom_line", catName: "核心收斂" },
+    { day: 46, phase: 3, cefr: "B1", topic: "建立良好日常習慣 (Habit Building)", cat: "mindset", catName: "習慣建立" },
+    { day: 47, phase: 3, cefr: "B1", topic: "踏出舒適圈 (Stepping Out of Comfort Zone)", cat: "mindset", catName: "自我突破" },
+    { day: 48, phase: 3, cefr: "B1", topic: "克服拖延與付諸行動 (Overcoming Procrastination)", cat: "mindset", catName: "行動執行" },
+    { day: 49, phase: 3, cefr: "B1", topic: "保持專注與心流 (Focus & Flow)", cat: "mindset", catName: "專注心流" },
+    { day: 50, phase: 3, cefr: "B1", topic: "慶祝微小進步 (Celebrating Small Wins)", cat: "empathy", catName: "慶祝進步" },
+    { day: 51, phase: 3, cefr: "B1", topic: "禮貌插話與補述 (Jumping In Politely)", cat: "interruption", catName: "禮貌插話" },
+    { day: 52, phase: 3, cefr: "B1", topic: "說明事情來龍去脈 (Walk Through & Storytelling)", cat: "interruption", catName: "說明脈絡" },
+    { day: 53, phase: 3, cefr: "B1", topic: "舉出具體生活實例 (Concrete Examples)", cat: "interruption", catName: "具體實例" },
+    { day: 54, phase: 3, cefr: "B1", topic: "溫和指正誤解 (Gentle Clarification)", cat: "diplomacy", catName: "溫和指正" },
+    { day: 55, phase: 3, cefr: "B1", topic: "重新拿回話語主導 (Taking Back the Floor)", cat: "interruption", catName: "對話主控" },
+    { day: 56, phase: 3, cefr: "B1", topic: "輕度職場早會進度 (Light Standup Updates)", cat: "standup", catName: "日常進度" },
+    { day: 57, phase: 3, cefr: "B1", topic: "友善提出請求與借力 (Lending a Hand)", cat: "nuance", catName: "請求借力" },
+    { day: 58, phase: 3, cefr: "B1", topic: "委婉拒絕超量要求 (Polite Boundaries)", cat: "diplomacy", catName: "委婉邊界" },
+    { day: 59, phase: 3, cefr: "B1", topic: "線下進一步深聊 (Taking It Offline)", cat: "standup", catName: "深入交流" },
+    { day: 60, phase: 3, cefr: "B1", topic: "【第三階段驗收】600 塊生活交涉與深度表達 (B1 Milestone)", cat: "milestone", catName: "階段里程碑" },
 
-    // Phase 4: Days 61 - 80 (高壓職場應變與專業說服)
-    { day: 61, phase: 4, topic: "敏捷早會 30 秒俐落進度匯報", cat: "standup", catName: "敏捷早會" },
-    { day: 62, phase: 4, topic: "清楚陳述阻礙與相依性 (Blocker)", cat: "standup", catName: "敏捷早會" },
-    { day: 63, phase: 4, topic: "主動尋求跨組協作與資源支援", cat: "standup", catName: "敏捷早會" },
-    { day: 64, phase: 4, topic: "進度跟進與線下對齊 (Take offline)", cat: "standup", catName: "敏捷早會" },
-    { day: 65, phase: 4, topic: "承諾下次碰面檢視成果 (Touch base)", cat: "standup", catName: "敏捷早會" },
-    { day: 66, phase: 4, topic: "誠實說明專案延期的專業口氣", cat: "crisis", catName: "危機協商" },
-    { day: 67, phase: 4, topic: "面對客戶抱怨時的致歉與挽回", cat: "crisis", catName: "危機協商" },
-    { day: 68, phase: 4, topic: "突發系統異常的緊急通報語塊", cat: "crisis", catName: "危機協商" },
-    { day: 69, phase: 4, topic: "安撫合作夥伴並提供替代路徑", cat: "crisis", catName: "危機協商" },
-    { day: 70, phase: 4, topic: "危機解除後的檢討與後續追蹤", cat: "crisis", catName: "危機協商" },
-    { day: 71, phase: 4, topic: "簡報開場抓住觀眾注意力的鉤子", cat: "presentation", catName: "專業簡報" },
-    { day: 72, phase: 4, topic: "圖表與數據呈現時的轉折詞", cat: "presentation", catName: "專業簡報" },
-    { day: 73, phase: 4, topic: "處理簡報 Q&A 棘手發問的擋箭牌", cat: "presentation", catName: "專業簡報" },
-    { day: 74, phase: 4, topic: "簡報結論與號召行動 (Call to Action)", cat: "presentation", catName: "專業簡報" },
-    { day: 75, phase: 4, topic: "超時控制與禮貌打圓場", cat: "presentation", catName: "專業簡報" },
-    { day: 76, phase: 4, topic: "商務報價談判中的心理博弈", cat: "negotiation", catName: "商務談判" },
-    { day: 77, phase: 4, topic: "相互讓步的雙贏談判 (Give & take)", cat: "negotiation", catName: "商務談判" },
-    { day: 78, phase: 4, topic: "為公司爭取更多權益的試探提問", cat: "negotiation", catName: "商務談判" },
-    { day: 79, phase: 4, topic: "最終拍板定案的專業用語", cat: "negotiation", catName: "商務談判" },
-    { day: 80, phase: 4, topic: "【第四階段大考驗】800 塊高壓模擬", cat: "milestone", catName: "階段里程碑" },
+    // Phase 4: Days 61 - 80 (CEFR B1 休閒旅遊與全情境聽說)
+    { day: 61, phase: 4, cefr: "B1", topic: "聚會點飲料與乾杯 (Drinks & Toasting)", cat: "social", catName: "聚會飲品" },
+    { day: 62, phase: 4, cefr: "B1", topic: "週末戶外與大自然 (Weekend Outdoors)", cat: "social", catName: "戶外休閒" },
+    { day: 63, phase: 4, cefr: "B1", topic: "旅行抵達與飯店入住 (Travel & Hotel Check-in)", cat: "social", catName: "旅行住宿" },
+    { day: 64, phase: 4, cefr: "B1", topic: "街頭問路與方向指引 (Asking for Directions)", cat: "survival", catName: "街頭問路" },
+    { day: 65, phase: 4, cefr: "B1", topic: "品嚐道地美食與評價 (Tasting & Food Compliments)", cat: "social", catName: "美食評價" },
+    { day: 66, phase: 4, cefr: "B1", topic: "分享好消息與慶祝 (Sharing Good News)", cat: "empathy", catName: "喜悅分享" },
+    { day: 67, phase: 4, cefr: "B1", topic: "傾聽朋友心事與支持 (Active Listening & Support)", cat: "empathy", catName: "傾聽支持" },
+    { day: 68, phase: 4, cefr: "B1", topic: "原諒與冰釋前嫌 (Forgiveness & Letting Go)", cat: "mindset", catName: "看開放下" },
+    { day: 69, phase: 4, cefr: "B1", topic: "表達疑惑與好奇 (Curiosity & Confusion)", cat: "thinking", catName: "好奇疑惑" },
+    { day: 70, phase: 4, cefr: "B1", topic: "給予溫和建議 (Gentle Advice & Feedback)", cat: "diplomacy", catName: "溫和建議" },
+    { day: 71, phase: 4, cefr: "B1", topic: "壓力調節與深呼吸 (Stress Relief & Breathing)", cat: "mindset", catName: "壓力調節" },
+    { day: 72, phase: 4, cefr: "B1", topic: "整理房間與極簡生活 (Decluttering & Simple Living)", cat: "mindset", catName: "極簡生活" },
+    { day: 73, phase: 4, cefr: "B1", topic: "感嘆時光飛逝 (Time Flying & Nostalgia)", cat: "mindset", catName: "時光感嘆" },
+    { day: 74, phase: 4, cefr: "B1", topic: "幽默自嘲與放鬆笑看 (Self-Deprecation & Humor)", cat: "mindset", catName: "幽默自嘲" },
+    { day: 75, phase: 4, cefr: "B1", topic: "保持好奇心與終身學習 (Lifelong Curiosity)", cat: "mindset", catName: "終身學習" },
+    { day: 76, phase: 4, cefr: "B1", topic: "生活預算與聰明消費 (Smart Budgeting & Thrifty Living)", cat: "routine", catName: "生活理財" },
+    { day: 77, phase: 4, cefr: "B1", topic: "租屋與居家生活 (Home Life & Living Spaces)", cat: "routine", catName: "居家生活" },
+    { day: 78, phase: 4, cefr: "B1", topic: "保持身心健康日常 (Health & Wellbeing)", cat: "routine", catName: "身心健康" },
+    { day: 79, phase: 4, cefr: "B1", topic: "科技使用與數位排毒 (Digital Detox & Tech Habits)", cat: "mindset", catName: "數位生活" },
+    { day: 80, phase: 4, cefr: "B1", topic: "【第四階段驗收】800 塊生活全情境聽說 (B1 Fluency Sprint)", cat: "milestone", catName: "階段里程碑" },
 
-    // Phase 5: Days 81 - 100 (母語直覺、幽默與即興流暢)
-    { day: 81, phase: 5, topic: "開門見山直接切題 (Cut to the chase)", cat: "idioms", catName: "道地成語" },
-    { day: 82, phase: 5, topic: "話到嘴邊與記憶喚起 (Tip of my tongue)", cat: "idioms", catName: "道地成語" },
-    { day: 83, phase: 5, topic: "隨機應變看情況行事 (Play it by ear)", cat: "idioms", catName: "道地成語" },
-    { day: 84, phase: 5, topic: "大度不記仇的豁達 (No hard feelings)", cat: "idioms", catName: "道地成語" },
-    { day: 85, phase: 5, topic: "見好就收宣布下班 (Call it a day)", cat: "idioms", catName: "道地成語" },
-    { day: 86, phase: 5, topic: "接受無法改變的客觀事實 (It is what it is)", cat: "mindset", catName: "母語鬆弛感" },
-    { day: 87, phase: 5, topic: "幽默自嘲與化解全場緊繃氛圍", cat: "mindset", catName: "母語鬆弛感" },
-    { day: 88, phase: 5, topic: "讚美他人做到極致 (You nailed it)", cat: "mindset", catName: "母語鬆弛感" },
-    { day: 89, phase: 5, topic: "表達難以抉擇的糾結 (Torn between)", cat: "mindset", catName: "母語鬆弛感" },
-    { day: 90, phase: 5, topic: "以輕鬆幽默方式結識新朋友", cat: "social_humor", catName: "幽默社交" },
-    { day: 91, phase: 5, topic: "跨文化英式幽默 vs 美式幽默差異", cat: "culture", catName: "文化隱喻" },
-    { day: 92, phase: 5, topic: "美式運動隱喻 (Touch base, Curveball)", cat: "culture", catName: "文化隱喻" },
-    { day: 93, phase: 5, topic: "美食、電影與流行文化深入探討", cat: "culture", catName: "文化隱喻" },
-    { day: 94, phase: 5, topic: "深度哲學與職涯價值觀探討", cat: "depth", catName: "深度思維" },
-    { day: 95, phase: 5, topic: "表達真摯感謝與深層人際連結", cat: "depth", catName: "深度思維" },
-    { day: 96, phase: 5, topic: "【衝刺日 1】高頻 100 塊盲聽盲答總集結", cat: "sprint", catName: "巔峰衝刺" },
-    { day: 97, phase: 5, topic: "【衝刺日 2】卡頓句型庫零死角終極清空", cat: "sprint", catName: "巔峰衝刺" },
-    { day: 98, phase: 5, topic: "【衝刺日 3】全隨機速度 1.25x 壓力挑戰", cat: "sprint", catName: "巔峰衝刺" },
-    { day: 99, phase: 5, topic: "【衝刺日 4】15 分鐘全英語盲測實戰", cat: "sprint", catName: "巔峰衝刺" },
-    { day: 100, phase: 5, topic: "【巔峰里程碑】突破 1000 塊 • 內化直覺英語大腦！", cat: "mastery", catName: "大腦質變" }
+    // Phase 5: Days 81 - 100 (CEFR B1+ 母語直覺、幽默與思維質變)
+    { day: 81, phase: 5, cefr: "B1", topic: "開門見山直接切題 (Cut to the chase)", cat: "idioms", catName: "道地成語" },
+    { day: 82, phase: 5, cefr: "B1", topic: "話到嘴邊差點想起來 (Tip of my tongue)", cat: "idioms", catName: "道地成語" },
+    { day: 83, phase: 5, cefr: "B1", topic: "隨機應變看情況 (Play it by ear)", cat: "idioms", catName: "道地成語" },
+    { day: 84, phase: 5, cefr: "B1", topic: "豁達大度不記仇 (No hard feelings)", cat: "idioms", catName: "道地成語" },
+    { day: 85, phase: 5, cefr: "B1", topic: "見好就收今天收工 (Call it a day)", cat: "idioms", catName: "道地成語" },
+    { day: 86, phase: 5, cefr: "B1", topic: "接受無法改變的事實 (It is what it is)", cat: "mindset", catName: "母語鬆弛感" },
+    { day: 87, phase: 5, cefr: "B1", topic: "幽默自嘲化解尷尬 (Laugh it off)", cat: "mindset", catName: "母語鬆弛感" },
+    { day: 88, phase: 5, cefr: "B1", topic: "讚美他人表現極致 (You nailed it)", cat: "mindset", catName: "母語鬆弛感" },
+    { day: 89, phase: 5, cefr: "B1", topic: "左右為難難以抉擇 (Torn between)", cat: "mindset", catName: "母語鬆弛感" },
+    { day: 90, phase: 5, cefr: "B1", topic: "放下煩惱放鬆心態 (Don't sweat the small stuff)", cat: "mindset", catName: "母語鬆弛感" },
+    { day: 91, phase: 5, cefr: "B1", topic: "口腔肌肉記憶刻意練習 (Oral Muscle Memory)", cat: "mindset", catName: "肌肉記憶" },
+    { day: 92, phase: 5, cefr: "B1", topic: "英語自言自語日常 (Self-talk in English)", cat: "mindset", catName: "英語思維" },
+    { day: 93, phase: 5, cefr: "B1", topic: "聽播客與跟讀技巧 (Shadowing & Listening)", cat: "mindset", catName: "跟讀練習" },
+    { day: 94, phase: 5, cefr: "B1", topic: "進步重於完美心態 (Progress Over Perfection)", cat: "mindset", catName: "進步心態" },
+    { day: 95, phase: 5, cefr: "B1", topic: "英美文化幽默與隱喻 (Cultural Humor & Metaphors)", cat: "culture", catName: "文化隱喻" },
+    { day: 96, phase: 5, cefr: "B1", topic: "【衝刺日 1】高頻 100 塊盲聽盲答極速衝刺 (Sprint 1: Fast Reflexes)", cat: "sprint", catName: "巔峰衝刺" },
+    { day: 97, phase: 5, cefr: "B1", topic: "【衝刺日 2】卡頓句型庫零死角終極清空 (Sprint 2: Clear Stuck Bank)", cat: "sprint", catName: "巔峰衝刺" },
+    { day: 98, phase: 5, cefr: "B1", topic: "【衝刺日 3】全隨機速度 1.25x 聽說挑戰 (Sprint 3: Real Speech Speed)", cat: "sprint", catName: "巔峰衝刺" },
+    { day: 99, phase: 5, cefr: "B1", topic: "【衝刺日 4】15 分鐘無字幕全英語流暢實戰 (Sprint 4: Full English Flow)", cat: "sprint", catName: "巔峰衝刺" },
+    { day: 100, phase: 5, cefr: "B1", topic: "【巔峰里程碑】突破 1000 塊 • 內化直覺英語大腦！ (Day 100 Mastery)", cat: "mastery", catName: "大腦質變" }
   ];
 
   // 2. High-Fidelity Thematic Chunk Dictionary for Every Phase & Topic
@@ -372,6 +372,7 @@
         id: `chunk-d${day}-${idx + 1 < 10 ? '0' + (idx + 1) : idx + 1}`,
         day: day,
         phase: dayInfo.phase,
+        cefr: item.cefr || dayInfo.cefr || (day <= 40 ? 'A2' : 'B1'),
         category: dayInfo.cat,
         categoryName: dayInfo.catName,
         text: item.text,
@@ -380,8 +381,8 @@
         fastSpeechShape: item.fast,
         fastSpeechNote: item.note || `針對「${dayInfo.topic}」情境之自然母語連音弱化。`,
         stressPoints: [item.text.split(' ')[0], item.text.split(' ').slice(-1)[0]],
-        usageWhen: `適用於 Day ${day}【${dayInfo.topic}】對話情境。`,
-        noPanicTip: "0.3 秒反射輸出此語塊，不必在中英文法間來回翻譯！",
+        usageWhen: `適用於 Day ${day}【${dayInfo.topic}】(${item.cefr || dayInfo.cefr || (day <= 40 ? 'A2' : 'B1')}) 對話情境。`,
+        noPanicTip: "0.3 秒短語塊反射輸出，不必在中英文法間來回翻譯！",
         dialogue: {
           speakerA: item.q || `Hey, regarding ${dayInfo.topic}, how should we approach this?`,
           speakerB: item.text
@@ -406,6 +407,7 @@
       id: `chunk-d${day}-${idx + 1 < 10 ? '0' + (idx + 1) : idx + 1}`,
       day: day,
       phase: dayInfo.phase,
+      cefr: dayInfo.cefr || (day <= 40 ? 'A2' : 'B1'),
       category: dayInfo.cat,
       categoryName: dayInfo.catName,
       text: item.text,
@@ -414,8 +416,8 @@
       fastSpeechShape: item.fast,
       fastSpeechNote: item.note || `針對「${dayInfo.topic}」情境之自然母語連音弱化。`,
       stressPoints: [item.text.split(' ')[0], item.text.split(' ').slice(-1)[0]],
-      usageWhen: `適用於 Day ${day}【${dayInfo.topic}】對話情境。`,
-      noPanicTip: "0.3 秒反射輸出此語塊，不必在中英文法間來回翻譯！",
+      usageWhen: `適用於 Day ${day}【${dayInfo.topic}】(${dayInfo.cefr || (day <= 40 ? 'A2' : 'B1')}) 對話情境。`,
+      noPanicTip: "0.3 秒短語塊反射輸出，不必在中英文法間來回翻譯！",
       dialogue: {
         speakerA: `Hey, regarding ${dayInfo.topic}, how should we approach this?`,
         speakerB: item.text
@@ -432,17 +434,19 @@
   // Expose Global Master Database
   window.ECHOMIND_MASTER_DB = {
     metadata: {
-      version: "2.2.0",
+      version: "2.3.0",
       total_days: 100,
       target_chunks: 1000,
-      phases_count: 5
+      phases_count: 5,
+      cefr_framework: "CEFR A2 (Days 1-40) & B1/B1+ (Days 41-100)",
+      methodology: "English Podcast 1314 Spoken Chunks & Oral Muscle Memory"
     },
     phases: [
-      { phase: 1, days: "Days 1 - 20", title: "破除逐字直譯與生存破冰", target: "200 塊", reactionTime: "< 1.0s" },
-      { phase: 2, days: "Days 21 - 40", title: "連音形變與聽力預測力", target: "400 塊", reactionTime: "< 0.7s" },
-      { phase: 3, days: "Days 41 - 60", title: "觀點碰撞與委婉折衷", target: "600 塊", reactionTime: "< 0.6s" },
-      { phase: 4, days: "Days 61 - 80", title: "高壓職場應變與專業說服", target: "800 塊", reactionTime: "< 0.5s" },
-      { phase: 5, days: "Days 81 - 100", title: "母語直覺、幽默與即興流暢", target: "1000 塊", reactionTime: "< 0.3s" }
+      { phase: 1, days: "Days 1 - 20", title: "生活起居與生存破冰 (A2)", target: "200 塊", reactionTime: "< 1.0s", cefr: "A2" },
+      { phase: 2, days: "Days 21 - 40", title: "連音弱化與情緒共鳴 (A2-B1)", target: "400 塊", reactionTime: "< 0.7s", cefr: "A2-B1" },
+      { phase: 3, days: "Days 41 - 60", title: "生活交涉與習慣建立 (B1)", target: "600 塊", reactionTime: "< 0.6s", cefr: "B1" },
+      { phase: 4, days: "Days 61 - 80", title: "休閒旅遊與全情境聽說 (B1)", target: "800 塊", reactionTime: "< 0.5s", cefr: "B1" },
+      { phase: 5, days: "Days 81 - 100", title: "母語直覺、幽默與思維質變 (B1+)", target: "1000 塊", reactionTime: "< 0.3s", cefr: "B1+" }
     ],
     syllabus: syllabus100,
     chunks: allMasterChunks,
@@ -456,33 +460,33 @@
     panicQuizzes: [
       {
         id: "quiz-01",
-        situation: "外籍工程師在 Zoom 會議快速劈里啪啦講完一段話：「So basically we need to deprecate the auth middleware because the token handshake is throwing 504 timeouts across all edge clusters, you know what I mean?」",
-        audioText: "So basically we need to deprecate the auth middleware because the token handshake is throwing 504 timeouts across all edge clusters, you know what I mean?",
-        timeLimit: 6,
+        situation: "在國外咖啡廳排隊點餐時，店員語速飛快夾帶連音：「Do you want that iced or hot, and would you like oat milk, whole milk, or almond milk?」你第一時間沒完全聽清所有奶類選項...",
+        audioText: "Do you want that iced or hot, and would you like oat milk, whole milk, or almond milk?",
+        timeLimit: 5,
         options: [
           {
             id: "opt-a",
-            text: "Yes yes, I totally agree, no problem!",
+            text: "Yes, thank you very much!",
             isTrap: true,
-            explanation: "【假裝聽懂點頭陷阱】千萬不要隨便答應！你根本沒聽懂，萬一對方以為你接下修改權限的工作，會造成嚴重的職場信任危機！"
+            explanation: "【假裝聽懂隨便點頭陷阱】店員問的是『冰的還是熱的、選哪種奶』的選擇題，回答 Yes 會讓店員一頭霧水！"
           },
           {
             id: "opt-b",
-            text: "Sorry, I missed the last part. What happens to the edge clusters?",
+            text: "Iced with oat milk, please. Thanks!",
             isCorrect: true,
-            explanation: "【完美生存應對】專業且沉著！坦承只漏掉後半段，並點出關鍵字要求重述，既保護自己又展現高度參與感。"
+            explanation: "【CEFR A2 俐落反射】直接提取關鍵字回答，或說 'Could you say that again?'，自然大方不慌亂！"
           },
           {
             id: "opt-c",
-            text: "My English is very poor, please speak Chinese.",
+            text: "My English is not good, sorry.",
             isTrap: true,
-            explanation: "【自我放棄陷阱】在職場中說這句會立刻喪失專業尊嚴。請使用對話求生工具維持英文模式！"
+            explanation: "【自我否定陷阱】日常生活點餐不需要道歉！用短語塊 (Iced please) 就能輕鬆完成對話。"
           }
         ]
       },
       {
         id: "quiz-02",
-        situation: "在外商電梯裡，VP 副總突然轉頭看著你微笑問：「Hey! How's your week been treating you?」你腦袋一時卡住不知如何回答...",
+        situation: "在路上或大廳巧遇外籍朋友，對方微笑走過來問：「Hey! How's your week been treating you?」你腦袋一時卡住不知如何回答...",
         audioText: "Hey! How's your week been treating you?",
         timeLimit: 5,
         options: [
@@ -494,127 +498,127 @@
           },
           {
             id: "opt-b",
-            text: "Pretty good! Busy with the launch, but hanging in there. How about yourself?",
+            text: "Pretty good! Busy as usual, but hanging in there. How about yourself?",
             isCorrect: true,
-            explanation: "【神級英文思維】正面回應、簡述現狀、反拋問題給主管，0.5 秒完成高情商破冰對話！"
+            explanation: "【自然母語反射】正面回應、簡述現狀、反拋問題給對方，0.5 秒完成高情商破冰對話！"
           },
           {
             id: "opt-c",
             text: "(尷尬笑笑不講話，低頭滑手機)",
             isTrap: true,
-            explanation: "【冷場當機陷阱】沉默會讓老外以為你冷漠或對他不友善。哪怕只說一句 'Busy, but good! You?' 都好！"
+            explanation: "【冷場當機陷阱】沉默會讓對方以為你冷漠或對他不友善。哪怕只說一句 'Good! How about you?' 都很棒！"
           }
         ]
       },
       {
         id: "quiz-03",
-        situation: "在跨國團隊會議中，設計師講了一長串專業排版術語，你聽得一頭霧水完全摸不著頭緒，大家似乎都準備通過決策了...",
-        audioText: "We decided to implement a non-destructive contextual glyph kerning strategy.",
+        situation: "外國朋友講起上週末的經歷，語速極快且夾帶大量連音短語：「We were gonna hit the beach, but it started pouring, so we just played it by ear and called it a day.」你想確認他們到底有沒有去成海灘...",
+        audioText: "We were gonna hit the beach, but it started pouring, so we just played it by ear and called it a day.",
         timeLimit: 6,
         options: [
           {
             id: "opt-a",
-            text: "I'm not sure I follow. Could you explain that another way for the rest of us?",
+            text: "So what you're saying is, you didn't go because of the rain?",
             isCorrect: true,
-            explanation: "【領袖級求生句】'I'm not sure I follow' 加上 'for the rest of us'（為大家著想），瞬間化身全場英雄！"
+            explanation: "【B1 積極傾聽神句】用 'What you're saying is...' 重述對方核心意思，既展現理解又確認了細節！"
           },
           {
             id: "opt-b",
             text: "What? Say again please?",
             isTrap: true,
-            explanation: "【生硬命令陷阱】'What? Say again please' 聽起來像在命令對方或怪對方說不好，語氣生硬。"
+            explanation: "【生硬命令陷阱】'What? Say again please' 聽起來語氣生硬，像是怪對方說得不好。"
           },
           {
             id: "opt-c",
-            text: "Okay, sounds good to me.",
+            text: "Haha yeah, playing ears is very funny.",
             isTrap: true,
-            explanation: "【盲目放行陷阱】完全不懂還說 sounds good，等到產品做出來出問題你就得背鍋！"
+            explanation: "【字面誤解陷阱】把 'play it by ear' (隨機應變) 望文生義成『玩耳朵』，容易鬧出大笑話！"
           }
         ]
       },
       {
         id: "quiz-04",
-        situation: "外籍主管突然問你一個棘手問題：「Why do you think the conversion rate dropped 15% last Tuesday?」你手邊根本沒有當天的數據！",
-        audioText: "Why do you think the conversion rate dropped 15% last Tuesday?",
+        situation: "朋友熱情邀約你這週末去爬象山：「Hey, are you free this Saturday for a hike at Elephant Mountain?」但你手邊事情還沒忙完，不能當場立刻答應...",
+        audioText: "Hey, are you free this Saturday for a hike at Elephant Mountain?",
         timeLimit: 6,
         options: [
           {
             id: "opt-a",
-            text: "I don't know.",
+            text: "No! I am very busy.",
             isTrap: true,
-            explanation: "【句點殺手】直接回 I don't know 顯得消極且不負責任。"
+            explanation: "【生硬句點殺手】直接回 No 顯得冷淡拒人千里之外。"
           },
           {
             id: "opt-b",
-            text: "That's a really good question. Off the top of my head, I'd say traffic fluctuated, but let me pull up the exact report.",
+            text: "Sounds awesome! Let me check my schedule and sleep on it. I'll let you know tomorrow!",
             isCorrect: true,
-            explanation: "【頂級職場防衛】先讚美問題爭取 3 秒，再用 'off the top of my head' 概括直覺，最後以調閱報告收尾，滴水不漏！"
+            explanation: "【頂級生活交涉】先肯定熱情 (Sounds awesome)，再用 'sleep on it' 爭取考慮時間，最後約定回覆，得體又溫暖！"
           },
           {
             id: "opt-c",
-            text: "Because server is broken maybe.",
+            text: "Maybe yes maybe no.",
             isTrap: true,
-            explanation: "【胡亂猜測陷阱】在沒有數據佐證下輕率甩鍋，容易誤導決策。"
+            explanation: "【中式直譯陷阱】'Maybe yes maybe no' 不是道地英文表達，聽起來猶豫且敷衍。"
           }
         ]
       }
     ],
     scenarios: [
       {
-        id: "roleplay-standup",
-        title: "外商敏捷早會突襲 (Daily Standup Meeting)",
-        role: "Alex (Tech Lead at an international startup)",
-        avatar: "👨‍💻",
-        description: "在早會上，Tech Lead 快速詢問大家進度，突然指名要你說明昨天的 blocker 和下一步計畫。",
-        panicTension: "Medium-High (隨機語速 1.05x ~ 1.2x)",
-        initialMessage: "Morning team! Let's get right into it. Sarah gave her update on the database migration. Next up, could you walk us through what you tackled yesterday and if there are any blockers on your end?",
+        id: "roleplay-cafe",
+        title: "咖啡廳日常點餐與客製 (Cafe Ordering & Customization)",
+        role: "Emma (Friendly Barista in Melbourne)",
+        avatar: "☕",
+        description: "在墨爾本街角咖啡廳，店員親切詢問你的咖啡需求、內用外帶與甜點搭配。",
+        panicTension: "Relaxed-Natural (語速 1.0x，生活日常高頻)",
+        initialMessage: "Morning! What can I get started for you today? Are you staying in or taking away?",
         survivalKit: [
-          { label: "爭取思考時間", text: "Let me think for a second before I jump into the details." },
-          { label: "沒聽清楚要求", text: "Sorry, I missed the last part. Were you asking about yesterday's blocker?" },
-          { label: "確認理解", text: "Let me make sure I understand. You'd like an update on the API deployment?" },
-          { label: "準備好回答", text: "Sure! Off the top of my head, the core features are ready, and I'll keep you posted on testing." }
+          { label: "點一杯外帶拿鐵", text: "Can I get a medium latte to go, please?" },
+          { label: "沒聽清楚詢問", text: "Sorry, I missed the last part. Could you say that again?" },
+          { label: "客製燕麥奶", text: "Could I have that with oat milk instead?" },
+          { label: "詢問今日推薦", text: "What do you recommend for something sweet?" }
         ],
         aiResponses: [
           {
-            keywords: ["think", "second", "moment"],
-            response: "Take your time! No rush at all, we just want to make sure the pipeline is clear before deployment.",
-            feedback: "棒極了！主動用 'Let me think for a second' 爭取時間，完全化解了被點名的猝不及防感。"
+            keywords: ["latte", "coffee", "cappuccino", "flat white", "to go", "take away"],
+            response: "Sure thing! A medium latte to go. Would you like regular whole milk or oat milk with that?",
+            feedback: "太棒了！'Can I get... to go, please?' 是全世界咖啡廳最地道好用的 A2 生活短語！"
           },
           {
-            keywords: ["missed", "last", "clarify", "repeat"],
-            response: "No worries! Basically, I just want to know if anything is blocking you from finishing the sprint tasks today.",
-            feedback: "太優秀了！及時叫停並縮減問題範疇，讓對方把問題簡化成一句話。"
+            keywords: ["missed", "again", "repeat", "pardon"],
+            response: "No problem at all! I asked if you're having it here or taking it away with you?",
+            feedback: "及時叫停！坦然使用澄清短語，店員會很樂意放慢速度再說一遍。"
           },
           {
-            keywords: ["ready", "posted", "sure", "yesterday", "working"],
-            response: "Awesome! Sounds like you've got everything under control. On that note, let's touch base this afternoon.",
-            feedback: "流暢自然的專業溝通！有效使用 chunk 傳達掌握度。"
+            keywords: ["oat", "milk", "sweet", "recommend", "muffin", "croissant"],
+            response: "Oat milk it is! And our almond croissants just came out of the oven, highly recommend!",
+            feedback: "自然流暢！運用短語塊與店員互動，完美融入在地生活氛圍。"
           }
         ]
       },
       {
         id: "roleplay-coffee",
-        title: "茶水間與外籍同事閒聊 (Coffee Break Small Talk)",
-        role: "Jessica (Senior Product Designer from Seattle)",
+        title: "茶水間與外國朋友閒聊 (Casual Small Talk & Chatting)",
+        role: "Jessica (Friendly Designer from Seattle)",
         avatar: "👩‍🎨",
-        description: "在公司咖啡吧巧遇設計師，她熱情向你打招呼並分享西雅圖的天氣與週末計畫。",
+        description: "在休息室巧遇朋友，她熱情向你打招呼並分享生活近況與週末計畫。",
         panicTension: "Relaxed (自然對話，訓練主動拋球)",
-        initialMessage: "Hey there! How's it going? I haven't seen you around the office lately. What have you been up to?",
+        initialMessage: "Hey there! How's it going? I haven't seen you around lately. What have you been up to?",
         survivalKit: [
-          { label: "標準破冰回覆", text: "Pretty good! Just the usual project stuff. What about yourself?" },
-          { label: "讚美與話題推進", text: "Good to see you! Speaking of which, how's the Seattle office doing?" },
-          { label: "順利收尾脫身", text: "Anyway, I know you've got coffee to brew. I'll let you get back to it!" },
-          { label: "沒聽清楚", text: "Sorry, the coffee machine was loud! What did you say?" }
+          { label: "標準破冰回覆", text: "Pretty good! Just the usual stuff. How about yourself?" },
+          { label: "順帶推進話題", text: "Good to see you! Speaking of which, how was your weekend?" },
+          { label: "優雅收尾脫身", text: "Anyway, I'll let you get back to it. Catch you later!" },
+          { label: "沒聽清楚背景聲", text: "Sorry, it's a bit loud in here! Come again?" }
         ],
         aiResponses: [
           {
             keywords: ["pretty", "good", "usual", "yourself", "about you"],
-            response: "Oh man, tell me about it! I've been drowning in Figma mocks all week. But hey, it is what it is!",
+            response: "Oh man, tell me about it! Super busy this week, but hey, it is what it is! Any fun plans for the weekend?",
             feedback: "完美反射！'Pretty good, how about yourself?' 是母語者最高頻的自然破冰雙拍子。"
           },
           {
-            keywords: ["speaking", "which", "seattle", "weather"],
-            response: "Haha, rainy as always! But the coffee there is amazing. We definitely need better beans in this office though!",
+            keywords: ["speaking", "which", "weekend", "how was"],
+            response: "It was awesome! Went hiking out by the river. We should totally get a group together next time!",
             feedback: "高手！運用 'Speaking of which' 把話題無縫過渡，展現了高超的社交流暢度。"
           },
           {
@@ -625,34 +629,34 @@
         ]
       },
       {
-        id: "roleplay-client",
-        title: "突發視訊會議需求釐清 (Fast-Paced Client Call)",
-        role: "David (Product Manager at Global Corp)",
-        avatar: "👔",
-        description: "跨國客戶在線上會議提出模糊而緊急的需求，語速極快，要求你立刻承諾交付時間。",
-        panicTension: "High (快速 1.15x 語速，訓練高壓生存)",
-        initialMessage: "Look, our VP just escalated this! We essentially need the entire checkout funnel overhauled before Friday because conversion is down 20%, can we commit to that right now?",
+        id: "roleplay-plans",
+        title: "週末聚會邀約與隨機應變 (Weekend Plans & Making Decisions)",
+        role: "David (Active Friend from Vancouver)",
+        avatar: "🚲",
+        description: "朋友提議週末一起去戶外騎單車野餐，但天氣預報似乎不太樂觀，需要一起商量應變方案。",
+        panicTension: "Medium (訓練 B1 商量妥協與隨機應變)",
+        initialMessage: "Hey! A few of us are planning a bike ride and picnic by the riverside this Sunday. You in? Though the forecast says it might rain...",
         survivalKit: [
-          { label: "絕不輕易點頭", text: "I see where you're coming from, but let me make sure I understand the scope first." },
-          { label: "委婉實話預警", text: "To be completely honest with you, that timeline is going to be a massive stretch." },
-          { label: "要求具體範疇", text: "Could you walk me through the exact bottleneck before we commit to a date?" },
-          { label: "爭取會後核對", text: "Give me just a second to pull up our schedule. I'll keep you posted by end of day." }
+          { label: "熱情但保留彈性", text: "I'd love to! But let's play it by ear depending on the weather." },
+          { label: "需要考慮時間", text: "Sounds fun! Let me sleep on it and get back to you tomorrow." },
+          { label: "提出室內備案", text: "If push comes to shove, we can always switch to a board game cafe." },
+          { label: "交由對方決定", text: "Either way works for me. It's up to you!" }
         ],
         aiResponses: [
           {
-            keywords: ["see", "coming", "understand", "scope"],
-            response: "Alright, fair enough. The critical part is really just the payment gateway step, not the whole UI.",
-            feedback: "救命稻草！你成功讓激動的客戶把範疇從『整個結帳流程』縮減為『支付模組』！"
+            keywords: ["play", "ear", "weather", "rain"],
+            response: "Totally agree! Let's check the radar Sunday morning and play it by ear. No stress at all!",
+            feedback: "道地極致！'Play it by ear' 是 English Podcast 1314 最推崇的母語鬆弛感短語！"
           },
           {
-            keywords: ["honest", "stretch", "timeline"],
-            response: "I appreciate your honesty. If Friday is impossible, what's a realistic date your team can deliver?",
-            feedback: "成熟沉著！'To be completely honest with you' 贏得了對方的敬重，並將被動承諾轉為主動協商。"
+            keywords: ["sleep", "on it", "tomorrow", "back to you"],
+            response: "Take your time! No rush at all, just let me know whenever you're ready.",
+            feedback: "得體成熟！用 'Let me sleep on it' 既表達了興趣，又給自己爭取了充分時間。"
           },
           {
-            keywords: ["walk", "through", "bottleneck"],
-            response: "Sure, let's cut to the chase: users are dropping off at the credit card verification modal.",
-            feedback: "引導有方！逼客戶切入核心問題，而不是漫天開火。"
+            keywords: ["push", "shove", "cafe", "board game", "indoor"],
+            response: "Ooh, a board game cafe is actually a great backup plan. Let's make that plan B!",
+            feedback: "解決問題高手！'If push comes to shove' 展現出 B1 等級的靈活交涉思維。"
           }
         ]
       }

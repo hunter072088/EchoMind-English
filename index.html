@@ -789,6 +789,7 @@
       const [selectedPhase, setSelectedPhase] = useState(1);
       const [searchQuery, setSearchQuery] = useState('');
       const [categoryFilter, setCategoryFilter] = useState('all');
+      const [cefrFilter, setCefrFilter] = useState('all'); // 'all', 'A2', 'B1'
       const [playingChunkId, setPlayingChunkId] = useState(null);
 
       // --- Multi-Select & Continuous Playback State ---
@@ -853,14 +854,15 @@
       // Filtered chunks
       const filteredChunks = useMemo(() => {
         return currentDayChunks.filter(c => {
+          const matchCefr = cefrFilter === 'all' || (c.cefr === cefrFilter) || (!c.cefr && (cefrFilter === 'A2' ? c.day <= 40 : c.day > 40));
           const matchCat = categoryFilter === 'all' || c.category === categoryFilter;
           const matchQuery = !searchQuery || 
             c.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
             c.situationalMeaning.toLowerCase().includes(searchQuery.toLowerCase()) ||
             c.literalMeaning.toLowerCase().includes(searchQuery.toLowerCase());
-          return matchCat && matchQuery;
+          return matchCefr && matchCat && matchQuery;
         });
-      }, [currentDayChunks, categoryFilter, searchQuery]);
+      }, [currentDayChunks, cefrFilter, categoryFilter, searchQuery]);
 
       // Multi-Select helpers
       const toggleSelectChunk = (chunkId) => {
@@ -1140,11 +1142,11 @@
               {/* Phase Switcher Buttons */}
               <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2">
                 {[
-                  { p: 1, range: 'Days 1-20', label: '破除直譯' },
-                  { p: 2, range: 'Days 21-40', label: '連音形變' },
-                  { p: 3, range: 'Days 41-60', label: '觀點折衷' },
-                  { p: 4, range: 'Days 61-80', label: '高壓職場' },
-                  { p: 5, range: 'Days 81-100', label: '母語直覺' }
+                  { p: 1, range: 'Days 1-20', label: '生活起居 (A2)' },
+                  { p: 2, range: 'Days 21-40', label: '連音弱化 (A2-B1)' },
+                  { p: 3, range: 'Days 41-60', label: '生活交涉 (B1)' },
+                  { p: 4, range: 'Days 61-80', label: '休閒旅遊 (B1)' },
+                  { p: 5, range: 'Days 81-100', label: '母語直覺 (B1+)' }
                 ].map(ph => (
                   <button
                     key={ph.p}
@@ -1191,31 +1193,60 @@
             </div>
           </div>
 
-          {/* Search & Category Filter Toolbar */}
-          <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
-            <div className="relative w-full sm:w-80">
-              <input
-                type="text"
-                placeholder="搜尋 Chunk、情境義或中譯..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2.5 pl-10 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-sm"
-              />
-              <span className="absolute left-3.5 top-3 text-slate-400">🔍</span>
-              {searchQuery && (
-                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 text-xs">✕</button>
-              )}
+          {/* Search & Category / CEFR Filter Toolbar */}
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+              <div className="relative w-full sm:w-80">
+                <input
+                  type="text"
+                  placeholder="搜尋 Chunk、情境義或中譯..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-2.5 pl-10 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-sm"
+                />
+                <span className="absolute left-3.5 top-3 text-slate-400">🔍</span>
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 text-xs">✕</button>
+                )}
+              </div>
+
+              {/* CEFR Level Fast Filter */}
+              <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto no-scrollbar">
+                <span className="text-[11px] font-bold text-slate-400 whitespace-nowrap pl-1">等級:</span>
+                {[
+                  { id: 'all', label: '全部' },
+                  { id: 'A2', label: '🟢 A2 生活必備' },
+                  { id: 'B1', label: '🔵 B1 自然流暢' }
+                ].map(lvl => (
+                  <button
+                    key={lvl.id}
+                    onClick={() => setCefrFilter(lvl.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+                      cefrFilter === lvl.id
+                        ? (lvl.id === 'A2' ? 'bg-emerald-600 text-white shadow-sm font-extrabold' : lvl.id === 'B1' ? 'bg-sky-600 text-white shadow-sm font-extrabold' : 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900 font-extrabold')
+                        : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    {lvl.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto no-scrollbar">
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto w-full no-scrollbar">
               {[
                 { id: 'all', label: '所有分類' },
+                { id: 'routine', label: '☕ 生活日常' },
                 { id: 'opening', label: '👋 破冰問候' },
                 { id: 'survival', label: '🛡️ 免恐慌求生' },
                 { id: 'thinking', label: '⏳ 爭取時間' },
-                { id: 'nuance', label: '💡 委婉推進' },
-                { id: 'interrupt', label: '✋ 禮貌打斷' },
-                { id: 'advanced', label: '⚡ 高階流暢' }
+                { id: 'social', label: '🍽️ 社交生活' },
+                { id: 'fast_speech', label: '⚡ 連音形變' },
+                { id: 'empathy', label: '💛 同理共鳴' },
+                { id: 'diplomacy', label: '🤝 委婉商量' },
+                { id: 'mindset', label: '🌿 母語思維' },
+                { id: 'idioms', label: '🎯 道地短語' }
               ].map(cat => (
                 <button
                   key={cat.id}
@@ -1616,6 +1647,15 @@
                   </div>
                   <span>{isSelected ? '已選入' : '選取'}</span>
                 </button>
+
+                {/* CEFR Level Badge */}
+                <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full border ${
+                  (chunk.cefr === 'A2' || (!chunk.cefr && chunk.day <= 40))
+                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
+                    : 'bg-sky-50 text-sky-700 dark:bg-sky-950/80 dark:text-sky-300 border-sky-300 dark:border-sky-800'
+                }`}>
+                  {chunk.cefr || (chunk.day <= 40 ? 'A2' : 'B1')} • {chunk.day <= 40 ? '生活必備' : '自然表達'}
+                </span>
 
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 dark:bg-brand-950 dark:text-brand-300 border border-brand-200 dark:border-brand-800">
                   {chunk.categoryName}
@@ -2915,7 +2955,7 @@
                   100 天 1000 語塊進階里程碑
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed">
-                  分 5 大階段漸進式內化：由破除中英直譯、連音弱化聽力預測、觀點碰撞折衷，到高壓職場對話與母語直覺反應。
+                  參考 English Podcast 1314 精髓，涵蓋 CEFR A2 (生活高頻) 與 B1 (自然流暢) 短語塊，由日常生活起居、連音形變共鳴，到生活交涉、休閒旅遊與母語思維質變。
                 </p>
               </div>
 
@@ -2929,11 +2969,11 @@
             {/* 5-Phase Progression Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2">
               {[
-                { p: 1, days: "Days 1-20", title: "破除逐字直譯", target: "200 塊", icon: "🛡️", desc: "殺死心算翻譯，建立生存求救工具" },
-                { p: 2, days: "Days 21-40", title: "連音弱化預測", target: "400 塊", icon: "⚡", desc: "攻克口語變形，話題無縫切換" },
-                { p: 3, days: "Days 41-60", title: "觀點碰撞折衷", target: "600 塊", icon: "🤝", desc: "高情商反駁，先肯定再轉折" },
-                { p: 4, days: "Days 61-80", title: "高壓職場應變", target: "800 塊", icon: "💼", desc: "敏捷早會匯報，談判危機處理" },
-                { p: 5, days: "Days 81-100", title: "母語直覺流暢", target: "1000 塊", icon: "👑", desc: "0.3s 母語反射，徹底英文大腦" }
+                { p: 1, days: "Days 1-20", title: "生活起居與生存 (A2)", target: "200 塊", icon: "🌱", desc: "短語塊直出，早晨問候與求生叫停" },
+                { p: 2, days: "Days 21-40", title: "連音弱化與同理 (A2-B1)", target: "400 塊", icon: "⚡", desc: "攻克 gonna/wanna，讚美安慰與情緒共鳴" },
+                { p: 3, days: "Days 41-60", title: "生活交涉與習慣 (B1)", target: "600 塊", icon: "🤝", desc: "踏出舒適圈，折衷商量與告別拖延" },
+                { p: 4, days: "Days 61-80", title: "休閒旅遊與聽說 (B1)", target: "800 塊", icon: "✈️", desc: "聚會點餐問路，旅行入住與時光自嘲" },
+                { p: 5, days: "Days 81-100", title: "母語直覺與思維 (B1+)", target: "1000 塊", icon: "👑", desc: "播客跟讀肌肉記憶，進步重於完美" }
               ].map(phase => {
                 const phaseMin = (phase.p - 1) * 200;
                 const isCurrent = totalMastered >= phaseMin && totalMastered < phase.p * 200;

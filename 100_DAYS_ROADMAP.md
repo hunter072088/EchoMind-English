@@ -1,7 +1,9 @@
 # 🏆 EchoMind English - 100 天「英文式思考與抗恐慌」全面內化學習計畫
 
 > **核心宗旨**：告別逐字翻譯，用 100 天將「塊狀語意 (Chunk Prediction)」與「口腔影子跟讀 (Shadowing)」刻入潛意識。  
-> **每日基石**：每日掌握 **10 個核心 Chunk** ＋ **3 次三階段 Shadowing 循環** ＋ **1 次抗恐慌測驗或對話演練**。
+> **難度定位**：嚴格參照 **English Podcast 1314** 教學理念與 **CEFR A2（基礎生活、高頻反射）** 至 **CEFR B1（自然流暢、生活交涉）** 國際語言等級。  
+> **語塊設計**：短小精悍（**2~5 個單字**），一句呼吸就能自然輸出，徹底擺脫落落長的死板難句！  
+> **每日基石**：每日掌握 **10 個核心短語塊** ＋ **3 次三階段 Shadowing 循環** ＋ **1 次抗恐慌測驗或對話演練**。
 
 ---
 
@@ -9,86 +11,57 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                            100 天英文直覺思維大腦建立路徑                      │
+│                   100 天 CEFR A2 / B1 英文直覺思維大腦建立路徑                 │
 ├───────────────┬───────────────┬───────────────┬───────────────┬─────────────┤
 │   Phase 1     │   Phase 2     │   Phase 3     │   Phase 4     │   Phase 5   │
 │  Days 1-20    │  Days 21-40   │  Days 41-60   │  Days 61-80   │ Days 81-100 │
+│   [CEFR A2]   │  [CEFR A2-B1] │   [CEFR B1]   │   [CEFR B1]   │  [CEFR B1+] │
 ├───────────────┼───────────────┼───────────────┼───────────────┼─────────────┤
-│ 破除逐字直譯  │ 連音形變弱化  │ 觀點折衷委婉  │ 高壓職場應變  │ 即興母語反應 │
-│ 生存工具建立  │ 聽覺預測能力  │ 深度社交推動  │ 10分鐘不冷場  │ 0.3s直覺流暢 │
+│ 生活起居習慣  │ 連音形變弱化  │ 生活交涉協商  │ 休閒旅遊全景  │ 即興母語直覺 │
+│ 生存叫停工具  │ 讚美安慰共鳴  │ 踏出舒適圈    │ 聚會點餐問路  │ 播客跟讀習慣 │
 │ 累積 200 塊   │ 累積 400 塊   │ 累積 600 塊   │ 累積 800 塊   │ 突破 1000 塊 │
 └───────────────┴───────────────┴───────────────┴───────────────┴─────────────┘
 ```
 
 ---
 
-## 📌 第一階段：破除逐字直譯與生存破冰 (Days 1 - 20)
+## 📌 第一階段：生活起居與生存破冰 (Days 1 - 20) • 【CEFR A2】
 * **核心修煉**：徹底殺死「聽到英文 ➔ 大腦心算翻中文 ➔ 想好中文 ➔ 試圖翻成英文單字 ➔ 拼文法說出」的 5 步延遲鏈。
-* **主要領域**：自然開場、打招呼、聽不懂時的緊急求救、確認理解、拒絕假裝點頭 (Fake Nodding)。
-* **量化指標**：掌握 200 個核心語塊，聽力反應時間由 2.5 秒縮減至 1.0 秒。
-
-| 天數區間 | 核心主題 | 代表性必備語塊 (Chunks) | 實戰情境驗收 |
-| :--- | :--- | :--- | :--- |
-| **Day 1 - 5** | 破冰問候與自然反問 | *How's it going?, What'cha been up to?, Good to meet you in person, Catch you later.* | 遇見老外 0.5 秒反射反問，拋出發球權 |
-| **Day 6 - 10** | 聽不懂時的免恐慌求生 | *I'm not sure I follow, Let me make sure I understand, Sorry, I missed the last part.* | 不懂裝懂點頭率降為 0%，從容叫停請求澄清 |
-| **Day 11 - 15** | 爭取思考時間與填補空白 | *Let me think for a second, That's a good question, How should I put this?, The thing is...* | 被點名問到難題時，維持 5-8 秒優雅思考期 |
-| **Day 16 - 20** | 積極傾聽與語意收攏 | *What you're saying is..., Does that make sense?, Do you know what I mean?* | 總結對方長篇大論，拉回對話主導權 |
+* **主要領域**：早晨起床、友善問候、咖啡廳與早餐點餐、聽不懂時的緊急求救、確認理解、拒絕假裝點頭 (Fake Nodding)、晚間放鬆。
+* **代表性必備短語塊 (Chunks)**：*Wake up, Brush my teeth, How's it going?, To go, please, I'm not sure I follow, Let me think, Thanks a lot, Evening wind-down.*
+* **量化指標**：掌握 200 個核心生活短語塊，聽力反應時間由 2.5 秒縮減至 1.0 秒。
 
 ---
 
-## ⚡ 第二階段：連音形變與聽力預測力 (Days 21 - 40)
-* **核心修煉**：攻克母語人士的真實語音形變（弱化、脫落、閃音 Flap-T、顎化連讀），讓耳朵先於眼睛識別。
-* **主要領域**：快速口語縮略、常見情態連音（*woulda, coulda, shoulda, gotta, wanna*）、話題順暢跳轉。
+## ⚡ 第二階段：連音形變與同理共鳴 (Days 21 - 40) • 【CEFR A2-B1】
+* **核心修煉**：攻克母語人士的真實語音形變（弱化、脫落、閃音 Flap-T、縮讀），讓耳朵先於眼睛識別。
+* **主要領域**：快速口語縮略（*gonna, wanna, gotta, woulda, coulda, flap-T*）、表達興奮、給予讚美、同理心與安慰、看開與放下。
+* **代表性必備短語塊 (Chunks)**：*Gonna do, Wanna go, Gotta run, Coulda been worse, A bottle of water, Can't wait!, Good job!, Hang in there, Let it go, Tell me about it!*
 * **量化指標**：累積至 400 個語塊，能在不看逐字稿下聽懂 1.1x 快速對話中的 85% 核心意圖。
 
-| 天數區間 | 核心主題 | 代表性必備語塊 (Chunks) | 實戰情境驗收 |
-| :--- | :--- | :--- | :--- |
-| **Day 21 - 25** | 連音縮讀與自然弱化 | *What are you gonna do? ➔ Whatcha gonna do?, I would have ➔ I woulda, Out of ➔ Outta.* | 影子跟讀精準模仿母語人士吞音與滑音 |
-| **Day 26 - 30** | 話題切換與順暢過渡 | *Speaking of which..., On that note..., Before I forget..., Getting back to your point...* | 聊天時無縫轉移話題，不產生生硬卡頓 |
-| **Day 31 - 35** | 模糊推論與經驗概括 | *Off the top of my head, As far as I know, If I'm not mistaken, For what it's worth.* | 分享非百分之百確定資訊時的安全語意護盾 |
-| **Day 36 - 40** | 情感共鳴與同理心表達 | *I know the feeling, Tell me about it!, You can say that again!, Hang in there!* | 社交場合中給予對方最強烈的心理共鳴與反饋 |
+---
+
+## 🤝 第三階段：生活交涉與習慣建立 (Days 41 - 60) • 【CEFR B1】
+* **核心修煉**：學會日常決策商量、各退一步、輕度妥協，並透過 Chunk 思考培養每天持續開口的良好心態。
+* **主要領域**：委婉商量（*It's up to you, Sleep on it*）、建立日常好習慣、踏出舒適圈、克服拖延、慶祝微小進步、禮貌插話、劃定邊界。
+* **代表性必備短語塊 (Chunks)**：*It's up to you, Sleep on it, Meet halfway, Step by step, Comfort zone, First step, Do it now, Small wins, Jump in, Take it offline.*
+* **量化指標**：累積至 600 個語塊，在日常交涉或規劃討論中能冷靜維持英文交流 5 分鐘以上。
 
 ---
 
-## 🤝 第三階段：觀點碰撞與委婉折衷 (Days 41 - 60)
-* **核心修煉**：學會高情商的「先接納再反對（Yes, and / Yes, but）」句型，杜絕粗魯的 "No" 或 "I disagree"。
-* **主要領域**：委婉反駁、提出替代方案、劃定界線、平衡期望、禮貌打斷。
-* **量化指標**：累積至 600 個語塊，在意見衝突的情境下能冷靜維持英文交涉 5 分鐘以上。
-
-| 天數區間 | 核心主題 | 代表性必備語塊 (Chunks) | 實戰情境驗收 |
-| :--- | :--- | :--- | :--- |
-| **Day 41 - 45** | 委婉反對與高情商反駁 | *I see where you're coming from, but..., Don't get me wrong..., With all due respect...* | 會議中不同意他人方案但對方欣然接受你的論點 |
-| **Day 46 - 50** | 核心收斂與底線堅持 | *The bottom line is..., At the end of the day, It all comes down to..., Fair enough.* | 在討論發散時，一句話切中本質並取得共識 |
-| **Day 51 - 55** | 禮貌介入與發言權爭取 | *Sorry to jump in, but..., Can I add one quick thing?, Before we move on...* | 多人會議中優雅搶到麥克風而不顯得粗暴打斷 |
-| **Day 56 - 60** | 步驟拆解與引導說服 | *Could you walk me through that?, Step by step, Let's break this down into...* | 遇到複雜業務需求時，引導對方條理分明說明 |
+## ✈️ 第四階段：休閒旅遊與全情境聽說 (Days 61 - 80) • 【CEFR B1】
+* **核心修煉**：融入海外旅行與社交生活，自然應對聚會飲品、飯店入住、問路、美食評價、傾聽朋友心事與壓力調節。
+* **主要領域**：酒吧點飲料、戶外踏青、飯店入住退房、街頭指路、美食讚美、原諒放下、感嘆時光飛逝、幽默自嘲、數位排毒。
+* **代表性必備短語塊 (Chunks)**：*On the rocks, Fresh air, Check in, Go straight, Hits the spot, Good news!, Water under the bridge, Deep breath, Time flies, Laugh it off.*
+* **量化指標**：累積至 800 個語塊，出國旅行或與外國友人出遊時，食衣住行各情境皆能自如應對。
 
 ---
 
-## 💼 第四階段：高壓職場應變與專業說服 (Days 61 - 80)
-* **核心修煉**：適應快節奏跨國會議、談判協商、敏捷匯報 (Standup) 與危機處理，完全消除臨場膽怯感。
-* **主要領域**：進度承諾、風險預警、推動下一步、處理客訴、專業簡報過渡。
-* **量化指標**：累積至 800 個語塊，能流暢進行 10 分鐘以上無中文介入的職場全英文匯報。
-
-| 天數區間 | 核心主題 | 代表性必備語塊 (Chunks) | 實戰情境驗收 |
-| :--- | :--- | :--- | :--- |
-| **Day 61 - 65** | 敏捷早會與進度推進 | *I'm currently blocked by..., I'll keep you posted, Let's touch base next week.* | 30 秒俐落完成早會更新，無贅字且條理清晰 |
-| **Day 66 - 70** | 風險評估與誠實溝通 | *To be completely honest, That's a huge stretch, Better safe than sorry.* | 擋下不合理的上線時間，同時提出可行替代方案 |
-| **Day 71 - 75** | 會議控場與時間管理 | *Where were we?, Let's take this offline, We're running short on time.* | 主持英文會議，適時將扯遠的話題拉回正軌 |
-| **Day 76 - 80** | 商務協商與雙贏妥協 | *Meet in the middle, Trade-off, Give and take, We have a deal.* | 在預算或交付條款交涉中展現專業談判風範 |
-
----
-
-## 👑 第五階段：母語直覺、幽默與即興流暢 (Days 81 - 100)
-* **核心修煉**：擺脫單調直白用字，融合地道成語、美式文化隱喻與幽默化解，達到母語人士等級的鬆弛感 (Effortless Flow)。
-* **主要領域**：生活隱喻、即興幽默、文化慣用、深刻哲思、從容結尾。
-* **量化指標**：**突破 1000 個高頻語塊儲備庫**，反應速度達到母語反射級 **0.3 秒**。
-
-| 天數區間 | 核心主題 | 代表性必備語塊 (Chunks) | 實戰情境驗收 |
-| :--- | :--- | :--- | :--- |
-| **Day 81 - 85** | 高階道地片語與隱喻 | *Take it with a grain of salt, Cut to the chase, It rings a bell, It slipped my mind.* | 說話生動具畫面感，告別中規中矩的教科書英語 |
-| **Day 86 - 90** | 豁達接受與幽默化解 | *It is what it is, Play it by ear, No hard feelings, Call it a day.* | 面對挫折或意外事件，從容展現美式幽默與情商 |
-| **Day 91 - 95** | 讚美激勵與團隊凝聚 | *You nailed it!, Couldn't have done it without you, Props to the team, Hats off to you!* | 鼓舞同儕士氣，建立深刻的跨文化人際連結 |
-| **Day 96 - 100** | **大腦直覺英文總體檢** | *全面隨機 100 塊盲測、高壓快速 Role-play、全方位卡頓庫清空* | **達成完全捨棄逐字翻譯，建立終身受用的英語大腦！** |
+## 👑 第五階段：母語直覺、幽默與思維質變 (Days 81 - 100) • 【CEFR B1+】
+* **核心修煉**：深度內化 English Podcast 1314 理念——「口腔肌肉記憶」、「英語自言自語」、「聽播客跟讀」與「進步重於完美」，達到自然從容的鬆弛感。
+* **主要領域**：高頻道地成語（*Cut to the chase, Tip of my tongue, Play it by ear, Call it a day, It is what it is*）、自言自語訓練、肌肉記憶跟讀、文化幽默、100 天巔峰衝刺。
+* **代表性必備短語塊 (Chunks)**：*Cut to the chase, Tip of my tongue, Play it by ear, No hard feelings, Call it a day, It is what it is, You nailed it, Muscle memory, Talk to myself, Progress over perfection.*
+* **量化指標**：**突破 1000 個高頻短語塊**，反應速度達到母語反射級 **0.3 秒**，徹底形成直覺英語大腦！
 
 ---
 
